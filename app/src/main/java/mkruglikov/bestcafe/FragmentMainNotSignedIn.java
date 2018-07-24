@@ -29,7 +29,7 @@ public class FragmentMainNotSignedIn extends Fragment {
         btnConnectMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //ToDo
             }
         });
 
@@ -37,7 +37,7 @@ public class FragmentMainNotSignedIn extends Fragment {
         btnBookMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                //ToDo
             }
         });
         return rootView;
