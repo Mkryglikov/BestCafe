@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">BestCafe</string>
+    <string name="app_name">Best Cafe</string>
+
+    <!--Main activity-->
+    <string name="btnBookMain_text">Book a table</string>
+    <string name="tvSignInMain_text">Sign In</string>
+    <string name="btnConnectMain_text">Connect to table</string>
+
 </resources>
