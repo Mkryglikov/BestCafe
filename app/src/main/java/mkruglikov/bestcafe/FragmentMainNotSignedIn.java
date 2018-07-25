@@ -1,5 +1,6 @@
 package mkruglikov.bestcafe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,22 +11,15 @@ import android.widget.TextView;
 
 public class FragmentMainNotSignedIn extends Fragment {
 
-    private TextView tvLogoMainNotSignedIn, tvSignInMainNotSignedIn;
-    private Button btnConnectMainNotSignedIn, btnBookMainNotSignedIn;
-
-
     public FragmentMainNotSignedIn() {
 
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_not_signed_in, container, false);
-        tvLogoMainNotSignedIn = rootView.findViewById(R.id.tvLogoMainNotSignedIn);
-        tvSignInMainNotSignedIn = rootView.findViewById(R.id.tvSignInMainNotSignedIn);
 
-        btnConnectMainNotSignedIn = rootView.findViewById(R.id.btnConnectMainNotSignedIn);
+        Button btnConnectMainNotSignedIn = rootView.findViewById(R.id.btnConnectMainNotSignedIn);
         btnConnectMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -33,14 +27,21 @@ public class FragmentMainNotSignedIn extends Fragment {
             }
         });
 
-        btnBookMainNotSignedIn = rootView.findViewById(R.id.btnBookMainNotSignedIn);
+        Button btnBookMainNotSignedIn = rootView.findViewById(R.id.btnBookMainNotSignedIn);
         btnBookMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //ToDo
             }
         });
+
+        TextView tvSignInMainNotSignedIn = rootView.findViewById(R.id.tvSignInMainNotSignedIn);
+        tvSignInMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE);
+            }
+        });
         return rootView;
     }
-
 }

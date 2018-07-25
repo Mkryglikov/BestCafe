@@ -66,6 +66,7 @@
         android:layout_height="wrap_content"
         android:text="@string/tvSignInMain_text"
         android:textSize="16sp"
+        android:padding="16dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

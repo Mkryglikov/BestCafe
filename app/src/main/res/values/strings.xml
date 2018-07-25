@@ -1,13 +1,27 @@
 <resources>
+    <!--Application name-->
     <string name="app_name">Best Cafe</string>
 
     <!--Main activity-->
     <string name="btnBookMain_text">Book a table</string>
-    <string name="tvSignInMain_text">Sign In</string>
     <string name="btnConnectMain_text">Connect to table</string>
+    
+    <!--Not SignedIn fragment-->
+    <string name="tvSignInMain_text">Sign In</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--SignedIn fragment-->
     <string name="tvNoBookingsHint_text">You have no active bookings yet</string>
+
+    <!--Both login activities-->
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+
+    <!--SignIn activity-->
+    <string name="btnSubmitSignIn_text">Sign In</string>
+    <string name="SignInActivity_title">Sign In</string>
+
+    <!--SignUp activity-->
+    <string name="SignUpActivity_title">Sign Up</string>
+    <string name="btnSubmitSignUp_text">Sign Up</string>
 
 </resources>
