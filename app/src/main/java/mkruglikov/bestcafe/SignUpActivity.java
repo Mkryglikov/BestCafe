@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -12,6 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,9 +24,12 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity {
 
+    public static final int SIGN_UP_ACTIVITY_REQUEST_CODE = 15;
+    private static final int GOOGLE_SIGN_UP_ACTIVITY_REQUEST_CODE = 16;
     private FirebaseAuth firebaseAuth;
     private EditText etEmailSignUp, etPasswordSignUp;
-    private Button btnSubmitSignUp;
+    private GoogleSignInClient googleSignInClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +38,16 @@ public class SignUpActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(BuildConfig.GoogleSignInClientId)
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+
         etEmailSignUp = findViewById(R.id.etEmailSignUp);
         etPasswordSignUp = findViewById(R.id.etPasswordSignUp);
 
-        btnSubmitSignUp = findViewById(R.id.btnSubmitSignUp);
+        Button btnSubmitSignUp = findViewById(R.id.btnSubmitSignUp);
         btnSubmitSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,6 +64,24 @@ public class SignUpActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        SignInButton btnGoogleSignUp = findViewById(R.id.btnGoogleSignUp);
+        btnGoogleSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signUpIntent = googleSignInClient.getSignInIntent();
+                startActivityForResult(signUpIntent, GOOGLE_SIGN_UP_ACTIVITY_REQUEST_CODE);
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GOOGLE_SIGN_UP_ACTIVITY_REQUEST_CODE) {
+            setResult(RESULT_OK, data);
+            finish();
+        }
     }
 
     protected void addUser(String email, String password) {

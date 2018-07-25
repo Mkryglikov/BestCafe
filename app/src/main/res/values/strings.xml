@@ -15,7 +15,8 @@
     <!--Both login activities-->
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
-
+    <string name="or">or</string>
+   
     <!--SignIn activity-->
     <string name="btnSubmitSignIn_text">Sign In</string>
     <string name="SignInActivity_title">Sign In</string>
