@@ -29,5 +29,8 @@
     <string name="step_label">Step</string>
     <string name="booking_date_hint">Choose a date</string>
     <string name="booking_time_hint">Choose a time</string>
+    <string name="booking_people_hint">No of people</string>
+    <string name="booking_review_hint">Review booking</string>
+    <string name="sign_out_text">Sign Out</string>
 
 </resources>

@@ -20,11 +20,14 @@
         </activity>
         <activity
             android:name=".SignUpActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTop" />
         <activity
             android:name=".SignInActivity"
-            android:launchMode="singleInstance" />
-        <activity android:name=".BookingActivity"></activity>
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".BookingActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
