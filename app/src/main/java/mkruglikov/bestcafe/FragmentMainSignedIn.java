@@ -1,5 +1,6 @@
 package mkruglikov.bestcafe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,7 @@ public class FragmentMainSignedIn extends Fragment {
 
     public static final String USER_EMAIL_ARGUMENTS_KEY = "user_email_arguments_key";
 
-    private Button btnConnectMainNoBookings, btnBookMainNoBookings;
+    private Button btnConnectMainSignedIn, btnBookMainSignedIn;
 
     public FragmentMainSignedIn() {
 
@@ -23,23 +24,23 @@ public class FragmentMainSignedIn extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_signed_in, container, false);
 
-        Toolbar toolbarMainNoBookings = rootView.findViewById(R.id.toolbarMainNoBookings);
+        Toolbar toolbarMainSignedIn = rootView.findViewById(R.id.toolbarMainSignedIn);
 
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarMainNoBookings);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarMainSignedIn);
 
-        btnConnectMainNoBookings = rootView.findViewById(R.id.btnConnectMainNoBookings);
-        btnConnectMainNoBookings.setOnClickListener(new View.OnClickListener() {
+        btnConnectMainSignedIn = rootView.findViewById(R.id.btnConnectMainSignedIn);
+        btnConnectMainSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //ToDo
             }
         });
 
-        btnBookMainNoBookings = rootView.findViewById(R.id.btnBookMainNoBookings);
-        btnBookMainNoBookings.setOnClickListener(new View.OnClickListener() {
+        btnBookMainSignedIn = rootView.findViewById(R.id.btnBookMainSignedIn);
+        btnBookMainSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //ToDo
+                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
             }
         });
 

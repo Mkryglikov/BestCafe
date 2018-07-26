@@ -2,7 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinatorMainNoBookings"
+    android:id="@+id/coordinatorMainSignedIn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
@@ -19,14 +19,14 @@
             app:layout_scrollFlags="snap">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbarMainNoBookings"
-                android:paddingStart="48dp"
+                android:id="@+id/toolbarMainSignedIn"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:paddingStart="48dp"
                 app:layout_collapseMode="pin">
 
                 <TextView
-                    android:id="@+id/tvToolbarMainNoBookingsTitle"
+                    android:id="@+id/tvToolbarMainSignedInTitle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
@@ -39,8 +39,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:padding="16dp"
         android:layout_height="match_parent"
+        android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <TextView
@@ -50,15 +50,15 @@
             android:layout_marginBottom="128dp"
             android:gravity="center"
             android:text="@string/tvNoBookingsHint_text"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/btnConnectMainNoBookings"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnConnectMainSignedIn"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
-            android:id="@+id/btnConnectMainNoBookings"
+            android:id="@+id/btnConnectMainSignedIn"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_marginBottom="48dp"
@@ -70,14 +70,13 @@
             android:paddingTop="24dp"
             android:text="@string/btnConnectMain_text"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/btnBookMainNoBookings"
+            app:layout_constraintBottom_toTopOf="@+id/btnBookMainSignedIn"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvNoBookingsHint" />
 
         <Button
-            android:id="@+id/btnBookMainNoBookings"
+            android:id="@+id/btnBookMainSignedIn"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:background="@drawable/button_rounded_white"
@@ -87,11 +86,10 @@
             android:paddingStart="48dp"
             android:paddingTop="24dp"
             android:text="@string/btnBookMain_text"
-            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnConnectMainNoBookings"
+            app:layout_constraintTop_toBottomOf="@+id/btnConnectMainSignedIn"
             app:layout_constraintVertical_bias="1.0" />
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

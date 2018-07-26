@@ -5,7 +5,7 @@
     <!--Main activity-->
     <string name="btnBookMain_text">Book a table</string>
     <string name="btnConnectMain_text">Connect to table</string>
-    
+
     <!--Not SignedIn fragment-->
     <string name="tvSignInMain_text">Sign In</string>
 
@@ -16,7 +16,7 @@
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="or">or</string>
-   
+
     <!--SignIn activity-->
     <string name="btnSubmitSignIn_text">Sign In</string>
     <string name="SignInActivity_title">Sign In</string>
@@ -24,5 +24,10 @@
     <!--SignUp activity-->
     <string name="SignUpActivity_title">Sign Up</string>
     <string name="btnSubmitSignUp_text">Sign Up</string>
+
+    <!--Booking activity-->
+    <string name="step_label">Step</string>
+    <string name="booking_date_hint">Choose a date</string>
+    <string name="booking_time_hint">Choose a time</string>
 
 </resources>

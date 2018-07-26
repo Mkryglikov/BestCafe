@@ -2,7 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/coordinatorMainNoBookings"
+    android:id="@+id/coordinatorSignUp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
@@ -102,7 +102,6 @@
             android:background="@color/colorAccent"
             android:text="@string/btnSubmitSignUp_text"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </android.support.constraint.ConstraintLayout>

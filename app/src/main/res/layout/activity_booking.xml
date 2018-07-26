@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorBooking"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context=".BookingActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="snap">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbarBooking"
+                android:layout_marginEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin">
+
+                <TextView
+                    android:id="@+id/tvToolbarBooking"
+                    android:layout_width="match_parent"
+                    android:textColor="@android:color/black"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:id="@+id/ivBookingDateIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_calendar"
+            android:tint="@color/colorAccent"
+            app:layout_constraintEnd_toStartOf="@+id/ivBookingTimeIcon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvBookingDateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/ivBookingDateIcon"
+            app:layout_constraintStart_toStartOf="@+id/ivBookingDateIcon"
+            app:layout_constraintTop_toBottomOf="@+id/ivBookingDateIcon" />
+
+        <ImageView
+            android:id="@+id/ivBookingTimeIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_clock"
+            android:tint="@color/colorLightGrey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvBookingTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/ivBookingTimeIcon"
+            app:layout_constraintStart_toStartOf="@+id/ivBookingTimeIcon"
+            app:layout_constraintTop_toBottomOf="@+id/ivBookingTimeIcon" />
+
+        <ImageView
+            android:id="@+id/ivBookingPeopleIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_people"
+            android:tint="@color/colorLightGrey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivBookingTimeIcon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvBookingPeopleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/ivBookingPeopleIcon"
+            app:layout_constraintStart_toStartOf="@+id/ivBookingPeopleIcon"
+            app:layout_constraintTop_toBottomOf="@+id/ivBookingPeopleIcon" />
+
+        <FrameLayout
+            android:id="@+id/containerBooking"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/clBookingNextStep"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBookingTimeText" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/clBookingNextStep"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/colorAccent"
+            android:clickable="true"
+            android:focusable="true"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/ivBookingNextStepIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:padding="8dp"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvBookingNextStepStepLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="8dp"
+                android:text="@string/step_label"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toEndOf="@+id/ivBookingNextStepIcon"
+                app:layout_constraintTop_toTopOf="@+id/ivBookingNextStepIcon" />
+
+            <TextView
+                android:id="@+id/tvBookingNextStepNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toEndOf="@+id/tvBookingNextStepStepLabel"
+                app:layout_constraintTop_toTopOf="@+id/tvBookingNextStepStepLabel" />
+
+            <TextView
+                android:id="@+id/tvBookingNextStepHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/ivBookingNextStepIcon"
+                app:layout_constraintTop_toBottomOf="@+id/tvBookingNextStepStepLabel" />
+
+            <ImageView
+                android:id="@+id/ivBookingNextStepArrowIcon"
+                android:layout_width="48dp"
+                android:padding="8dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_next_step"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

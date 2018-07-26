@@ -31,7 +31,7 @@ public class FragmentMainNotSignedIn extends Fragment {
         btnBookMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //ToDo
+                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
             }
         });
 

@@ -66,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case (BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE):
+                //ToDo
+                break;
             default:
                 break;
         }

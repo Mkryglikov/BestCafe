@@ -2,6 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menuSignOut"
         android:title="Sign Out"
-        android:icon="@drawable/sign_out_icon"
+        android:icon="@drawable/ic_sign_out"
         app:showAsAction="ifRoom"/>
 </menu>
