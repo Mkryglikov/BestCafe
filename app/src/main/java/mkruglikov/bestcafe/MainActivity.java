@@ -25,7 +25,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "FUCK";
+    public static final String TAG = "FUCK";
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
@@ -36,17 +36,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         firebaseAuth = FirebaseAuth.getInstance();
         fragmentManager = getSupportFragmentManager();
-        user = firebaseAuth.getCurrentUser();
     }
 
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        user = firebaseAuth.getCurrentUser();
         if (user == null)
             showFragmentNotSignedIn();
         else
             showFragmentSignedIn();
+        super.onResume();
     }
 
     @Override

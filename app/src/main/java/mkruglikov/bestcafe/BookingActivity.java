@@ -1,6 +1,7 @@
 package mkruglikov.bestcafe;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -38,6 +39,7 @@ public class BookingActivity extends AppCompatActivity implements
     private static Calendar selectedDate;
     private static int selectedHour = 24, selectedMinute = 60, selectedPeopleCount;
     private static int currentStep = 0;
+    private Calendar calendar = Calendar.getInstance();
 
 
     @Override
@@ -100,24 +102,16 @@ public class BookingActivity extends AppCompatActivity implements
                 showFirstStep();
                 break;
             case 1:
-                if (selectedDate != null)
+                if (checkSelectedDate())
                     showSecondStep();
-                else
-                    Toast.makeText(this, "Choose the day", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
-                if (selectedHour == 24 || selectedMinute == 60)
-                    Toast.makeText(this, "Choose the time", Toast.LENGTH_SHORT).show();
-                else if (selectedHour >= CAFES_OPENING_HOUR && selectedHour < CAFES_CLOSING_HOUR)
+                if (checkSelectedTime())
                     showThirdStep();
-                else
-                    Toast.makeText(this, "We're open from " + CAFES_OPENING_HOUR + " to " + CAFES_CLOSING_HOUR, Toast.LENGTH_SHORT).show();
                 break;
             case 3:
-                if (selectedPeopleCount > 0)
+                if (checkSelectedDate() && checkSelectedTime() && checkSelectedPeople())
                     showFourthStep();
-                else
-                    Toast.makeText(this, "Choose people count", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -204,19 +198,54 @@ public class BookingActivity extends AppCompatActivity implements
     }
 
     private void showFourthStep() {
-//        FragmentBookingReview fragmentBookingReview = new FragmentBookingReview();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.containerBooking, fragmentBookingReview)
-//                .addToBackStack(null)
-//                .commit();
+        FragmentBookingReview fragmentBookingReview = new FragmentBookingReview();
+        fragmentManager.beginTransaction()
+                .replace(R.id.containerBooking, fragmentBookingReview)
+                .addToBackStack(null)
+                .commit();
 
-        ivBookingDateIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorLightGrey));
-        ivBookingTimeIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorLightGrey));
-        ivBookingPeopleIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorLightGrey));
+        ivBookingDateIcon.setColorFilter(Color.BLACK);
+        ivBookingTimeIcon.setColorFilter(Color.BLACK);
+        ivBookingPeopleIcon.setColorFilter(Color.BLACK);
         clBookingNextStep.setVisibility(View.GONE);
 
         tvToolbarBooking.setText(R.string.booking_review_hint);
         currentStep = 4;
+    }
+
+    private boolean checkSelectedDate() {
+        if (selectedDate == null) {
+            Toast.makeText(this, "Choose the day", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkSelectedTime() {
+        if (selectedHour == 24 || selectedMinute == 60) {
+            Toast.makeText(this, "Choose the time", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (selectedHour < CAFES_OPENING_HOUR || selectedHour > CAFES_CLOSING_HOUR) {
+            Toast.makeText(this, "We're open from " + CAFES_OPENING_HOUR + " to " + CAFES_CLOSING_HOUR, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        // selected day == today && (selected hour < current hour || (selected hour == current hour && selected minute <= current minute))
+        else if (selectedDate != null && (" " + selectedDate.get(Calendar.DAY_OF_MONTH) + selectedDate.get(Calendar.MONTH) + selectedDate.get(Calendar.YEAR)).equals(" " + calendar.get(Calendar.DAY_OF_MONTH) + calendar.get(Calendar.MONTH) + calendar.get(Calendar.YEAR)) &&
+                ((selectedHour < calendar.get(Calendar.HOUR_OF_DAY) ||
+                        (selectedHour == calendar.get(Calendar.HOUR_OF_DAY) &&
+                                selectedMinute <= calendar.get(Calendar.MINUTE))))) {
+            Toast.makeText(this, "Selected time has passed already", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkSelectedPeople() {
+        if (selectedPeopleCount <= 0) {
+            Toast.makeText(this, "Choose people count", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -28,7 +28,7 @@ public class FragmentMainSignedIn extends Fragment {
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarMainSignedIn);
 
-        btnConnectMainSignedIn = rootView.findViewById(R.id.btnConnectMainSignedIn);
+        btnConnectMainSignedIn = rootView.findViewById(R.id.btnSignInReview);
         btnConnectMainSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,7 +36,7 @@ public class FragmentMainSignedIn extends Fragment {
             }
         });
 
-        btnBookMainSignedIn = rootView.findViewById(R.id.btnBookMainSignedIn);
+        btnBookMainSignedIn = rootView.findViewById(R.id.btnSignUpReview);
         btnBookMainSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

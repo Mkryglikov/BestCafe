@@ -11,7 +11,8 @@
         android:id="@+id/calendarBooking"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:mcv_selectionColor="@color/colorAccent"
-        app:mcv_showOtherDates="all" />
+        app:mcv_showOtherDates="out_of_range"
+        app:mcv_arrowColor="@color/colorLightGrey"
+        app:mcv_selectionColor="@color/colorAccent" />
 
 </FrameLayout>

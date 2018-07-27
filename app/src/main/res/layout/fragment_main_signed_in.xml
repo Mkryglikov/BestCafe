@@ -51,14 +51,14 @@
             android:gravity="center"
             android:text="@string/tvNoBookingsHint_text"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/btnConnectMainSignedIn"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignInReview"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
-            android:id="@+id/btnConnectMainSignedIn"
+            android:id="@+id/btnSignInReview"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_marginBottom="48dp"
@@ -70,13 +70,13 @@
             android:paddingTop="24dp"
             android:text="@string/btnConnectMain_text"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toTopOf="@+id/btnBookMainSignedIn"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignUpReview"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvNoBookingsHint" />
 
         <Button
-            android:id="@+id/btnBookMainSignedIn"
+            android:id="@+id/btnSignUpReview"
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:background="@drawable/button_rounded_white"
@@ -89,7 +89,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnConnectMainSignedIn"
+            app:layout_constraintTop_toBottomOf="@+id/btnSignInReview"
             app:layout_constraintVertical_bias="1.0" />
     </android.support.constraint.ConstraintLayout>
 </android.support.design.widget.CoordinatorLayout>

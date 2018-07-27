@@ -5,6 +5,7 @@
     <!--Main activity-->
     <string name="btnBookMain_text">Book a table</string>
     <string name="btnConnectMain_text">Connect to table</string>
+    <string name="sign_out_text">Sign Out</string>
 
     <!--Not SignedIn fragment-->
     <string name="tvSignInMain_text">Sign In</string>
@@ -31,6 +32,10 @@
     <string name="booking_time_hint">Choose a time</string>
     <string name="booking_people_hint">No of people</string>
     <string name="booking_review_hint">Review booking</string>
-    <string name="sign_out_text">Sign Out</string>
+    <string name="tvNeedLoginHint_text">You need to login to make a booking</string>
+    <string name="btnSignUpReview_text">Sign Up</string>
+    <string name="btnSignInReview_text">Sign In</string>
+    <string name="btnSubmitBooking_text">Book a table</string>
+
 
 </resources>

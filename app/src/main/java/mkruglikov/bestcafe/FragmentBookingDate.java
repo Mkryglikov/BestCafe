@@ -31,6 +31,9 @@ public class FragmentBookingDate extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_booking_date, container, false);
         onDateSelectedListener = getArguments().getParcelable(ON_DATE_SELECTED_LISTENER_FRAGMENT_BOOKING_DATE_BUNDLE_KEY);
         calendarBooking = rootView.findViewById(R.id.calendarBooking);
+        calendarBooking.state().edit()
+                .setMinimumDate(CalendarDay.from(Calendar.getInstance()))
+                .commit();
         calendarBooking.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView materialCalendarView, @NonNull CalendarDay calendarDay, boolean b) {
