@@ -3,6 +3,7 @@ package mkruglikov.bestcafe;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,6 +33,7 @@ import static mkruglikov.bestcafe.MainActivity.TAG;
 public class FragmentBookingReview extends Fragment {
 
     private static final int GOOGLE_SIGN_IN_REVIEW_REQUEST_CODE = 18;
+    static final String ON_BOOKING_SUBMIT_LISTENER_BUNDLE_KEY = "onBookingSubmitListener bundle key";
 
     private Button btnSignInReview, btnSignUpReview, btnSubmitBooking;
     private TextView tvEmailReview;
@@ -43,6 +44,7 @@ public class FragmentBookingReview extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
     private GoogleSignInClient googleSignInClient;
+    private OnBookingSubmitListener onBookingSubmitListener;
 
     public FragmentBookingReview() {
 
@@ -52,6 +54,7 @@ public class FragmentBookingReview extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_booking_review, container, false);
 
+        onBookingSubmitListener = getArguments().getParcelable(ON_BOOKING_SUBMIT_LISTENER_BUNDLE_KEY);
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -73,7 +76,6 @@ public class FragmentBookingReview extends Fragment {
             case SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE:
             case SignUpActivity.SIGN_UP_ACTIVITY_REQUEST_CODE:
             case GOOGLE_SIGN_IN_REVIEW_REQUEST_CODE:
-                Log.i(TAG, "right case");
                 if (resultCode == Activity.RESULT_OK && data == null) {
                     user = firebaseAuth.getCurrentUser();
                     changeLayout();
@@ -98,7 +100,6 @@ public class FragmentBookingReview extends Fragment {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Log.i(TAG, "onComplete: ");
                     user = firebaseAuth.getCurrentUser();
                     changeLayout();
                 } else {
@@ -111,7 +112,6 @@ public class FragmentBookingReview extends Fragment {
 
     private void changeLayout() {
         if (user == null) {
-            Log.i(TAG, "changeLayout: user null");
             btnSignInReview = rootView.findViewById(R.id.btnSignInReview);
             btnSignUpReview = rootView.findViewById(R.id.btnSignUpReview);
             btnGoogleReview = rootView.findViewById(R.id.btnGoogleReview);
@@ -141,7 +141,6 @@ public class FragmentBookingReview extends Fragment {
                 }
             });
         } else {
-            Log.i(TAG, "changeLayout: user !=null");
             layoutBookingReviewSignedIn.setVisibility(View.VISIBLE);
             layoutBookingReviewNotSignedIn.setVisibility(View.GONE);
 
@@ -152,9 +151,14 @@ public class FragmentBookingReview extends Fragment {
             btnSubmitBooking.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getActivity().getApplicationContext(), "BOOK!", Toast.LENGTH_LONG).show();
+                    onBookingSubmitListener.onBookingSubmitted();
                 }
             });
         }
     }
+
+    interface OnBookingSubmitListener extends Parcelable{
+        void onBookingSubmitted();
+    }
+
 }

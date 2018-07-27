@@ -36,6 +36,7 @@
     <string name="btnSignUpReview_text">Sign Up</string>
     <string name="btnSignInReview_text">Sign In</string>
     <string name="btnSubmitBooking_text">Book a table</string>
+    <string name="tvLoggedAsHintReview_hint">You\'re logged in as</string>
 
 
 </resources>

@@ -29,6 +29,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.github.prolificinteractive:material-calendarview:1.6.0'
+    implementation 'com.google.firebase:firebase-firestore:17.0.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

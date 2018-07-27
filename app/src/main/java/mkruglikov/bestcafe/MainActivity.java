@@ -67,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case (BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE):
-                //ToDo
+                if (resultCode == Activity.RESULT_OK) {
+                    Toast.makeText(this, "Booked!", Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 break;

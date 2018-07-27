@@ -1,6 +1,7 @@
 package mkruglikov.bestcafe;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -11,25 +12,48 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressLint("ParcelCreator")
 public class BookingActivity extends AppCompatActivity implements
         FragmentBookingDate.BookingOnDateSelectedListener,
         FragmentBookingTime.BookingOnTimeSelectedListener,
-        FragmentBookingPeople.BookingOnPeopleCountSelectedListener {
+        FragmentBookingPeople.BookingOnPeopleCountSelectedListener,
+        FragmentBookingReview.OnBookingSubmitListener {
 
     public static final int BOOKING_ACTIVITY_REQUEST_CODE = 17;
     public static final int CAFES_OPENING_HOUR = 9;
     public static final int CAFES_CLOSING_HOUR = 22;
+
+    private static final String FIRESTORE_BOOKINGS_COLLECTION_NAME = "bookings";
+    private static final String FIRESTORE_COUNTER_DOCUMENT_NAME = "counter";
+    private static final String FIRESTORE_COUNTER_FIELD_NAME = "lastId";
+    private static final String FIRESTORE_USERID_FIELD_NAME = "userId";
+    private static final String FIRESTORE_DAY_FIELD_NAME = "day";
+    private static final String FIRESTORE_MONTH_FIELD_NAME = "month";
+    private static final String FIRESTORE_YEAR_FIELD_NAME = "year";
+    private static final String FIRESTORE_HOUR_FIELD_NAME = "hour";
+    private static final String FIRESTORE_MINUTE_FIELD_NAME = "minute";
+    private static final String FIRESTORE_ACTIVE_FIELD_NAME = "active";
 
     private FragmentManager fragmentManager;
     private ImageView ivBookingDateIcon, ivBookingTimeIcon, ivBookingPeopleIcon, ivBookingNextStepIcon;
@@ -40,6 +64,7 @@ public class BookingActivity extends AppCompatActivity implements
     private static int selectedHour = 24, selectedMinute = 60, selectedPeopleCount;
     private static int currentStep = 0;
     private Calendar calendar = Calendar.getInstance();
+    private FirebaseFirestore db;
 
 
     @Override
@@ -94,6 +119,7 @@ public class BookingActivity extends AppCompatActivity implements
             }
         });
         nextStep();
+        db = FirebaseFirestore.getInstance();
     }
 
     private void nextStep() {
@@ -119,6 +145,7 @@ public class BookingActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (currentStep == 1) {
+            setResult(Activity.RESULT_CANCELED);
             super.onBackPressed();
             finish();
         } else if (currentStep > 1) {
@@ -199,6 +226,9 @@ public class BookingActivity extends AppCompatActivity implements
 
     private void showFourthStep() {
         FragmentBookingReview fragmentBookingReview = new FragmentBookingReview();
+        Bundle args = new Bundle();
+        args.putParcelable(FragmentBookingReview.ON_BOOKING_SUBMIT_LISTENER_BUNDLE_KEY, this);
+        fragmentBookingReview.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerBooking, fragmentBookingReview)
                 .addToBackStack(null)
@@ -288,5 +318,71 @@ public class BookingActivity extends AppCompatActivity implements
 
     public static int getSelectedMinute() {
         return selectedMinute;
+    }
+
+    @Override
+    public void onBookingSubmitted() {
+        Map<String, Object> booking = new HashMap<>();
+        booking.put(FIRESTORE_USERID_FIELD_NAME, FirebaseAuth.getInstance().getCurrentUser().getUid());
+        booking.put(FIRESTORE_DAY_FIELD_NAME, selectedDate.get(Calendar.DAY_OF_MONTH));
+        booking.put(FIRESTORE_MONTH_FIELD_NAME, selectedDate.get(Calendar.MONTH) + 1);
+        booking.put(FIRESTORE_YEAR_FIELD_NAME, selectedDate.get(Calendar.YEAR));
+        booking.put(FIRESTORE_HOUR_FIELD_NAME, selectedHour);
+        booking.put(FIRESTORE_MINUTE_FIELD_NAME, selectedMinute);
+        booking.put(FIRESTORE_ACTIVE_FIELD_NAME, true);
+
+        db.collection(FIRESTORE_BOOKINGS_COLLECTION_NAME)
+                .add(booking)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        updateCounter();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //todo
+                        Log.i(MainActivity.TAG, "Booking failed: " + e.getLocalizedMessage());
+                    }
+                });
+    }
+
+    private void updateCounter() {
+        db.collection(FIRESTORE_BOOKINGS_COLLECTION_NAME)
+                .document(FIRESTORE_COUNTER_DOCUMENT_NAME)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists())
+                                db.collection(FIRESTORE_BOOKINGS_COLLECTION_NAME)
+                                        .document(FIRESTORE_COUNTER_DOCUMENT_NAME)
+                                        .update(FIRESTORE_COUNTER_FIELD_NAME, ((long) document.getData().get(FIRESTORE_COUNTER_FIELD_NAME)) + 1)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                setResult(Activity.RESULT_OK);
+                                                finish();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                //todo
+                                                Log.i(MainActivity.TAG, "Counter updating failed: " + e.getLocalizedMessage());
+                                            }
+                                        });
+                            else
+                                Log.i(MainActivity.TAG, "Counter updating failed: Document doesn't exist");
+
+                        } else {
+                            //todo
+                            Log.i(MainActivity.TAG, "Error getting documents " + task.getException().getLocalizedMessage());
+                        }
+                    }
+                });
     }
 }
