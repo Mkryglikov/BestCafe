@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
+    private boolean isBookingsAvailable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         firebaseAuth = FirebaseAuth.getInstance();
         fragmentManager = getSupportFragmentManager();
+        user = firebaseAuth.getCurrentUser();
     }
-
 
     @Override
     protected void onResume() {
-        user = firebaseAuth.getCurrentUser();
         if (user == null)
             showFragmentNotSignedIn();
         else
@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case (BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE):
                 if (resultCode == Activity.RESULT_OK) {
-                    Toast.makeText(this, "Booked!", Toast.LENGTH_LONG).show();
+                    user = firebaseAuth.getCurrentUser();
+                    showFragmentSignedIn();
                 }
                 break;
             default:
@@ -92,11 +93,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void showFragmentSignedIn() {
-        FragmentMainSignedIn fragment = new FragmentMainSignedIn();
-        Bundle args = new Bundle();
-        args.putString(FragmentMainSignedIn.USER_EMAIL_ARGUMENTS_KEY, user.getEmail());
+        final FragmentMainSignedIn fragment = new FragmentMainSignedIn();
+        final Bundle args = new Bundle();
+        args.putString(FragmentMainSignedIn.USER_ID_ARGUMENTS_KEY, user.getUid());
         fragment.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerMain, fragment)

@@ -6,6 +6,7 @@
     <string name="btnBookMain_text">Book a table</string>
     <string name="btnConnectMain_text">Connect to table</string>
     <string name="sign_out_text">Sign Out</string>
+    <string name="btnBookMoreMain_text">Book one more</string>
 
     <!--Not SignedIn fragment-->
     <string name="tvSignInMain_text">Sign In</string>
