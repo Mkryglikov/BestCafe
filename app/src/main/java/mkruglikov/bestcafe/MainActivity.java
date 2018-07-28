@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
-    private boolean isBookingsAvailable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
                     showFragmentSignedIn();
                 }
                 break;
+            case (ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE):
+                //todo
+                break;
             default:
                 break;
         }
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menuSignOut:
                 AlertDialog alert = new AlertDialog.Builder(this)
                         .setTitle("Confirm")
-                        .setMessage("Are you sure you want to Log Out?")
+                        .setMessage("Are you sure you want to Log out?")
                         .setCancelable(true)
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {

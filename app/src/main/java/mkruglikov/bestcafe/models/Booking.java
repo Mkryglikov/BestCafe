@@ -1,11 +1,6 @@
 package mkruglikov.bestcafe.models;
 
-import org.parceler.Parcel;
-
-@Parcel
 public class Booking {
-    public Booking() {
-    }
 
     private String id;
     private String userId;

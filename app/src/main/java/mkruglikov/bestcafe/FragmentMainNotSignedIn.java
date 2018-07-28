@@ -23,7 +23,7 @@ public class FragmentMainNotSignedIn extends Fragment {
         btnConnectMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //ToDo
+                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), ConnectActivity.class), ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE);
             }
         });
 
