@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import mkruglikov.bestcafe.adapters.BookingPeopleAdapter;
+
 public class FragmentBookingPeople extends Fragment {
 
     private static final int MAX_PEOPLE_COUNT = 6;

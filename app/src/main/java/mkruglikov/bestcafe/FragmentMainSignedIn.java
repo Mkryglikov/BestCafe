@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import mkruglikov.bestcafe.adapters.BookingsAdapter;
+import mkruglikov.bestcafe.models.Booking;
+
 public class FragmentMainSignedIn extends Fragment {
 
     public static final String USER_ID_ARGUMENTS_KEY = "user_id_arguments_key";
@@ -27,7 +30,7 @@ public class FragmentMainSignedIn extends Fragment {
     private FloatingActionButton fabConnectMainSignedIn;
     private boolean isBookingsAvailable;
     private List<Booking> bookings;
-    private ConstraintLayout layoutMainNoBookings, layoutMainBookings;
+    private ConstraintLayout layoutMainNoBookings, layoutMainBookings, layoutLoadingMain;
     private View rootView;
 
     public FragmentMainSignedIn() {
@@ -40,6 +43,7 @@ public class FragmentMainSignedIn extends Fragment {
 
         layoutMainNoBookings = rootView.findViewById(R.id.layoutMainNoBookings);
         layoutMainBookings = rootView.findViewById(R.id.layoutBookingsMain);
+        layoutLoadingMain = rootView.findViewById(R.id.layoutLoadingMain);
 
         Toolbar toolbarMainSignedIn = rootView.findViewById(R.id.toolbarMainSignedIn);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbarMainSignedIn);
@@ -64,6 +68,7 @@ public class FragmentMainSignedIn extends Fragment {
                 }
 
                 if (isBookingsAvailable) {
+                    layoutLoadingMain.setVisibility(View.GONE);
                     layoutMainNoBookings.setVisibility(View.GONE);
                     layoutMainBookings.setVisibility(View.VISIBLE);
 
@@ -94,6 +99,7 @@ public class FragmentMainSignedIn extends Fragment {
                         }
                     });
                 } else {
+                    layoutLoadingMain.setVisibility(View.GONE);
                     layoutMainNoBookings.setVisibility(View.VISIBLE);
                     layoutMainBookings.setVisibility(View.GONE);
 

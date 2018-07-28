@@ -1,4 +1,4 @@
-package mkruglikov.bestcafe;
+package mkruglikov.bestcafe.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -13,14 +13,16 @@ import android.widget.Button;
 import java.util.ArrayList;
 import java.util.List;
 
-class BookingPeopleAdapter extends RecyclerView.Adapter<BookingPeopleAdapter.ViewHolder> {
+import mkruglikov.bestcafe.R;
+
+public class BookingPeopleAdapter extends RecyclerView.Adapter<BookingPeopleAdapter.ViewHolder> {
 
     private int maxPeopleCount, selectedPeopleCount;
     private List<PeopleButton> peopleButtons;
     private OnPeopleButtonClickListener onPeopleButtonClickListener;
     private Context context;
 
-    BookingPeopleAdapter(Context context, int maxPeopleCount, int selectedPeopleCount, OnPeopleButtonClickListener onPeopleButtonClickListener) {
+    public BookingPeopleAdapter(Context context, int maxPeopleCount, int selectedPeopleCount, OnPeopleButtonClickListener onPeopleButtonClickListener) {
         this.context = context;
         this.maxPeopleCount = maxPeopleCount;
         this.selectedPeopleCount = selectedPeopleCount;

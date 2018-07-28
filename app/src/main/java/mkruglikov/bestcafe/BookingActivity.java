@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -102,6 +101,18 @@ public class BookingActivity extends AppCompatActivity implements
         nextStep();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (currentStep == 1) {
+            setResult(Activity.RESULT_CANCELED);
+            super.onBackPressed();
+            finish();
+        } else if (currentStep > 1) {
+            currentStep -= 2;
+            nextStep();
+        }
+    }
+
     private void nextStep() {
         switch (currentStep) {
             case 0:
@@ -119,18 +130,6 @@ public class BookingActivity extends AppCompatActivity implements
                 if (checkSelectedDate() && checkSelectedTime() && checkSelectedPeople())
                     showFourthStep();
                 break;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (currentStep == 1) {
-            setResult(Activity.RESULT_CANCELED);
-            super.onBackPressed();
-            finish();
-        } else if (currentStep > 1) {
-            currentStep -= 2;
-            nextStep();
         }
     }
 
@@ -258,6 +257,18 @@ public class BookingActivity extends AppCompatActivity implements
         return true;
     }
 
+    public static Calendar getSelectedDate() {
+        return selectedDate;
+    }
+
+    public static int getSelectedHour() {
+        return selectedHour;
+    }
+
+    public static int getSelectedMinute() {
+        return selectedMinute;
+    }
+
     @Override
     public void onDateSelected(@NonNull CalendarDay calendarDay) {
         selectedDate = calendarDay.getCalendar();
@@ -275,29 +286,6 @@ public class BookingActivity extends AppCompatActivity implements
     public void onPeopleCountSelected(int count) {
         selectedPeopleCount = count;
         tvBookingPeopleText.setText(String.valueOf(count));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-
-    }
-
-    @Nullable
-    public static Calendar getSelectedDate() {
-        return selectedDate;
-    }
-
-    public static int getSelectedHour() {
-        return selectedHour;
-    }
-
-    public static int getSelectedMinute() {
-        return selectedMinute;
     }
 
     @Override
@@ -325,6 +313,16 @@ public class BookingActivity extends AppCompatActivity implements
             }
         });
 
+
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
 
     }
 

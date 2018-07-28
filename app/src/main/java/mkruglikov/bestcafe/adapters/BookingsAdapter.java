@@ -1,4 +1,4 @@
-package mkruglikov.bestcafe;
+package mkruglikov.bestcafe.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,7 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
-class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHolder> {
+import mkruglikov.bestcafe.FirestoreUtils;
+import mkruglikov.bestcafe.R;
+import mkruglikov.bestcafe.models.Booking;
+
+public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHolder> {
 
     private Context context;
     private List<Booking> bookings;

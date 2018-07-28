@@ -1,4 +1,4 @@
-package mkruglikov.bestcafe;
+package mkruglikov.bestcafe.models;
 
 import org.parceler.Parcel;
 

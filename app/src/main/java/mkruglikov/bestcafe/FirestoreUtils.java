@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import mkruglikov.bestcafe.models.Booking;
+
 public class FirestoreUtils {
 
     static final String FIRESTORE_BOOKINGS_COLLECTION = "bookings";
@@ -37,7 +39,7 @@ public class FirestoreUtils {
     private static OnGetBookingsListener onGetBookingsListener;
     private static OnDeleteBookingListener onDeleteBookingListener;
 
-    static void addBooking(Map<String, Object> booking, OnAddBookingListener listener) {
+    public static void addBooking(Map<String, Object> booking, OnAddBookingListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
         onAddBookingListener = listener;
@@ -90,11 +92,11 @@ public class FirestoreUtils {
 
     }
 
-    interface OnAddBookingListener {
+    public interface OnAddBookingListener {
         void onBookingAdded(boolean isSuccessful, String exceptionMessage);
     }
 
-    static void getBookings(String userId, OnGetBookingsListener listener) {
+    public static void getBookings(String userId, OnGetBookingsListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
         onGetBookingsListener = listener;
@@ -128,11 +130,11 @@ public class FirestoreUtils {
         });
     }
 
-    interface OnGetBookingsListener {
+    public interface OnGetBookingsListener {
         void onGotBookings(List<Booking> bookings, String exceptionMessage);
     }
 
-    static void deleteBooking(String bookingId, OnDeleteBookingListener listener) {
+    public static void deleteBooking(String bookingId, OnDeleteBookingListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
         onDeleteBookingListener = listener;
@@ -151,7 +153,7 @@ public class FirestoreUtils {
                 });
     }
 
-    interface OnDeleteBookingListener {
+    public interface OnDeleteBookingListener {
         void onBookingDeleted(boolean isSuccessful, String exceptionMessage);
     }
 }
