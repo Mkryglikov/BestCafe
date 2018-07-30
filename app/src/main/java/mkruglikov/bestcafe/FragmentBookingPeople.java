@@ -36,17 +36,14 @@ public class FragmentBookingPeople extends Fragment {
         rvPeopleBooking = rootView.findViewById(R.id.rvPeopleBooking);
         rvPeopleBooking.setLayoutManager(new GridLayoutManager(getActivity().getApplicationContext(), 3));
         rvPeopleBooking.setHasFixedSize(true);
-        rvPeopleBooking.setAdapter(new BookingPeopleAdapter(getActivity().getApplicationContext(), MAX_PEOPLE_COUNT, selectedPeopleCount, new BookingPeopleAdapter.OnPeopleButtonClickListener() {
-            @Override
-            public void onButtonClicked(int noOfPeople) {
-                onPeopleCountSelectedListener.onPeopleCountSelected(noOfPeople);
-                RecyclerView.LayoutManager layoutManager = rvPeopleBooking.getLayoutManager();
-                for (int i = 0; i < MAX_PEOPLE_COUNT; i++) {
-                    if (i + 1 != noOfPeople) {
-                        Button btn = layoutManager.getChildAt(i).findViewById(R.id.btnItemBookingPeople);
-                        btn.setBackground(ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.button_round_white));
-                        btn.setTextColor(Color.BLACK);
-                    }
+        rvPeopleBooking.setAdapter(new BookingPeopleAdapter(getActivity().getApplicationContext(), MAX_PEOPLE_COUNT, selectedPeopleCount, noOfPeople -> {
+            onPeopleCountSelectedListener.onPeopleCountSelected(noOfPeople);
+            RecyclerView.LayoutManager layoutManager = rvPeopleBooking.getLayoutManager();
+            for (int i = 0; i < MAX_PEOPLE_COUNT; i++) {
+                if (i + 1 != noOfPeople) {
+                    Button btn = layoutManager.getChildAt(i).findViewById(R.id.btnItemBookingPeople);
+                    btn.setBackground(ContextCompat.getDrawable(getActivity().getApplicationContext(), R.drawable.button_round_white));
+                    btn.setTextColor(Color.BLACK);
                 }
             }
         }));

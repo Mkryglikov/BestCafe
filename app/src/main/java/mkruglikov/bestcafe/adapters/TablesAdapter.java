@@ -44,12 +44,7 @@ public class TablesAdapter extends RecyclerView.Adapter<TablesAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Table table = tables.get(position);
         holder.tvConnectTableName.setText(table.getName());
-        holder.btnConnectingConnectToTable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSelectTableToConnectListener.onTableSelected(table.getId(), table.getName());
-            }
-        });
+        holder.btnConnectingConnectToTable.setOnClickListener(view -> onSelectTableToConnectListener.onTableSelected(table.getId(), table.getName()));
     }
 
     @Override

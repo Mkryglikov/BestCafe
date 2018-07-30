@@ -2,10 +2,8 @@ package mkruglikov.bestcafe;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,10 +15,8 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -28,6 +24,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "FUCK";
+
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
@@ -62,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        //ToDo
-                        Log.w(TAG, "Google sign in failed", e);
+                        //todo
+                        Log.w(TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage() );
                     }
                 }
                 break;
@@ -72,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
                     user = firebaseAuth.getCurrentUser();
                     showFragmentSignedIn();
                 }
-                break;
-            case (ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE):
-                //todo
                 break;
             default:
                 break;
@@ -100,17 +94,8 @@ public class MainActivity extends AppCompatActivity {
                         .setTitle("Confirm")
                         .setMessage("Are you sure you want to Log out?")
                         .setCancelable(true)
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                signOut();
-                            }
-                        })
+                        .setNegativeButton("No", (dialog, id) -> dialog.cancel())
+                        .setPositiveButton("Yes", (dialogInterface, i) -> signOut())
                         .create();
                 alert.show();
                 return true;
@@ -138,16 +123,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    user = firebaseAuth.getCurrentUser();
-                    showFragmentSignedIn();
-                } else {
-                    //Todo
-                    Log.w(TAG, "Firebase Auth With Google failed");
-                }
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                user = firebaseAuth.getCurrentUser();
+                showFragmentSignedIn();
+            } else {
+                //todo
+                Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
             }
         });
     }
@@ -155,9 +137,11 @@ public class MainActivity extends AppCompatActivity {
     private void signOut() {
         firebaseAuth.signOut();
         user = firebaseAuth.getCurrentUser();
-        if (user == null)
+        if (user == null) {
             showFragmentNotSignedIn();
-        else
-            Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show(); //ToDo
+        } else {
+            //todo
+            Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show();
+        }
     }
 }

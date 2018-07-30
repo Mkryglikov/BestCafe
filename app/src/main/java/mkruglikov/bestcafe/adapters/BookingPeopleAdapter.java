@@ -55,13 +55,10 @@ public class BookingPeopleAdapter extends RecyclerView.Adapter<BookingPeopleAdap
             holder.btnItemBookingPeople.setTextColor(Color.WHITE);
         }
         holder.btnItemBookingPeople.setText(String.valueOf(position + 1));
-        holder.btnItemBookingPeople.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.btnItemBookingPeople.setBackground(ContextCompat.getDrawable(context, R.drawable.button_round_red));
-                holder.btnItemBookingPeople.setTextColor(Color.WHITE);
-                onPeopleButtonClickListener.onButtonClicked(position + 1);
-            }
+        holder.btnItemBookingPeople.setOnClickListener(view -> {
+            holder.btnItemBookingPeople.setBackground(ContextCompat.getDrawable(context, R.drawable.button_round_red));
+            holder.btnItemBookingPeople.setTextColor(Color.WHITE);
+            onPeopleButtonClickListener.onButtonClicked(position + 1);
         });
     }
 

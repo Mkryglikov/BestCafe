@@ -10,59 +10,51 @@ import com.google.android.gms.nearby.connection.AdvertisingOptions;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback;
 import com.google.android.gms.nearby.connection.ConnectionResolution;
+import com.google.android.gms.nearby.connection.ConnectionsClient;
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes;
 import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.PayloadCallback;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.nearby.connection.Strategy;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
 
+    public static final String TAG = "FUCK";
     public static final int TABLE_NUMBER = 5;
+    private ConnectionsClient nearbyConnectionsClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        nearbyConnectionsClient = Nearby.getConnectionsClient(this);
         startAdvertising();
     }
 
     private void startAdvertising() {
-        Nearby.getConnectionsClient(this).startAdvertising(
+        nearbyConnectionsClient.startAdvertising(
                 "Table #" + String.valueOf(TABLE_NUMBER),
                 BuildConfig.NearbyServiceId,
                 connectionLifecycleCallback,
-                new AdvertisingOptions(Strategy.P2P_STAR))
-                .addOnSuccessListener(
-                        new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unusedResult) {
-                                Log.i("FUCK", "Things слушает");
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.i("FUCK", "Things не слушает");
-                            }
-                        });
+                new AdvertisingOptions(Strategy.P2P_STAR));
     }
 
     private final ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
 
         @Override
         public void onConnectionInitiated(String endpointId, ConnectionInfo connectionInfo) {
-            // Automatically accept the connection on both sides.
-            Nearby.getConnectionsClient(MainActivity.this).acceptConnection(endpointId, new PayloadCallback() {
+
+            nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
-                public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
+                public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
 
                 }
 
                 @Override
-                public void onPayloadTransferUpdate(@NonNull String s, @NonNull PayloadTransferUpdate payloadTransferUpdate) {
+                public void onPayloadTransferUpdate(@NonNull String endpointId, @NonNull PayloadTransferUpdate payloadTransferUpdate) {
 
                 }
             });
@@ -72,26 +64,36 @@ public class MainActivity extends Activity {
         public void onConnectionResult(String endpointId, ConnectionResolution result) {
             switch (result.getStatus().getStatusCode()) {
                 case ConnectionsStatusCodes.STATUS_OK:
-                    // We're connected! Can now start sending and receiving data.
-                    Log.i("FUCK", "Things Connected");
-
-                    break;
-                case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
-                    // The connection was rejected by one or both sides.
-                    Log.i("FUCK", "Things Rejected");
-                    break;
-                case ConnectionsStatusCodes.STATUS_ERROR:
-                    // The connection broke before it was able to be accepted.
-                    Log.i("FUCK", "Things Connection Error");
-                    break;
+                    nearbyConnectionsClient.stopAdvertising();
+                    FirestoreUtils.getMenu((menu, exceptionMessage) -> {
+                        if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
+                            //todo
+                            Log.w(TAG, "Error getting menu: " + exceptionMessage);
+                            return;
+                        }
+                        JSONArray jsonArrayMenu = new JSONArray();
+                        for (MenuItem menuItem : menu) {
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put(FirestoreUtils.FIRESTORE_NAME_FIELD, menuItem.getName());
+                                jsonObject.put(FirestoreUtils.FIRESTORE_CATEGORY_FIELD, menuItem.getCategory());
+                                jsonObject.put(FirestoreUtils.FIRESTORE_DESCRIPTION_FIELD, menuItem.getDescription());
+                                jsonObject.put(FirestoreUtils.FIRESTORE_PRICE_FIELD, menuItem.getPrice());
+                                jsonObject.put(FirestoreUtils.FIRESTORE_IS_AVAILABLE_FIELD, menuItem.getIsAvailable());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            jsonArrayMenu.put(jsonObject);
+                        }
+                        Payload payload = Payload.fromBytes(jsonArrayMenu.toString().getBytes());
+                        nearbyConnectionsClient.sendPayload(endpointId, payload)
+                                .addOnFailureListener(e -> Log.w(TAG, "payload isn't sent: " + e.getLocalizedMessage()));
+                    });
             }
         }
 
         @Override
         public void onDisconnected(String endpointId) {
-            // We've been disconnected from this endpoint. No more data can be
-            // sent or received.
-            Log.i("FUCK", "Things Disconnected");
             startAdvertising();
         }
     };

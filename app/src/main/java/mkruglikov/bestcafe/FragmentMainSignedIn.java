@@ -54,71 +54,44 @@ public class FragmentMainSignedIn extends Fragment {
     }
 
     private void updateViews() {
-        FirestoreUtils.getBookings(getArguments().getString(USER_ID_ARGUMENTS_KEY), new FirestoreUtils.OnGetBookingsListener() {
-            @Override
-            public void onGotBookings(List<Booking> downloadedBookings, String exceptionMessage) {
-                if (exceptionMessage != null) {
-                    isBookingsAvailable = false;
-                    Log.w(MainActivity.TAG, exceptionMessage);
-                } else if (downloadedBookings != null && !downloadedBookings.isEmpty()) {
-                    isBookingsAvailable = true;
-                    bookings = downloadedBookings;
-                } else {
-                    isBookingsAvailable = false;
-                }
+        FirestoreUtils.getBookings(getArguments().getString(USER_ID_ARGUMENTS_KEY), (downloadedBookings, exceptionMessage) -> {
+            if (exceptionMessage != null) {
+                isBookingsAvailable = false;
+                Log.w(MainActivity.TAG, exceptionMessage);
+            } else if (downloadedBookings != null && !downloadedBookings.isEmpty()) {
+                isBookingsAvailable = true;
+                bookings = downloadedBookings;
+            } else {
+                isBookingsAvailable = false;
+            }
 
-                if (isBookingsAvailable) {
-                    layoutLoadingMain.setVisibility(View.GONE);
-                    layoutMainNoBookings.setVisibility(View.GONE);
-                    layoutMainBookings.setVisibility(View.VISIBLE);
+            if (isBookingsAvailable) {
+                layoutLoadingMain.setVisibility(View.GONE);
+                layoutMainNoBookings.setVisibility(View.GONE);
+                layoutMainBookings.setVisibility(View.VISIBLE);
 
-                    RecyclerView rvMainBookings = rootView.findViewById(R.id.rvBookingsMain);
-                    rvMainBookings.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
-                    rvMainBookings.setAdapter(new BookingsAdapter(getActivity(), bookings, new FirestoreUtils.OnDeleteBookingListener() {
-                        @Override
-                        public void onBookingDeleted(boolean isSuccessful, String exceptionMessage) {
-                            if (isSuccessful) {
-                                updateViews();
-                            }
-                        }
-                    }));
+                RecyclerView rvMainBookings = rootView.findViewById(R.id.rvBookingsMain);
+                rvMainBookings.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+                rvMainBookings.setAdapter(new BookingsAdapter(getActivity(), bookings, (isSuccessful, exceptionMessage1) -> {
+                    if (isSuccessful)
+                        updateViews();
+                }));
 
-                    tvBookMoreMain = rootView.findViewById(R.id.tvBookMoreMain);
-                    tvBookMoreMain.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
-                        }
-                    });
+                tvBookMoreMain = rootView.findViewById(R.id.tvBookMoreMain);
+                tvBookMoreMain.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE));
 
-                    fabConnectMainSignedIn = rootView.findViewById(R.id.fabConnectMainSignedIn);
-                    fabConnectMainSignedIn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), ConnectActivity.class), ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE);
-                        }
-                    });
-                } else {
-                    layoutLoadingMain.setVisibility(View.GONE);
-                    layoutMainNoBookings.setVisibility(View.VISIBLE);
-                    layoutMainBookings.setVisibility(View.GONE);
+                fabConnectMainSignedIn = rootView.findViewById(R.id.fabConnectMainSignedIn);
+                fabConnectMainSignedIn.setOnClickListener(view -> startActivity(new Intent(getActivity().getApplicationContext(), ConnectActivity.class)));
+            } else {
+                layoutLoadingMain.setVisibility(View.GONE);
+                layoutMainNoBookings.setVisibility(View.VISIBLE);
+                layoutMainBookings.setVisibility(View.GONE);
 
-                    btnConnectMainSignedIn = rootView.findViewById(R.id.btnConnectMainSignedIn);
-                    btnConnectMainSignedIn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), ConnectActivity.class), ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE);
-                        }
-                    });
+                btnConnectMainSignedIn = rootView.findViewById(R.id.btnConnectMainSignedIn);
+                btnConnectMainSignedIn.setOnClickListener(view -> startActivity(new Intent(getActivity().getApplicationContext(), ConnectActivity.class)));
 
-                    btnBookMainSignedIn = rootView.findViewById(R.id.btnBookMainSignedIn);
-                    btnBookMainSignedIn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
-                        }
-                    });
-                }
+                btnBookMainSignedIn = rootView.findViewById(R.id.btnBookMainSignedIn);
+                btnBookMainSignedIn.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE));
             }
         });
     }

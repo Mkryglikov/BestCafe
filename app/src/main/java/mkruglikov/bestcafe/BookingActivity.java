@@ -61,26 +61,11 @@ public class BookingActivity extends AppCompatActivity implements
         tvToolbarBooking = findViewById(R.id.tvToolbarBooking);
 
         ivBookingDateIcon = findViewById(R.id.ivBookingDateIcon);
-        ivBookingDateIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showFirstStep();
-            }
-        });
+        ivBookingDateIcon.setOnClickListener(view -> showFirstStep());
         ivBookingTimeIcon = findViewById(R.id.ivBookingTimeIcon);
-        ivBookingTimeIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showSecondStep();
-            }
-        });
+        ivBookingTimeIcon.setOnClickListener(view -> showSecondStep());
         ivBookingPeopleIcon = findViewById(R.id.ivBookingPeopleIcon);
-        ivBookingPeopleIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showThirdStep();
-            }
-        });
+        ivBookingPeopleIcon.setOnClickListener(view -> showThirdStep());
 
         ivBookingNextStepIcon = findViewById(R.id.ivBookingNextStepIcon);
 
@@ -92,12 +77,7 @@ public class BookingActivity extends AppCompatActivity implements
         tvBookingNextStepHint = findViewById(R.id.tvBookingNextStepHint);
 
         clBookingNextStep = findViewById(R.id.clBookingNextStep);
-        clBookingNextStep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                nextStep();
-            }
-        });
+        clBookingNextStep.setOnClickListener(view -> nextStep());
         nextStep();
     }
 
@@ -300,17 +280,14 @@ public class BookingActivity extends AppCompatActivity implements
         bookingMap.put(FirestoreUtils.FIRESTORE_PEOPLE_FIELD, selectedPeopleCount);
         bookingMap.put(FirestoreUtils.FIRESTORE_ACTIVE_FIELD, true);
 
-        FirestoreUtils.addBooking(bookingMap, new FirestoreUtils.OnAddBookingListener() {
-            @Override
-            public void onBookingAdded(boolean isSuccessful, String exceptionMessage) {
-                if (isSuccessful) {
-                    setResult(Activity.RESULT_OK);
-                } else {
-                    setResult(Activity.RESULT_CANCELED);
-                    Log.w(MainActivity.TAG, exceptionMessage);
-                }
-                finish();
+        FirestoreUtils.addBooking(bookingMap, (isSuccessful, exceptionMessage) -> {
+            if (isSuccessful) {
+                setResult(Activity.RESULT_OK);
+            } else {
+                setResult(Activity.RESULT_CANCELED);
+                Log.w(MainActivity.TAG, exceptionMessage);
             }
+            finish();
         });
 
 

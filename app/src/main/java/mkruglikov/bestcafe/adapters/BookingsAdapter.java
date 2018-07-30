@@ -2,7 +2,6 @@ package mkruglikov.bestcafe.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -66,27 +65,15 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
         holder.tvBookingItemTime.setText(String.format("%s:%s", hour, minute));
         holder.tvBookingItemPeople.setText(String.valueOf(booking.getPeople()));
 
-        holder.btnBookingItemCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog alert = new AlertDialog.Builder(context)
-                        .setTitle("Confirm")
-                        .setMessage("Are you sure you want to cancel the booking?")
-                        .setCancelable(true)
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener);
-                            }
-                        })
-                        .create();
-                alert.show();
-            }
+        holder.btnBookingItemCancel.setOnClickListener(view -> {
+            AlertDialog alert = new AlertDialog.Builder(context)
+                    .setTitle("Confirm")
+                    .setMessage("Are you sure you want to cancel the booking?")
+                    .setCancelable(true)
+                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Yes", (dialogInterface, i) -> FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener))
+                    .create();
+            alert.show();
         });
     }
 

@@ -32,12 +32,7 @@ public class FragmentBookingTime extends Fragment {
             timePickerBooking.setHour(BookingActivity.getSelectedHour());
             timePickerBooking.setMinute(BookingActivity.getSelectedMinute());
         }
-        timePickerBooking.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker timePicker, int hourOfDay, int minute) {
-                onTimeSelectedListener.onTimeSelected(hourOfDay, minute);
-            }
-        });
+        timePickerBooking.setOnTimeChangedListener((timePicker, hourOfDay, minute) -> onTimeSelectedListener.onTimeSelected(hourOfDay, minute));
         return rootView;
     }
 

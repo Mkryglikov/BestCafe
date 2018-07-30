@@ -20,28 +20,13 @@ public class FragmentMainNotSignedIn extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main_not_signed_in, container, false);
 
         Button btnConnectMainNotSignedIn = rootView.findViewById(R.id.btnConnectMainNotSignedIn);
-        btnConnectMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), ConnectActivity.class), ConnectActivity.CONNECT_ACTIVITY_REQUEST_CODE);
-            }
-        });
+        btnConnectMainNotSignedIn.setOnClickListener(view -> startActivity(new Intent(getActivity().getApplicationContext(), ConnectActivity.class)));
 
         Button btnBookMainNotSignedIn = rootView.findViewById(R.id.btnBookMainNotSignedIn);
-        btnBookMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
-            }
-        });
+        btnBookMainNotSignedIn.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE));
 
         TextView tvSignInMainNotSignedIn = rootView.findViewById(R.id.tvSignInMainNotSignedIn);
-        tvSignInMainNotSignedIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE);
-            }
-        });
+        tvSignInMainNotSignedIn.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE));
         return rootView;
     }
 }

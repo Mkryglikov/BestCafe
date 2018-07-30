@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,10 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -84,8 +81,8 @@ public class FragmentBookingReview extends Fragment {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        //ToDo
-                        Log.w(TAG, "Google sign in failed", e);
+                        //todo
+                        Log.w(MainActivity.TAG, "Google sign in failed: " + e.getLocalizedMessage());
                     }
                 }
                 break;
@@ -96,16 +93,13 @@ public class FragmentBookingReview extends Fragment {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    user = firebaseAuth.getCurrentUser();
-                    changeLayout();
-                } else {
-                    //Todo
-                    Log.w(TAG, "Firebase Auth With Google failed");
-                }
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                user = firebaseAuth.getCurrentUser();
+                changeLayout();
+            } else {
+                //todo
+                Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage() );
             }
         });
     }
@@ -119,26 +113,11 @@ public class FragmentBookingReview extends Fragment {
             layoutBookingReviewSignedIn.setVisibility(View.GONE);
             layoutBookingReviewNotSignedIn.setVisibility(View.VISIBLE);
 
-            btnSignInReview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE);
-                }
-            });
-
-            btnSignUpReview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivityForResult(new Intent(getActivity().getApplicationContext(), SignUpActivity.class), SignUpActivity.SIGN_UP_ACTIVITY_REQUEST_CODE);
-                }
-            });
-
-            btnGoogleReview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = googleSignInClient.getSignInIntent();
-                    startActivityForResult(intent, GOOGLE_SIGN_IN_REVIEW_REQUEST_CODE);
-                }
+            btnSignInReview.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE));
+            btnSignUpReview.setOnClickListener(view -> startActivityForResult(new Intent(getActivity().getApplicationContext(), SignUpActivity.class), SignUpActivity.SIGN_UP_ACTIVITY_REQUEST_CODE));
+            btnGoogleReview.setOnClickListener(view -> {
+                Intent intent = googleSignInClient.getSignInIntent();
+                startActivityForResult(intent, GOOGLE_SIGN_IN_REVIEW_REQUEST_CODE);
             });
         } else {
             layoutBookingReviewSignedIn.setVisibility(View.VISIBLE);
@@ -148,12 +127,7 @@ public class FragmentBookingReview extends Fragment {
             tvEmailReview.setText(user.getEmail());
 
             btnSubmitBooking = rootView.findViewById(R.id.btnSubmitBooking);
-            btnSubmitBooking.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onBookingSubmitListener.onBookingSubmitted();
-                }
-            });
+            btnSubmitBooking.setOnClickListener(view -> onBookingSubmitListener.onBookingSubmitted());
         }
     }
 

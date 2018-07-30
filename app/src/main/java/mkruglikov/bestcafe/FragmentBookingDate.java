@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import java.util.Calendar;
 
@@ -34,18 +33,12 @@ public class FragmentBookingDate extends Fragment {
         calendarBooking.state().edit()
                 .setMinimumDate(CalendarDay.from(Calendar.getInstance()))
                 .commit();
-        calendarBooking.setOnDateChangedListener(new OnDateSelectedListener() {
-            @Override
-            public void onDateSelected(@NonNull MaterialCalendarView materialCalendarView, @NonNull CalendarDay calendarDay, boolean b) {
-                onDateSelectedListener.onDateSelected(calendarDay);
-            }
-        });
+        calendarBooking.setOnDateChangedListener((materialCalendarView, calendarDay, b) -> onDateSelectedListener.onDateSelected(calendarDay));
         Calendar selectedDate = BookingActivity.getSelectedDate();
         if (selectedDate != null) {
             calendarBooking.setCurrentDate(selectedDate);
             calendarBooking.setDateSelected(selectedDate, true);
         }
-
         return rootView;
     }
 
