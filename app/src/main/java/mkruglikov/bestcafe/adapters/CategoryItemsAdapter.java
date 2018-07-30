@@ -10,15 +10,18 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import mkruglikov.bestcafe.FragmentOrder;
 import mkruglikov.bestcafe.R;
 import mkruglikov.bestcafe.models.MenuItem;
 
 public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdapter.ViewHolder> {
 
     private List<MenuItem> menuCategory;
+    private FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
 
-    public CategoryItemsAdapter(List<MenuItem> menuCategory) {
+    public CategoryItemsAdapter(List<MenuItem> menuCategory, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
         this.menuCategory = menuCategory;
+        this.onMenuItemSelectListener = onMenuItemSelectListener;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,6 +50,7 @@ public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdap
         if (description != null && !description.isEmpty())
             holder.tvMenuItemDescription.setText(description);
         holder.btnMenuItemSelect.setText(menuItem.getPrice() + "$");
+        holder.btnMenuItemSelect.setOnClickListener(view -> onMenuItemSelectListener.onMenuItemSelected(menuItem));
 
     }
 

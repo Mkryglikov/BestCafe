@@ -79,7 +79,6 @@ public class MainActivity extends Activity {
                                 jsonObject.put(FirestoreUtils.FIRESTORE_CATEGORY_FIELD, menuItem.getCategory());
                                 jsonObject.put(FirestoreUtils.FIRESTORE_DESCRIPTION_FIELD, menuItem.getDescription());
                                 jsonObject.put(FirestoreUtils.FIRESTORE_PRICE_FIELD, menuItem.getPrice());
-                                jsonObject.put(FirestoreUtils.FIRESTORE_IS_AVAILABLE_FIELD, menuItem.getIsAvailable());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }

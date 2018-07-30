@@ -29,7 +29,7 @@ public class FragmentBookingPeople extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_fragment_booking_people, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_booking_people, container, false);
         onPeopleCountSelectedListener = getArguments().getParcelable(ON_PEOPLE_COUNT_SELECTED_LISTENER_FRAGMENT_BOOKING_PEOPLE_BUNDLE_KEY);
         int selectedPeopleCount = getArguments().getInt(SELECTED_PEOPLE_COUNT_FRAGMENT_BOOKING_PEOPLE_BUNDLE_KEY);
 

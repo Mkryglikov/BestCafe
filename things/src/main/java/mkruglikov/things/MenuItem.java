@@ -7,15 +7,13 @@ public class MenuItem {
     private String category;
     private String description;
     private long price;
-    private boolean isAvailable;
 
-    MenuItem(String id, String name, String category, String description, long price, boolean isAvailable) {
+    MenuItem(String id, String name, String category, String description, long price) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
-        this.isAvailable = isAvailable;
     }
 
     public String getId() {
@@ -36,9 +34,5 @@ public class MenuItem {
 
     public long getPrice() {
         return price;
-    }
-
-    public boolean getIsAvailable() {
-        return isAvailable;
     }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutOrderBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:elevation="8dp"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="64dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <ImageView
+        android:id="@+id/ivArrowOrderBottomSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_arrow_up"
+        android:tint="@color/colorLightGrey" />
+
+    <TextView
+        android:id="@+id/tvDetailsHintOrderBottomSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivArrowOrderBottomSheet"
+        android:layout_marginStart="16dp"
+        android:text="Order Details"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvTotalOrderBottomSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/ivArrowOrderBottomSheet"
+        android:layout_marginEnd="16dp"
+        android:text="$0"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvNoItemsOrderBottomSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDetailsHintOrderBottomSheet"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="32dp"
+        android:text="You haven't selected any items yet" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvOrderBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvDetailsHintOrderBottomSheet"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnSubmitOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent"
+        android:text="Place the order"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
+
+</RelativeLayout>

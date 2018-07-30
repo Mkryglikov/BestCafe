@@ -2,6 +2,7 @@ package mkruglikov.things;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ public class FirestoreUtils {
     static final String FIRESTORE_CATEGORY_FIELD = "category";
     static final String FIRESTORE_DESCRIPTION_FIELD = "description";
     static final String FIRESTORE_PRICE_FIELD = "price";
-    static final String FIRESTORE_IS_AVAILABLE_FIELD = "is_available";
 
     private static FirebaseFirestore db;
     private static OnGetMenuListener onGetMenuListener;
@@ -22,18 +22,31 @@ public class FirestoreUtils {
     public static void getMenu(OnGetMenuListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(false)
+                .build();
+        db.setFirestoreSettings(settings);
+
         onGetMenuListener = listener;
 
         db.collection(FIRESTORE_MENU_COLLECTION).get().addOnCompleteListener(task -> {
             List<MenuItem> menu = new ArrayList<>();
             for (DocumentSnapshot document : task.getResult().getDocuments()) {
-                menu.add(new MenuItem(
-                        document.getId(),
-                        (String) document.get(FIRESTORE_NAME_FIELD),
-                        (String) document.get(FIRESTORE_CATEGORY_FIELD),
-                        (String) document.get(FIRESTORE_DESCRIPTION_FIELD),
-                        (long) document.get(FIRESTORE_PRICE_FIELD),
-                        (boolean) document.get(FIRESTORE_IS_AVAILABLE_FIELD)));
+                try {
+                    menu.add(new MenuItem(
+                            document.getId(),
+                            (String) document.get(FIRESTORE_NAME_FIELD),
+                            (String) document.get(FIRESTORE_CATEGORY_FIELD),
+                            (String) document.get(FIRESTORE_DESCRIPTION_FIELD),
+                            (long) document.get(FIRESTORE_PRICE_FIELD)));
+                } catch (ClassCastException e) {
+                    menu.add(new MenuItem(
+                            document.getId(),
+                            (String) document.get(FIRESTORE_NAME_FIELD),
+                            (String) document.get(FIRESTORE_CATEGORY_FIELD),
+                            (String) document.get(FIRESTORE_DESCRIPTION_FIELD),
+                            Long.valueOf((String) document.get(FIRESTORE_PRICE_FIELD))));
+                }
             }
             onGetMenuListener.onGotMenu(menu, null);
         }).addOnFailureListener(e -> onGetMenuListener.onGotMenu(null, e.getLocalizedMessage()));

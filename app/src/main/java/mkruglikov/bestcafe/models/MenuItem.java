@@ -10,15 +10,13 @@ public class MenuItem {
     private String category;
     private String description;
     private long price;
-    private boolean isAvailable;
 
-    public MenuItem(String id, String name, String category, String description, long price, boolean isAvailable) {
+    public MenuItem(String id, String name, String category, String description, long price) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
-        this.isAvailable = isAvailable;
     }
 
     public MenuItem() {
@@ -43,10 +41,6 @@ public class MenuItem {
 
     public long getPrice() {
         return price;
-    }
-
-    public boolean isAvailable() {
-        return isAvailable;
     }
 
 }

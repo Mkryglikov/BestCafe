@@ -11,17 +11,20 @@ import org.parceler.Parcels;
 import java.util.ArrayList;
 import java.util.List;
 
+import mkruglikov.bestcafe.FragmentOrder;
 import mkruglikov.bestcafe.FragmentOrderCategory;
 import mkruglikov.bestcafe.models.MenuItem;
 
 public class OrderTabsAdapter extends FragmentPagerAdapter {
     private List<MenuItem> menu;
     private List<String> categories;
+    private FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
 
-    public OrderTabsAdapter(FragmentManager fm, List<MenuItem> menu, List<String> categories) {
+    public OrderTabsAdapter(FragmentManager fm, List<MenuItem> menu, List<String> categories, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
         super(fm);
         this.menu = menu;
         this.categories = categories;
+        this.onMenuItemSelectListener = onMenuItemSelectListener;
     }
 
     @Nullable
@@ -42,6 +45,8 @@ public class OrderTabsAdapter extends FragmentPagerAdapter {
                 itemsForCategory.add(menuItem);
         }
         args.putParcelable(FragmentOrderCategory.FRAGMENT_ORDER_TAB_ITEMS_ARGUMENTS_KEY, Parcels.wrap(itemsForCategory));
+
+        args.putParcelable(FragmentOrderCategory.ON_MENU_ITEM_SELECTED_LISTENER_ARGUMENTS_KEY, onMenuItemSelectListener);
         fragmentOrderTab.setArguments(args);
         return fragmentOrderTab;
     }
