@@ -2,12 +2,15 @@ package mkruglikov.bestcafe;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.github.euzee.permission.CallbackBuilder;
 import com.github.euzee.permission.PermissionUtil;
@@ -27,6 +30,7 @@ public class ConnectActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
     private ConnectionsClient nearbyConnectionsClient;
+    private String endpointId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +39,13 @@ public class ConnectActivity extends AppCompatActivity {
 
         PermissionUtil.checkGroup(this, new CallbackBuilder()
                 .onGranted(() -> {
-                    FragmentConnectConnecting fragment = new FragmentConnectConnecting();
+                    FragmentConnect fragmentConnect = new FragmentConnect();
                     Bundle args = new Bundle();
-                    args.putParcelable(FragmentConnectConnecting.CONNECTION_LIFECYCLE_CALLBACK_ARGUMENTS_KEY, new ConnectionLifecycleCallback());
-                    fragment.setArguments(args);
+                    args.putParcelable(FragmentConnect.CONNECTION_LIFECYCLE_CALLBACK_ARGUMENTS_KEY, new ConnectionLifecycleCallback());
+                    fragmentConnect.setArguments(args);
                     fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction()
-                            .replace(R.id.containerConnect, fragment)
+                            .replace(R.id.containerConnect, fragmentConnect)
                             .commit();
                     nearbyConnectionsClient = Nearby.getConnectionsClient(this);
                 })
@@ -49,22 +53,58 @@ public class ConnectActivity extends AppCompatActivity {
     }
 
     public class ConnectionLifecycleCallback extends com.google.android.gms.nearby.connection.ConnectionLifecycleCallback implements Parcelable {
+        String orderId, estimatedTime;
 
         @Override
         public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
+            nearbyConnectionsClient.stopDiscovery();
+            nearbyConnectionsClient.stopAdvertising();
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
+                    String payloadString;
                     try {
-                        FragmentOrder fragment = new FragmentOrder();
-                        Bundle args = new Bundle();
-                        args.putString(FragmentOrder.ORDER_FRAGMENT_MENU_ARGUMENTS_KEY, new String(payload.asBytes(), "UTF-8"));
-                        fragment.setArguments(args);
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.containerConnect, fragment)
-                                .commit();
+                        payloadString = new String(payload.asBytes(), "UTF-8");
                     } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                        Log.e(MainActivity.TAG, "Error converting payload to String: " + e.getLocalizedMessage());
+                        return;
+                    }
+
+                    if (payloadString.substring(0, 4).equals("menu")) { //There is a menu JSON array. Create order fragment and send menu there
+                        payloadString = payloadString.substring(4);
+                        FragmentOrder fragmentOrder = new FragmentOrder();
+                        Bundle args = new Bundle();
+                        args.putString(FragmentOrder.ORDER_FRAGMENT_MENU_ARGUMENTS_KEY, payloadString);
+                        args.putString(FragmentOrder.THINGS_ENDPOINT_ID_ARGUMENTS_KEY, endpointId);
+                        fragmentOrder.setArguments(args);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.containerConnect, fragmentOrder)
+                                .commit();
+                    } else if (payloadString.substring(0, 7).equals("orderId")) { //There is an orderId. It means table is already active and tries to reconnect or client just made an order.
+                        orderId = payloadString.substring(7);
+                        Log.i(MainActivity.TAG, "Order ID received: " + orderId);
+
+                        //Wait for estimated time
+                        new Handler().postDelayed(() -> {
+                            //If there is no estimated time, it means that table is already active, tries to reconnect and order status is EATS. Send orderId only
+                            if (estimatedTime == null || estimatedTime.isEmpty()) {
+                                Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
+                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY, orderId);
+                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY, estimatedTime);
+                                startActivity(activeOrderActivityIntent);
+                                finish();
+                            }
+                        }, 1000);
+                    } else if (payloadString.substring(0, 13).equals("estimatedTime")) { //There is an estimated time. It means table is already active, tries to reconnect and order status is PREPARING or client just made an order.
+                        estimatedTime = payloadString.substring(13);
+                        Log.i(MainActivity.TAG, "Estimated time received: " + estimatedTime);
+
+                        Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
+                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY, orderId);
+                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY, estimatedTime);
+                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY, endpointId);
+                        startActivity(activeOrderActivityIntent);
+                        finish();
                     }
                 }
 
@@ -76,9 +116,10 @@ public class ConnectActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onConnectionResult(@NonNull String endpointId, @NonNull ConnectionResolution result) {
+        public void onConnectionResult(@NonNull String id, @NonNull ConnectionResolution result) {
             switch (result.getStatus().getStatusCode()) {
                 case ConnectionsStatusCodes.STATUS_OK:
+                    endpointId = id;
                     break;
                 case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
                     break;
@@ -101,5 +142,15 @@ public class ConnectActivity extends AppCompatActivity {
         public void writeToParcel(Parcel parcel, int i) {
 
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (nearbyConnectionsClient != null) {
+            nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
+            nearbyConnectionsClient.stopDiscovery();
+        }
+
+        super.onDestroy();
     }
 }

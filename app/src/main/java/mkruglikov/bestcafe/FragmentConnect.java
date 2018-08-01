@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.connection.AdvertisingOptions;
 import com.google.android.gms.nearby.connection.ConnectionsClient;
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo;
 import com.google.android.gms.nearby.connection.DiscoveryOptions;
@@ -29,7 +30,7 @@ import mkruglikov.bestcafe.ConnectActivity.ConnectionLifecycleCallback;
 import mkruglikov.bestcafe.adapters.TablesAdapter;
 import mkruglikov.bestcafe.models.Table;
 
-public class FragmentConnectConnecting extends Fragment {
+public class FragmentConnect extends Fragment {
 
     public static final String CONNECTION_LIFECYCLE_CALLBACK_ARGUMENTS_KEY = "connection_lifecycle_callback_arguments_key";
 
@@ -40,7 +41,7 @@ public class FragmentConnectConnecting extends Fragment {
     private ConnectionsClient nearbyConnectionsClient;
     private ConnectionLifecycleCallback connectionLifecycleCallback;
 
-    public FragmentConnectConnecting() {
+    public FragmentConnect() {
 
     }
 
@@ -58,6 +59,7 @@ public class FragmentConnectConnecting extends Fragment {
         connectionLifecycleCallback = getArguments().getParcelable(CONNECTION_LIFECYCLE_CALLBACK_ARGUMENTS_KEY);
         nearbyConnectionsClient = Nearby.getConnectionsClient(getActivity().getApplicationContext());
         startDiscovery();
+        startAdvertising();
         return rootView;
     }
 
@@ -65,14 +67,28 @@ public class FragmentConnectConnecting extends Fragment {
         nearbyConnectionsClient.startDiscovery(
                 BuildConfig.NearbyServiceId,
                 endpointDiscoveryCallback,
-                new DiscoveryOptions(Strategy.P2P_STAR))
-                .addOnSuccessListener(
-                        unusedResult -> availableTables = new ArrayList<>())
+                new DiscoveryOptions(Strategy.P2P_CLUSTER))
+                .addOnSuccessListener(aVoid -> {
+                    Log.i(MainActivity.TAG, "Discovering");
+                    availableTables = new ArrayList<>();
+                })
                 .addOnFailureListener(e -> {
                     Log.w(MainActivity.TAG, "App unable to discover: " + e.getLocalizedMessage());
                     tvConnectingHint.setText("App is unable to discover tables");
                     pbConnecting.setVisibility(View.INVISIBLE);
                 });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startAdvertising() {
+        String nickname = ((TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+        nearbyConnectionsClient.startAdvertising(
+                nickname,
+                BuildConfig.NearbyServiceId,
+                connectionLifecycleCallback,
+                new AdvertisingOptions(Strategy.P2P_CLUSTER))
+                .addOnSuccessListener(aVoid -> Log.i(MainActivity.TAG, "Advertising with nickname " + nickname))
+                .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Unable to start advertising: " + e.getLocalizedMessage()));
     }
 
     private final EndpointDiscoveryCallback endpointDiscoveryCallback = new EndpointDiscoveryCallback() {

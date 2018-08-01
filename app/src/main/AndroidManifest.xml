@@ -38,7 +38,8 @@
             android:name=".BookingActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".ConnectActivity"></activity>
+        <activity android:name=".ConnectActivity" />
+        <activity android:name=".ActiveOrderActivity"></activity>
     </application>
 
 </manifest>

@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +20,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.connection.Payload;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +38,7 @@ import mkruglikov.bestcafe.models.MenuItem;
 public class FragmentOrder extends Fragment {
 
     public static final String ORDER_FRAGMENT_MENU_ARGUMENTS_KEY = "order_fragment_menu_arguments_key";
+    public static final String THINGS_ENDPOINT_ID_ARGUMENTS_KEY = "things_endpoint_id_arguments_key";
 
     private List<MenuItem> menu;
     private List<MenuItem> selectedItems;
@@ -47,6 +52,7 @@ public class FragmentOrder extends Fragment {
     private RelativeLayout layoutOrderBottomSheet;
     private ImageView ivArrowOrderBottomSheet;
     private View tintViewOrder;
+    private String thingsEndpointId;
     private int total = 0;
 
     public FragmentOrder() {
@@ -57,6 +63,7 @@ public class FragmentOrder extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         String menuString = getArguments().getString(ORDER_FRAGMENT_MENU_ARGUMENTS_KEY);
+        thingsEndpointId = getArguments().getString(THINGS_ENDPOINT_ID_ARGUMENTS_KEY);
         menu = new ArrayList<>();
         selectedItems = new ArrayList<>();
         try {
@@ -66,7 +73,7 @@ public class FragmentOrder extends Fragment {
                 menu.add(gson.fromJson(menuJsonArray.getJSONObject(i).toString(), MenuItem.class));
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.w(MainActivity.TAG, e.getLocalizedMessage());
         }
         createMenuCategoriesList();
 
@@ -82,11 +89,26 @@ public class FragmentOrder extends Fragment {
         layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
         tintViewOrder = rootView.findViewById(R.id.tintViewOrder);
         btnSubmitOrder = rootView.findViewById(R.id.btnSubmitOrder);
-        btnSubmitOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //todo Send to Things and add to Firestore there
+        btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
+            JSONArray jsonArrayMenu = new JSONArray();
+            for (MenuItem menuItem : selectedItems) {
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put(FirestoreUtils.FIRESTORE_ID_FIELD, menuItem.getId());
+                    jsonObject.put(FirestoreUtils.FIRESTORE_NAME_FIELD, menuItem.getName());
+                    jsonObject.put(FirestoreUtils.FIRESTORE_CATEGORY_FIELD, menuItem.getCategory());
+                    jsonObject.put(FirestoreUtils.FIRESTORE_DESCRIPTION_FIELD, menuItem.getDescription());
+                    jsonObject.put(FirestoreUtils.FIRESTORE_PRICE_FIELD, menuItem.getPrice());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                jsonArrayMenu.put(jsonObject);
             }
+            Payload payload = Payload.fromBytes(jsonArrayMenu.toString().getBytes());
+            Nearby.getConnectionsClient(getActivity().getApplicationContext())
+                    .sendPayload(thingsEndpointId, payload)
+                    .addOnSuccessListener(aVoid -> Log.i(MainActivity.TAG, "Order payload sent"))
+                    .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Order payload isn't sent: " + e.getLocalizedMessage()));
         });
 
         rvOrderBottomSheet = rootView.findViewById(R.id.rvOrderBottomSheet);

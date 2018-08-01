@@ -14,6 +14,7 @@ import mkruglikov.bestcafe.models.Booking;
 
 public class FirestoreUtils {
 
+    //Booking
     static final String FIRESTORE_BOOKINGS_COLLECTION = "bookings";
     static final String FIRESTORE_COUNTER_DOCUMENT = "counter";
     static final String FIRESTORE_COUNTER_FIELD = "lastId";
@@ -26,6 +27,20 @@ public class FirestoreUtils {
     static final String FIRESTORE_MINUTE_FIELD = "minute";
     static final String FIRESTORE_PEOPLE_FIELD = "people";
     static final String FIRESTORE_ACTIVE_FIELD = "active";
+
+    //Menu
+    static final String FIRESTORE_ID_FIELD = "id";
+    static final String FIRESTORE_NAME_FIELD = "name";
+    static final String FIRESTORE_CATEGORY_FIELD = "category";
+    static final String FIRESTORE_DESCRIPTION_FIELD = "description";
+    static final String FIRESTORE_PRICE_FIELD = "price";
+
+    //Order
+    static final String FIRESTORE_ORDERS_COLLECTION = "orders";
+    static final String FIRESTORE_STATUS_FIELD = "status";
+    static final String FIRESTORE_STATUS_PREPARING = "preparing";
+    static final String FIRESTORE_STATUS_EATS = "eats";
+    static final String FIRESTORE_STATUS_DONE = "done";
 
     private static FirebaseFirestore db;
     private static OnAddBookingListener onAddBookingListener;

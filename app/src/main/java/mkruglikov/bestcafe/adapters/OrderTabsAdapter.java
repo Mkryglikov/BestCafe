@@ -36,7 +36,7 @@ public class OrderTabsAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         String category = categories.get(position);
-        FragmentOrderCategory fragmentOrderTab = new FragmentOrderCategory();
+        FragmentOrderCategory fragmentOrderCategory = new FragmentOrderCategory();
         Bundle args = new Bundle();
         List<MenuItem> itemsForCategory = new ArrayList<>();
 
@@ -47,8 +47,8 @@ public class OrderTabsAdapter extends FragmentPagerAdapter {
         args.putParcelable(FragmentOrderCategory.FRAGMENT_ORDER_TAB_ITEMS_ARGUMENTS_KEY, Parcels.wrap(itemsForCategory));
 
         args.putParcelable(FragmentOrderCategory.ON_MENU_ITEM_SELECTED_LISTENER_ARGUMENTS_KEY, onMenuItemSelectListener);
-        fragmentOrderTab.setArguments(args);
-        return fragmentOrderTab;
+        fragmentOrderCategory.setArguments(args);
+        return fragmentOrderCategory;
     }
 
     @Override

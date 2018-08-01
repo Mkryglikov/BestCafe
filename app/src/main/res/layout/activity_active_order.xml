@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorActiveOrder"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false"
+    tools:context=".ActiveOrderActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="snap">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbarActiveOrder"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:paddingEnd="16dp"
+                app:layout_collapseMode="pin">
+
+                <TextView
+                    android:id="@+id/tvToolbarActiveOrderTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/app_name"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </android.support.v7.widget.Toolbar>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layoutOrderCooking"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:visibility="visible"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/tvOrderCookingHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/your_order_is_cooking_text"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvOrderCookingTimeHint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.6"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tvOrderCookingTimeHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="@string/estimated_waiting_time_text"
+            android:textColor="@color/colorLightGrey"
+            app:layout_constraintBottom_toTopOf="@+id/btnAddExtraOrderCooking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOrderCookingHint" />
+
+        <TextView
+            android:id="@+id/tvOrderCookingTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="center"
+            android:textColor="@color/colorLightGrey"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tvOrderCookingTimeHint"
+            app:layout_constraintStart_toEndOf="@+id/tvOrderCookingTimeHint"
+            app:layout_constraintTop_toTopOf="@+id/tvOrderCookingTimeHint" />
+
+        <TextView
+            android:id="@+id/tvOrderCookingTimeMeasure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:gravity="center"
+            android:text="@string/cooking_time_measure_text"
+            android:textColor="@color/colorLightGrey"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/tvOrderCookingTimeHint"
+            app:layout_constraintStart_toEndOf="@+id/tvOrderCookingTime"
+            app:layout_constraintTop_toTopOf="@+id/tvOrderCookingTimeHint" />
+
+        <Button
+            android:id="@+id/btnAddExtraOrderCooking"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="48dp"
+            android:background="@drawable/button_rounded_red"
+            android:elevation="8dp"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/add_extra_items_text"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/btnCallWaiterOrderCooking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOrderCookingTimeHint" />
+
+        <Button
+            android:id="@+id/btnCallWaiterOrderCooking"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:background="@drawable/button_rounded_white"
+            android:elevation="8dp"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/call_the_waiter_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddExtraOrderCooking"
+            app:layout_constraintVertical_weight="4" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layoutOrderEats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/tvOrderEatsHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="72dp"
+            android:text="@string/enjoy_your_meal_text"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnAddExtraOrderEats"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.6"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <Button
+            android:id="@+id/btnAddExtraOrderEats"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/button_rounded_red"
+            android:elevation="8dp"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/add_extra_items_text"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@+id/btnCallWaiterOrderEats"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvOrderEatsHint" />
+
+        <Button
+            android:id="@+id/btnCallWaiterOrderEats"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/button_rounded_white"
+            android:elevation="8dp"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/call_the_waiter_text"
+            app:layout_constraintBottom_toTopOf="@+id/btnCloseOrderCooking"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddExtraOrderEats"
+            app:layout_constraintVertical_weight="4" />
+
+        <Button
+            android:id="@+id/btnCloseOrderCooking"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:background="@drawable/button_rounded_white"
+            android:elevation="8dp"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/close_the_order_text"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnCallWaiterOrderEats"
+            app:layout_constraintVertical_weight="4" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

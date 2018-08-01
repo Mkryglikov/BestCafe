@@ -38,6 +38,17 @@
     <string name="btnSignInReview_text">Sign In</string>
     <string name="btnSubmitBooking_text">Book a table</string>
     <string name="tvLoggedAsHintReview_hint">You\'re logged in as</string>
+
+    <!--Connecting activity-->
     <string name="menu_title">Menu</string>
+
+    <!--Active order activity-->
+    <string name="add_extra_items_text">Add extra items</string>
+    <string name="call_the_waiter_text">Call the waiter</string>
+    <string name="your_order_is_cooking_text">Your order is cooking</string>
+    <string name="estimated_waiting_time_text">Estimated waiting time:</string>
+    <string name="cooking_time_measure_text">min</string>
+    <string name="enjoy_your_meal_text">Enjoy your meal</string>
+    <string name="close_the_order_text">Close the order</string>
 
 </resources>

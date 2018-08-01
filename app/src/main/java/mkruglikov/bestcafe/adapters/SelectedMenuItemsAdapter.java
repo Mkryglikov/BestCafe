@@ -46,13 +46,8 @@ public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuI
     public void onBindViewHolder(@NonNull SelectedMenuItemsAdapter.ViewHolder holder, int position) {
         MenuItem item = items.get(position);
         holder.tvSelectedMenuItemName.setText(item.getName());
-        holder.tvSelectedMenuItemPrice.setText(String.valueOf(item.getPrice()) + "$");
-        holder.btnDeleteSelectedMenuItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onMenuItemDeleteListener.onMenuItemDeleted(item);
-            }
-        });
+        holder.tvSelectedMenuItemPrice.setText("$" + String.valueOf(item.getPrice()));
+        holder.btnDeleteSelectedMenuItem.setOnClickListener(view -> onMenuItemDeleteListener.onMenuItemDeleted(item));
     }
 
     @Override
