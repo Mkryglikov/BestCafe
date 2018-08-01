@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        //todo
+                        //TODO
                         Log.w(TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
                     }
                 }
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 user = firebaseAuth.getCurrentUser();
                 showFragmentSignedIn();
             } else {
-                //todo
+                //TODO
                 Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
             }
         });
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             showFragmentNotSignedIn();
         } else {
-            //todo
+            //TODO
             Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show();
         }
     }

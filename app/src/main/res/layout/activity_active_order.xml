@@ -122,7 +122,9 @@
             android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:background="@drawable/button_rounded_white"
+            android:clickable="true"
             android:elevation="8dp"
+            android:focusable="true"
             android:paddingBottom="24dp"
             android:paddingEnd="48dp"
             android:paddingStart="48dp"
@@ -176,23 +178,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvOrderEatsHint" />
 
-        <Button
-            android:id="@+id/btnCallWaiterOrderEats"
-            android:layout_width="wrap_content"
-            android:layout_height="64dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/button_rounded_white"
-            android:elevation="8dp"
-            android:paddingBottom="24dp"
-            android:paddingEnd="48dp"
-            android:paddingStart="48dp"
-            android:paddingTop="24dp"
-            android:text="@string/call_the_waiter_text"
-            app:layout_constraintBottom_toTopOf="@+id/btnCloseOrderCooking"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnAddExtraOrderEats"
-            app:layout_constraintVertical_weight="4" />
 
         <Button
             android:id="@+id/btnCloseOrderCooking"
@@ -206,18 +191,68 @@
             android:paddingTop="24dp"
             android:text="@string/close_the_order_text"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/btnCallWaiterOrderEats"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnAddExtraOrderEats"
+            app:layout_constraintVertical_weight="4" />
+
+        <Button
+            android:id="@+id/btnCallWaiterOrderEats"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/button_rounded_white"
+            android:clickable="true"
+            android:elevation="8dp"
+            android:focusable="true"
+            android:paddingBottom="24dp"
+            android:paddingEnd="48dp"
+            android:paddingStart="48dp"
+            android:paddingTop="24dp"
+            android:text="@string/call_the_waiter_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnCallWaiterOrderEats"
+            app:layout_constraintTop_toBottomOf="@+id/btnCloseOrderCooking"
             app:layout_constraintVertical_weight="4" />
 
     </android.support.constraint.ConstraintLayout>
 
-    <ProgressBar
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:id="@+id/pbActiveOrderLoading"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layoutOrderConnecting"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center">
+
+        <TextView
+            android:id="@+id/tvOrderConnecting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="Connecting"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/pbActiveOrderConnecting"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/pbActiveOrderConnecting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/containerExtraItems"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
 </android.support.design.widget.CoordinatorLayout>

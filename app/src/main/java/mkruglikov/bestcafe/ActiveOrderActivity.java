@@ -5,17 +5,18 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.nearby.Nearby;
@@ -37,13 +38,13 @@ public class ActiveOrderActivity extends AppCompatActivity {
     public static final String ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY = "ActiveOrderActivity estimatedTime extra key";
     public static final String ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY = "ActiveOrderActivity endpointId extra key";
 
-    private String orderId, estimatedTime, thingsEndpointId;
-    private ConstraintLayout layoutOrderCooking, layoutOrderEats;
-    private TextView tvOrderCookingTime;
-    private ProgressBar pbActiveOrderLoading;
-    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats;
+    private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName;
+    private ConstraintLayout layoutOrderCooking, layoutOrderEats, layoutOrderConnecting, containerExtraItems;
+    private TextView tvOrderCookingTime, tvToolbarActiveOrderTitle, tvOrderConnecting;
+    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking;
     private NotificationManager notificationManager;
     private ConnectionsClient nearbyConnectionsClient;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,11 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
         layoutOrderCooking = findViewById(R.id.layoutOrderCooking);
         layoutOrderEats = findViewById(R.id.layoutOrderEats);
+        layoutOrderConnecting = findViewById(R.id.layoutOrderConnecting);
+        containerExtraItems = findViewById(R.id.containerExtraItems);
 
-        pbActiveOrderLoading = findViewById(R.id.pbActiveOrderLoading);
+        tvToolbarActiveOrderTitle = findViewById(R.id.tvToolbarActiveOrderTitle);
+        tvOrderConnecting = findViewById(R.id.tvOrderConnecting);
 
         btnCallWaiterOrderCooking = findViewById(R.id.btnCallWaiterOrderCooking);
         btnCallWaiterOrderEats = findViewById(R.id.btnCallWaiterOrderEats);
@@ -81,6 +85,16 @@ public class ActiveOrderActivity extends AppCompatActivity {
         btnCallWaiterOrderCooking.setOnClickListener(callWaiterButtonListener);
         btnCallWaiterOrderEats.setOnClickListener(callWaiterButtonListener);
 
+        btnAddExtraOrderEats = findViewById(R.id.btnAddExtraOrderEats);
+        btnAddExtraOrderCooking = findViewById(R.id.btnAddExtraOrderCooking);
+
+        View.OnClickListener addExtraButtonListener = view -> showExtraItemsFragment();
+
+        btnAddExtraOrderEats.setOnClickListener(addExtraButtonListener);
+        btnAddExtraOrderCooking.setOnClickListener(addExtraButtonListener);
+
+        fragmentManager = getSupportFragmentManager();
+
         if (estimatedTime != null)
             showCookingLayout();
         else
@@ -94,9 +108,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void startAdvertising() {
-        layoutOrderCooking.setVisibility(View.GONE);
-        layoutOrderEats.setVisibility(View.GONE);
-        pbActiveOrderLoading.setVisibility(View.VISIBLE);
+        showConnectingLayout();
 
         String nickname = ((TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
         nearbyConnectionsClient.startAdvertising(
@@ -109,8 +121,9 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showCookingLayout() {
-        pbActiveOrderLoading.setVisibility(View.GONE);
+        hideConnectingLayout();
         layoutOrderEats.setVisibility(View.GONE);
+        containerExtraItems.setVisibility(View.GONE);
         layoutOrderCooking.setVisibility(View.VISIBLE);
         tvOrderCookingTime = findViewById(R.id.tvOrderCookingTime);
         tvOrderCookingTime.setText(estimatedTime);
@@ -128,11 +141,24 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showEatsLayout() {
-        pbActiveOrderLoading.setVisibility(View.GONE);
+        hideConnectingLayout();
         layoutOrderCooking.setVisibility(View.GONE);
+        containerExtraItems.setVisibility(View.GONE);
         layoutOrderEats.setVisibility(View.VISIBLE);
         if (notificationManager != null)
             notificationManager.cancelAll();
+    }
+
+    private void showExtraItemsFragment() {
+        hideConnectingLayout();
+        layoutOrderCooking.setVisibility(View.GONE);
+        layoutOrderEats.setVisibility(View.GONE);
+        containerExtraItems.setVisibility(View.VISIBLE);
+        if (notificationManager != null)
+            notificationManager.cancelAll();
+
+        nearbyConnectionsClient.sendPayload(thingsEndpointId, Payload.fromBytes("getMenu".getBytes()))
+                .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Fail getting menu: " + e.getLocalizedMessage()));
     }
 
     @Override
@@ -151,6 +177,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
         @Override
         public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
+            thingsEndpointName = connectionInfo.getEndpointName();
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
@@ -163,6 +190,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
                     }
                     Log.i(MainActivity.TAG, "Payload Received: " + payloadString);
 
+
                     if (payloadString.substring(0, 7).equals("orderId")) {
                         orderId = payloadString.substring(7);
 
@@ -173,13 +201,18 @@ public class ActiveOrderActivity extends AppCompatActivity {
                             else
                                 showEatsLayout();
                         }, 500);
-                    }
+                    } else if (payloadString.length() >= 15 && payloadString.equals("extraItemsAdded")) {
 
-                    if (payloadString.substring(0, 13).equals("estimatedTime")) {
+                        //Wait for estimated time
+                        new Handler().postDelayed(() -> {
+                            if (estimatedTime != null && !estimatedTime.isEmpty())
+                                showCookingLayout();
+                            else
+                                showEatsLayout();
+                        }, 500);
+                    } else if (payloadString.length() > 13 && payloadString.substring(0, 13).equals("estimatedTime")) {
                         estimatedTime = payloadString.substring(13);
-                    }
-
-                    if (payloadString.length() > 17 && payloadString.substring(0, 17).equals("orderStatusUpdate")) {
+                    } else if (payloadString.length() > 17 && payloadString.substring(0, 17).equals("orderStatusUpdate")) {
                         payloadString = payloadString.substring(17);
                         switch (payloadString) {
                             case (FirestoreUtils.FIRESTORE_STATUS_PREPARING):
@@ -189,7 +222,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                 showEatsLayout();
                                 break;
                             case (FirestoreUtils.FIRESTORE_STATUS_DONE):
-                                //todo
+                                //TODO
                                 break;
                         }
                     } else if (payloadString.length() > 12 && payloadString.substring(0, 12).equals("waiterUpdate")) {
@@ -199,23 +232,39 @@ public class ActiveOrderActivity extends AppCompatActivity {
                             Log.i(MainActivity.TAG, "Waiter is called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
                                 btnCallWaiterOrderCooking.setText("Waiter is called");
-                                btnCallWaiterOrderCooking.setActivated(false);
+                                btnCallWaiterOrderCooking.setEnabled(false);
+                                btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
                                 btnCallWaiterOrderEats.setText("Waiter is called");
-                                btnCallWaiterOrderEats.setActivated(false);
+                                btnCallWaiterOrderEats.setEnabled(false);
+                                btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
                             }
                         } else {
                             Log.i(MainActivity.TAG, "Waiter is not called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
                                 btnCallWaiterOrderCooking.setText(getString(R.string.call_the_waiter_text));
-                                btnCallWaiterOrderCooking.setActivated(true);
+                                btnCallWaiterOrderCooking.setEnabled(true);
+                                btnCallWaiterOrderCooking.setBackgroundResource(R.drawable.button_rounded_white);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
                                 btnCallWaiterOrderEats.setText(getString(R.string.call_the_waiter_text));
-                                btnCallWaiterOrderEats.setActivated(true);
+                                btnCallWaiterOrderEats.setEnabled(true);
+                                btnCallWaiterOrderEats.setBackgroundResource(R.drawable.button_rounded_white);
+
                             }
                         }
+                    } else if (payloadString.substring(0, 4).equals("menu")) {
+                        String menuString = payloadString.substring(4);
+                        FragmentOrder fragmentOrder = new FragmentOrder();
+                        Bundle args = new Bundle();
+                        args.putString(FragmentOrder.ORDER_FRAGMENT_MENU_ARGUMENTS_KEY, menuString);
+                        args.putString(FragmentOrder.THINGS_ENDPOINT_ID_ARGUMENTS_KEY, endpointId);
+                        args.putBoolean(FragmentOrder.IS_NEW_ORDER_ARGUMENTS_KEY, false);
+                        fragmentOrder.setArguments(args);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.containerExtraItems, fragmentOrder)
+                                .commit();
                     }
                 }
 
@@ -242,4 +291,19 @@ public class ActiveOrderActivity extends AppCompatActivity {
             startAdvertising();
         }
     };
+
+    private void showConnectingLayout() {
+        layoutOrderCooking.setVisibility(View.GONE);
+        layoutOrderEats.setVisibility(View.GONE);
+        layoutOrderConnecting.setVisibility(View.VISIBLE);
+        tvToolbarActiveOrderTitle.setText("");
+        if (thingsEndpointName != null && !thingsEndpointId.isEmpty()) {
+            tvOrderConnecting.append(" to table #" + thingsEndpointName);
+        }
+    }
+
+    private void hideConnectingLayout() {
+        layoutOrderConnecting.setVisibility(View.GONE);
+        tvToolbarActiveOrderTitle.setText(getString(R.string.app_name));
+    }
 }

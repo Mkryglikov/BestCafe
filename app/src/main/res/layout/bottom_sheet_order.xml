@@ -68,6 +68,6 @@
         android:background="@color/colorAccent"
         android:text="Place the order"
         android:textColor="@android:color/white"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </RelativeLayout>

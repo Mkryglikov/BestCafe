@@ -76,13 +76,13 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             });
         } else {
-            //todo
+            //TODO
             Toast.makeText(SignUpActivity.this, "Info isn't correct", Toast.LENGTH_SHORT).show();
         }
     }
 
     protected boolean checkUserEmailPassword(String email, String password) {
-        //todo
+        //TODO
         return (!email.isEmpty() && !password.isEmpty());
     }
 }

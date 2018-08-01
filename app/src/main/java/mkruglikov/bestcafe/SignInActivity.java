@@ -64,12 +64,12 @@ public class SignInActivity extends AppCompatActivity {
                     setResult(Activity.RESULT_OK);
                     finish();
                 } else {
-                    //todo
+                    //TODO
                     Toast.makeText(SignInActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
-            //todo
+            //TODO
             Toast.makeText(SignInActivity.this, "Info isn't correct", Toast.LENGTH_SHORT).show();
         }
     }
@@ -84,7 +84,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     protected boolean checkUserEmailPassword(String email, String password) {
-        //todo
+        //TODO
         return (!email.isEmpty() && !password.isEmpty());
     }
 }

@@ -37,6 +37,8 @@ public class FirestoreUtils {
     private static OnGetMenuListener onGetMenuListener;
     private static OnAddOrderListener onAddOrderListener;
     private static OnCheckIsTableActiveListener onCheckIsTableActiveListener;
+    private static OnGetOrderItemsListener onGetOrderItemsListener;
+    private static OnAddExtraItemsListener onAddExtraitemsListener;
 
     public static void getMenu(OnGetMenuListener listener) {
         if (db == null)
@@ -179,5 +181,40 @@ public class FirestoreUtils {
 
         DocumentReference orderDocument = db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId);
         orderDocument.update(FIRESTORE_CALL_WAITER_FIELD, true);
+    }
+
+    public static void getOrderItems(String orderId, OnGetOrderItemsListener listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+
+        onGetOrderItemsListener = listener;
+
+        db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId).get()
+                .addOnSuccessListener(documentSnapshot -> onGetOrderItemsListener.onGotItems(
+                        ((List<String>) documentSnapshot.get(FIRESTORE_ITEMS_FIELD)),
+                        documentSnapshot.getString(FIRESTORE_STATUS_FIELD).equals(FIRESTORE_STATUS_PREPARING),
+                        null))
+                .addOnFailureListener(e -> onGetOrderItemsListener.onGotItems(null, false, e.getLocalizedMessage()));
+
+    }
+
+    public interface OnGetOrderItemsListener {
+        void onGotItems(List<String> items, boolean isCooking, String exceptionMessage);
+    }
+
+    public static void addExtraItems(String orderId, List<String> items, OnAddExtraItemsListener listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+        onAddExtraitemsListener = listener;
+
+        db.collection(FIRESTORE_ORDERS_COLLECTION)
+                .document(orderId)
+                .update(FIRESTORE_ITEMS_FIELD, items, FIRESTORE_STATUS_FIELD, FIRESTORE_STATUS_PREPARING)
+                .addOnSuccessListener(aVoid -> onAddExtraitemsListener.onExtraItemsAdded(null))
+                .addOnFailureListener(e -> onAddExtraitemsListener.onExtraItemsAdded(e.getLocalizedMessage()));
+    }
+
+    public interface OnAddExtraItemsListener {
+        void onExtraItemsAdded(String exceptionMessage);
     }
 }

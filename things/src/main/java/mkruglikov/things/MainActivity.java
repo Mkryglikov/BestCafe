@@ -119,22 +119,23 @@ public class MainActivity extends Activity {
                         FirestoreUtils.addOrder(orderMap, (orderId, exceptionMessage) -> {
                             if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
                                 Log.w(TAG, "Error adding order: " + exceptionMessage);
-                            } else {
-                                Payload payloadOrderId = Payload.fromBytes(("orderId" + orderId).getBytes());
-                                nearbyConnectionsClient.sendPayload(endpointId, payloadOrderId)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.i(TAG, "Order ID sent");
-                                            setRealtimeOrderUpdates(endpointId, orderId);
-                                        })
-                                        .addOnFailureListener(e -> Log.w(TAG, "Order ID isn't sent: " + e.getLocalizedMessage()));
-
-                                Payload payloadEstimatedTime = Payload.fromBytes(("estimatedTime" + getCookingTime(selectedItems.size())).getBytes());
-                                nearbyConnectionsClient.sendPayload(endpointId, payloadEstimatedTime)
-                                        .addOnSuccessListener(aVoid -> Log.i(TAG, "Estimated time sent"))
-                                        .addOnFailureListener(e -> Log.w(TAG, "Estimated time isn't sent: " + e.getLocalizedMessage()));
-
-
+                                return;
                             }
+
+                            Payload payloadOrderId = Payload.fromBytes(("orderId" + orderId).getBytes());
+                            nearbyConnectionsClient.sendPayload(endpointId, payloadOrderId)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.i(TAG, "Order ID sent");
+                                        setRealtimeOrderUpdates(endpointId, orderId);
+                                    })
+                                    .addOnFailureListener(e -> Log.w(TAG, "Order ID isn't sent: " + e.getLocalizedMessage()));
+
+                            Payload payloadEstimatedTime = Payload.fromBytes(("estimatedTime" + getCookingTime(selectedItems.size())).getBytes());
+                            nearbyConnectionsClient.sendPayload(endpointId, payloadEstimatedTime)
+                                    .addOnSuccessListener(aVoid -> Log.i(TAG, "Estimated time sent"))
+                                    .addOnFailureListener(e -> Log.w(TAG, "Estimated time isn't sent: " + e.getLocalizedMessage()));
+
+
                             finish();
                         });
 
@@ -158,7 +159,7 @@ public class MainActivity extends Activity {
                     nearbyConnectionsClient.stopAdvertising();
                     FirestoreUtils.getMenu((menu, exceptionMessage) -> {
                         if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
-                            //todo
+                            //TODO
                             Log.w(TAG, "Error getting menu: " + exceptionMessage);
                             return;
                         }
@@ -231,11 +232,78 @@ public class MainActivity extends Activity {
                                         public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
                                             try {
                                                 String payloadString = new String(payload.asBytes(), "UTF-8");
-                                                if (payloadString.substring(0, 13).equals("callTheWaiter")) {
+                                                if (payloadString.length() >= 13 && payloadString.substring(0, 13).equals("callTheWaiter")) {
                                                     FirestoreUtils.callTheWaiter(payloadString.substring(13));
+                                                } else if (payloadString.length() >= 7 && payloadString.substring(0, 7).equals("getMenu")) {
+                                                    FirestoreUtils.getMenu((menu, exceptionMessage) -> {
+                                                        if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
+                                                            Log.w(TAG, "Error getting menu: " + exceptionMessage);
+                                                            return;
+                                                        }
+                                                        JSONArray jsonArrayMenu = new JSONArray();
+                                                        for (MenuItem menuItem : menu) {
+                                                            JSONObject jsonObject = new JSONObject();
+                                                            try {
+                                                                jsonObject.put(FirestoreUtils.FIRESTORE_ID_FIELD, menuItem.getId());
+                                                                jsonObject.put(FirestoreUtils.FIRESTORE_NAME_FIELD, menuItem.getName());
+                                                                jsonObject.put(FirestoreUtils.FIRESTORE_CATEGORY_FIELD, menuItem.getCategory());
+                                                                jsonObject.put(FirestoreUtils.FIRESTORE_DESCRIPTION_FIELD, menuItem.getDescription());
+                                                                jsonObject.put(FirestoreUtils.FIRESTORE_PRICE_FIELD, menuItem.getPrice());
+                                                            } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                            jsonArrayMenu.put(jsonObject);
+                                                        }
+                                                        Payload payloadMenu = Payload.fromBytes(("menu" + jsonArrayMenu.toString()).getBytes());
+                                                        nearbyConnectionsClient.sendPayload(endpointId, payloadMenu)
+                                                                .addOnSuccessListener(aVoid -> Log.i(TAG, "Menu sent"))
+                                                                .addOnFailureListener(e -> Log.w(TAG, "Menu isn't sent: " + e.getLocalizedMessage()));
+                                                    });
+                                                } else if (payloadString.substring(0, 10).equals("extraItems")) {
+                                                    try {
+                                                        String extraItemsString = payloadString.substring(10);
+                                                        List<String> extraItems = new ArrayList<>();
+
+                                                        Log.i(TAG, "jsonExtraItems: " + extraItemsString);
+
+                                                        JSONArray menuJsonArray = new JSONArray(extraItemsString);
+                                                        Gson gson = new Gson();
+                                                        for (int i = 0; i < menuJsonArray.length(); i++) {
+                                                            MenuItem item = gson.fromJson(menuJsonArray.getJSONObject(i).toString(), MenuItem.class);
+                                                            Log.i(TAG, "Item ID: " + item.getId());
+                                                            extraItems.add(item.getId());
+                                                        }
+
+                                                        FirestoreUtils.getOrderItems(orderId, (items, isCooking, exceptionMessage) -> {
+                                                            items.addAll(extraItems);
+                                                            FirestoreUtils.addExtraItems(orderId, items, exceptionMessage1 -> {
+                                                                if (exceptionMessage1 != null && !exceptionMessage1.isEmpty()) {
+                                                                    Log.w(TAG, "Error adding extra items: " + exceptionMessage1);
+                                                                    return;
+                                                                }
+
+                                                                Payload payloadExtraItemsAdded = Payload.fromBytes("extraItemsAdded".getBytes());
+                                                                nearbyConnectionsClient.sendPayload(endpointId, payloadExtraItemsAdded)
+                                                                        .addOnSuccessListener(aVoid -> Log.i(TAG, "extraItemsAdded sent"))
+                                                                        .addOnFailureListener(e -> Log.w(TAG, "extraItemsAdded isn't sent: " + e.getLocalizedMessage()));
+
+                                                                //TODO Orders status was "eats", added extra item, status set to "preparing" with time only for the new items.
+                                                                //TODO Add one more item from there and time is calculating for all items (because current status is "preparing"),
+                                                                //TODO instead of calculating for 2nd and 3rd items adding.
+
+                                                                Payload payloadEstimatedTime = Payload.fromBytes(("estimatedTime" + getCookingTime(isCooking ? items.size() : extraItems.size())).getBytes());
+                                                                nearbyConnectionsClient.sendPayload(endpointId, payloadEstimatedTime)
+                                                                        .addOnSuccessListener(aVoid -> Log.i(TAG, "Estimated time sent"))
+                                                                        .addOnFailureListener(e -> Log.w(TAG, "Estimated time isn't sent: " + e.getLocalizedMessage()));
+                                                            });
+                                                        });
+
+                                                    } catch (JSONException e) {
+                                                        Log.w(TAG, e.getLocalizedMessage());
+                                                    }
                                                 }
                                             } catch (UnsupportedEncodingException e) {
-                                                e.printStackTrace();
+                                                Log.w(TAG, e.getLocalizedMessage());
                                             }
                                         }
 
@@ -346,6 +414,4 @@ public class MainActivity extends Activity {
             }
         });
     }
-
-
 }

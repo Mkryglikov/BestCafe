@@ -39,13 +39,14 @@ public class FragmentOrder extends Fragment {
 
     public static final String ORDER_FRAGMENT_MENU_ARGUMENTS_KEY = "order_fragment_menu_arguments_key";
     public static final String THINGS_ENDPOINT_ID_ARGUMENTS_KEY = "things_endpoint_id_arguments_key";
+    public static final String IS_NEW_ORDER_ARGUMENTS_KEY = "is_new_order_arguments_key";
 
     private List<MenuItem> menu;
     private List<MenuItem> selectedItems;
     private List<String> categories;
     private TabLayout tlOrder;
     private ViewPager vpOrder;
-    private TextView tvTotalOrderBottomSheet, tvNoItemsOrderBottomSheet;
+    private TextView tvTotalOrderBottomSheet, tvNoItemsOrderBottomSheet, tvDetailsHintOrderBottomSheet;
     private Button btnSubmitOrder;
     private RecyclerView rvOrderBottomSheet;
     private BottomSheetBehavior behaviorBottomSheet;
@@ -53,6 +54,7 @@ public class FragmentOrder extends Fragment {
     private ImageView ivArrowOrderBottomSheet;
     private View tintViewOrder;
     private String thingsEndpointId;
+    private boolean isNewOrder;
     private int total = 0;
 
     public FragmentOrder() {
@@ -64,6 +66,8 @@ public class FragmentOrder extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_order, container, false);
         String menuString = getArguments().getString(ORDER_FRAGMENT_MENU_ARGUMENTS_KEY);
         thingsEndpointId = getArguments().getString(THINGS_ENDPOINT_ID_ARGUMENTS_KEY);
+        isNewOrder = getArguments().getBoolean(IS_NEW_ORDER_ARGUMENTS_KEY);
+
         menu = new ArrayList<>();
         selectedItems = new ArrayList<>();
         try {
@@ -86,9 +90,14 @@ public class FragmentOrder extends Fragment {
         ivArrowOrderBottomSheet = rootView.findViewById(R.id.ivArrowOrderBottomSheet);
         tvTotalOrderBottomSheet = rootView.findViewById(R.id.tvTotalOrderBottomSheet);
         tvNoItemsOrderBottomSheet = rootView.findViewById(R.id.tvNoItemsOrderBottomSheet);
+        tvDetailsHintOrderBottomSheet = rootView.findViewById(R.id.tvDetailsHintOrderBottomSheet);
+        if (!isNewOrder)
+            tvDetailsHintOrderBottomSheet.setText("Extra items details");
         layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
         tintViewOrder = rootView.findViewById(R.id.tintViewOrder);
         btnSubmitOrder = rootView.findViewById(R.id.btnSubmitOrder);
+        if (!isNewOrder)
+            btnSubmitOrder.setText("Add extra items");
         btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
             JSONArray jsonArrayMenu = new JSONArray();
             for (MenuItem menuItem : selectedItems) {
@@ -104,7 +113,7 @@ public class FragmentOrder extends Fragment {
                 }
                 jsonArrayMenu.put(jsonObject);
             }
-            Payload payload = Payload.fromBytes(jsonArrayMenu.toString().getBytes());
+            Payload payload = Payload.fromBytes(("extraItems" + jsonArrayMenu.toString()).getBytes());
             Nearby.getConnectionsClient(getActivity().getApplicationContext())
                     .sendPayload(thingsEndpointId, payload)
                     .addOnSuccessListener(aVoid -> Log.i(MainActivity.TAG, "Order payload sent"))

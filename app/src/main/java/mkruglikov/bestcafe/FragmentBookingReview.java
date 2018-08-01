@@ -81,7 +81,7 @@ public class FragmentBookingReview extends Fragment {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        //todo
+                        //TODO
                         Log.w(MainActivity.TAG, "Google sign in failed: " + e.getLocalizedMessage());
                     }
                 }
@@ -98,7 +98,7 @@ public class FragmentBookingReview extends Fragment {
                 user = firebaseAuth.getCurrentUser();
                 changeLayout();
             } else {
-                //todo
+                //TODO
                 Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage() );
             }
         });

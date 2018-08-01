@@ -78,6 +78,7 @@ public class ConnectActivity extends AppCompatActivity {
                         Bundle args = new Bundle();
                         args.putString(FragmentOrder.ORDER_FRAGMENT_MENU_ARGUMENTS_KEY, payloadString);
                         args.putString(FragmentOrder.THINGS_ENDPOINT_ID_ARGUMENTS_KEY, endpointId);
+                        args.putBoolean(FragmentOrder.IS_NEW_ORDER_ARGUMENTS_KEY, true);
                         fragmentOrder.setArguments(args);
                         fragmentManager.beginTransaction()
                                 .replace(R.id.containerConnect, fragmentOrder)
