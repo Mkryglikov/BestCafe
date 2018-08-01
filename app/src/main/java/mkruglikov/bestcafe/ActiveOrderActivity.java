@@ -168,7 +168,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
                         //Wait for estimated time
                         new Handler().postDelayed(() -> {
-                            if (estimatedTime != null)
+                            if (estimatedTime != null && !estimatedTime.isEmpty())
                                 showCookingLayout();
                             else
                                 showEatsLayout();

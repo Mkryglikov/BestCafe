@@ -320,6 +320,12 @@ public class MainActivity extends Activity {
             currentOrderStatus = newOrderStatus;
             switch (newOrderStatus) {
                 case (FirestoreUtils.FIRESTORE_STATUS_PREPARING):
+
+                    Payload payloadEstimatedTime = Payload.fromBytes(("estimatedTime" + getCookingTime(((List<String>) document.get(FirestoreUtils.FIRESTORE_ITEMS_FIELD)).size())).getBytes());
+                    nearbyConnectionsClient.sendPayload(endpointId, payloadEstimatedTime)
+                            .addOnSuccessListener(aVoid -> Log.i(TAG, "Estimated time sent"))
+                            .addOnFailureListener(eTime -> Log.w(TAG, "Estimated time isn't sent: " + eTime.getLocalizedMessage()));
+
                     Payload payloadOrderStatusPreparing = Payload.fromBytes(("orderStatusUpdate" + FirestoreUtils.FIRESTORE_STATUS_PREPARING).getBytes());
                     nearbyConnectionsClient.sendPayload(endpointId, payloadOrderStatusPreparing)
                             .addOnSuccessListener(aVoid -> Log.i(TAG, "Order updates sent"))
