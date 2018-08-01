@@ -2,6 +2,8 @@ package mkruglikov.bestcafe;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -48,6 +50,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case (SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE):
@@ -60,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
                         //todo
-                        Log.w(TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage() );
+                        Log.w(TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
                     }
                 }
                 break;

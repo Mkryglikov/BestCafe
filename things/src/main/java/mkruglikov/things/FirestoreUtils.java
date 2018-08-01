@@ -3,6 +3,7 @@ package mkruglikov.things;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,6 +27,7 @@ public class FirestoreUtils {
     static final String FIRESTORE_TABLE_FIELD = "table";
     static final String FIRESTORE_ITEMS_FIELD = "items";
     static final String FIRESTORE_STATUS_FIELD = "status";
+    static final String FIRESTORE_CALL_WAITER_FIELD = "callWaiter";
 
     static final String FIRESTORE_STATUS_PREPARING = "preparing";
     static final String FIRESTORE_STATUS_EATS = "eats";
@@ -133,10 +135,14 @@ public class FirestoreUtils {
     }
 
     public static void getOrderRealtimeUpdates(String orderId, EventListener<DocumentSnapshot> listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
         db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId).addSnapshotListener(listener);
     }
 
     public static void getIsActiveRealtimeUpdates(OnTableStatusUpdateListener listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
         Query query = db.collection(FIRESTORE_ORDERS_COLLECTION).whereEqualTo(FIRESTORE_TABLE_FIELD, MainActivity.TABLE_NUMBER);
         query.addSnapshotListener((queryDocumentSnapshots, e) -> {
             boolean isActive = false;
@@ -155,5 +161,23 @@ public class FirestoreUtils {
 
     public interface OnTableStatusUpdateListener {
         void onTableStatusUpdated(boolean isActive);
+    }
+
+    public static void getWaiterStatusRealtimeUpdates(String orderId, EventListener<DocumentSnapshot> listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+        DocumentReference document = db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId);
+        document.addSnapshotListener(listener);
+        document.get().addOnSuccessListener(documentSnapshot -> {
+            listener.onEvent(documentSnapshot, null);
+        });
+    }
+
+    public static void callTheWaiter(String orderId) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+
+        DocumentReference orderDocument = db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId);
+        orderDocument.update(FIRESTORE_CALL_WAITER_FIELD, true);
     }
 }

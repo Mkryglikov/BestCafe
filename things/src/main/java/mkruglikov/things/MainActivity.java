@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -94,13 +95,14 @@ public class MainActivity extends Activity {
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
+                    Log.i(TAG, "Payload Received");
                     try {
-                        String jsonSelectedItems = new String(payload.asBytes(), "UTF-8");
+                        String payloadString = new String(payload.asBytes(), "UTF-8");
                         List<String> selectedItems = new ArrayList<>();
 
-                        Log.i(TAG, "jsonSelectedItems: " + jsonSelectedItems);
+                        Log.i(TAG, "jsonSelectedItems: " + payloadString);
 
-                        JSONArray menuJsonArray = new JSONArray(jsonSelectedItems);
+                        JSONArray menuJsonArray = new JSONArray(payloadString);
                         Gson gson = new Gson();
                         for (int i = 0; i < menuJsonArray.length(); i++) {
                             MenuItem item = gson.fromJson(menuJsonArray.getJSONObject(i).toString(), MenuItem.class);
@@ -135,6 +137,7 @@ public class MainActivity extends Activity {
                             }
                             finish();
                         });
+
                     } catch (UnsupportedEncodingException | JSONException e) {
                         Log.w(TAG, e.getLocalizedMessage());
                     }
@@ -226,14 +229,35 @@ public class MainActivity extends Activity {
                                     nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                                         @Override
                                         public void onPayloadReceived(@NonNull String endpointId, @NonNull Payload payload) {
-
+                                            try {
+                                                String payloadString = new String(payload.asBytes(), "UTF-8");
+                                                if (payloadString.substring(0, 13).equals("callTheWaiter")) {
+                                                    FirestoreUtils.callTheWaiter(payloadString.substring(13));
+                                                }
+                                            } catch (UnsupportedEncodingException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
 
                                         @Override
                                         public void onPayloadTransferUpdate(@NonNull String endpointId, @NonNull PayloadTransferUpdate payloadTransferUpdate) {
 
                                         }
-                                    });
+                                    })
+                                            .addOnSuccessListener(aVoid -> FirestoreUtils.getWaiterStatusRealtimeUpdates(oId, (documentSnapshot, e) -> {
+                                                if (e != null) {
+                                                    Log.w(TAG, "Error getting realtime call the waiter updates" + e.getLocalizedMessage());
+                                                } else if (documentSnapshot != null) {
+                                                    Payload waiterUpdatePayload = Payload.fromBytes(("waiterUpdate" + documentSnapshot.getBoolean(FirestoreUtils.FIRESTORE_CALL_WAITER_FIELD)).getBytes());
+                                                    nearbyConnectionsClient.sendPayload(endpointId, waiterUpdatePayload)
+                                                            .addOnFailureListener(e12 -> {
+                                                                Log.w(TAG, "Fail sending waiter update payload: " + e12.getLocalizedMessage());
+                                                                new Handler().postDelayed(
+                                                                        () -> nearbyConnectionsClient.sendPayload(endpointId, waiterUpdatePayload)
+                                                                                .addOnFailureListener(e1 -> Log.w(TAG, "Fail sending waiter update payload again: " + e1.getLocalizedMessage())), 500);
+                                                            });
+                                                }
+                                            }));
                                 }
 
                                 @Override
@@ -261,6 +285,7 @@ public class MainActivity extends Activity {
 
                                 @Override
                                 public void onDisconnected(@NonNull String endpointId) {
+                                    Log.i(MainActivity.TAG, "Disconnecting by Things MainActivity");
                                     connectionLifecycleCallback.onDisconnected(endpointId);
                                 }
                             });

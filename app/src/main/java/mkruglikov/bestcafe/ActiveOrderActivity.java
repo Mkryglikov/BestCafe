@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.NotificationCompat;
@@ -13,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.nearby.Nearby;
@@ -34,9 +37,11 @@ public class ActiveOrderActivity extends AppCompatActivity {
     public static final String ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY = "ActiveOrderActivity estimatedTime extra key";
     public static final String ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY = "ActiveOrderActivity endpointId extra key";
 
-    private String orderId, estimatedTime, endpointId;
+    private String orderId, estimatedTime, thingsEndpointId;
     private ConstraintLayout layoutOrderCooking, layoutOrderEats;
     private TextView tvOrderCookingTime;
+    private ProgressBar pbActiveOrderLoading;
+    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats;
     private NotificationManager notificationManager;
     private ConnectionsClient nearbyConnectionsClient;
 
@@ -47,10 +52,34 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
         orderId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY);
         estimatedTime = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY);
-        endpointId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY);
+        thingsEndpointId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY);
 
         layoutOrderCooking = findViewById(R.id.layoutOrderCooking);
         layoutOrderEats = findViewById(R.id.layoutOrderEats);
+
+        pbActiveOrderLoading = findViewById(R.id.pbActiveOrderLoading);
+
+        btnCallWaiterOrderCooking = findViewById(R.id.btnCallWaiterOrderCooking);
+        btnCallWaiterOrderEats = findViewById(R.id.btnCallWaiterOrderEats);
+
+        View.OnClickListener callWaiterButtonListener = view -> {
+            Payload callTheWaiterPayload = Payload.fromBytes(("callTheWaiter" + orderId).getBytes());
+            nearbyConnectionsClient.sendPayload(thingsEndpointId, callTheWaiterPayload)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.i(MainActivity.TAG, "Waiter payload sent fo order " + orderId);
+                        if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
+                            btnCallWaiterOrderCooking.setText("Waiter is called");
+                            btnCallWaiterOrderCooking.setActivated(false);
+                        }
+                        if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
+                            btnCallWaiterOrderEats.setText("Waiter is called");
+                            btnCallWaiterOrderEats.setActivated(false);
+                        }
+                    });
+        };
+
+        btnCallWaiterOrderCooking.setOnClickListener(callWaiterButtonListener);
+        btnCallWaiterOrderEats.setOnClickListener(callWaiterButtonListener);
 
         if (estimatedTime != null)
             showCookingLayout();
@@ -58,11 +87,17 @@ public class ActiveOrderActivity extends AppCompatActivity {
             showEatsLayout();
 
         nearbyConnectionsClient = Nearby.getConnectionsClient(this);
+
+        //Have to connect again since we want to get payload here but can't get current connection or update existing PayloadCallback
         startAdvertising();
     }
 
     @SuppressLint("MissingPermission")
     private void startAdvertising() {
+        layoutOrderCooking.setVisibility(View.GONE);
+        layoutOrderEats.setVisibility(View.GONE);
+        pbActiveOrderLoading.setVisibility(View.VISIBLE);
+
         String nickname = ((TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
         nearbyConnectionsClient.startAdvertising(
                 nickname,
@@ -74,6 +109,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showCookingLayout() {
+        pbActiveOrderLoading.setVisibility(View.GONE);
         layoutOrderEats.setVisibility(View.GONE);
         layoutOrderCooking.setVisibility(View.VISIBLE);
         tvOrderCookingTime = findViewById(R.id.tvOrderCookingTime);
@@ -92,6 +128,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showEatsLayout() {
+        pbActiveOrderLoading.setVisibility(View.GONE);
         layoutOrderCooking.setVisibility(View.GONE);
         layoutOrderEats.setVisibility(View.VISIBLE);
         if (notificationManager != null)
@@ -103,7 +140,8 @@ public class ActiveOrderActivity extends AppCompatActivity {
         if (notificationManager != null)
             notificationManager.cancelAll();
         if (nearbyConnectionsClient != null) {
-            nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
+            Log.i(MainActivity.TAG, "Disconnecting by active order Activity");
+            nearbyConnectionsClient.disconnectFromEndpoint(thingsEndpointId);
             nearbyConnectionsClient.stopDiscovery();
             nearbyConnectionsClient.stopAdvertising();
         }
@@ -112,7 +150,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
     ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
         @Override
-        public void onConnectionInitiated(@NonNull String s, @NonNull ConnectionInfo connectionInfo) {
+        public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
@@ -123,24 +161,61 @@ public class ActiveOrderActivity extends AppCompatActivity {
                         Log.e(MainActivity.TAG, "Error converting payload to String: " + e.getLocalizedMessage());
                         return;
                     }
+                    Log.i(MainActivity.TAG, "Payload Received: " + payloadString);
 
-                    try {
-                        if (payloadString.substring(0, 17).equals("orderStatusUpdate")) {
-                            payloadString = payloadString.substring(17);
-                            switch (payloadString) {
-                                case (FirestoreUtils.FIRESTORE_STATUS_PREPARING):
-                                    showCookingLayout();
-                                    break;
-                                case (FirestoreUtils.FIRESTORE_STATUS_EATS):
-                                    showEatsLayout();
-                                    break;
-                                case (FirestoreUtils.FIRESTORE_STATUS_DONE):
-                                    //todo
-                                    break;
+                    if (payloadString.substring(0, 7).equals("orderId")) {
+                        orderId = payloadString.substring(7);
+
+                        //Wait for estimated time
+                        new Handler().postDelayed(() -> {
+                            if (estimatedTime != null)
+                                showCookingLayout();
+                            else
+                                showEatsLayout();
+                        }, 500);
+                    }
+
+                    if (payloadString.substring(0, 13).equals("estimatedTime")) {
+                        estimatedTime = payloadString.substring(13);
+                    }
+
+                    if (payloadString.length() > 17 && payloadString.substring(0, 17).equals("orderStatusUpdate")) {
+                        payloadString = payloadString.substring(17);
+                        switch (payloadString) {
+                            case (FirestoreUtils.FIRESTORE_STATUS_PREPARING):
+                                showCookingLayout();
+                                break;
+                            case (FirestoreUtils.FIRESTORE_STATUS_EATS):
+                                showEatsLayout();
+                                break;
+                            case (FirestoreUtils.FIRESTORE_STATUS_DONE):
+                                //todo
+                                break;
+                        }
+                    } else if (payloadString.length() > 12 && payloadString.substring(0, 12).equals("waiterUpdate")) {
+                        String isWaiterCalled = payloadString.substring(12);
+                        Log.i(MainActivity.TAG, "Waiter update: " + isWaiterCalled);
+                        if (Boolean.valueOf(isWaiterCalled)) {
+                            Log.i(MainActivity.TAG, "Waiter is called");
+                            if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
+                                btnCallWaiterOrderCooking.setText("Waiter is called");
+                                btnCallWaiterOrderCooking.setActivated(false);
+                            }
+                            if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
+                                btnCallWaiterOrderEats.setText("Waiter is called");
+                                btnCallWaiterOrderEats.setActivated(false);
+                            }
+                        } else {
+                            Log.i(MainActivity.TAG, "Waiter is not called");
+                            if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
+                                btnCallWaiterOrderCooking.setText(getString(R.string.call_the_waiter_text));
+                                btnCallWaiterOrderCooking.setActivated(true);
+                            }
+                            if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
+                                btnCallWaiterOrderEats.setText(getString(R.string.call_the_waiter_text));
+                                btnCallWaiterOrderEats.setActivated(true);
                             }
                         }
-                    } catch (IndexOutOfBoundsException e) {
-                        //Things sent us orderId or estimatedTime. We already have it
                     }
                 }
 
@@ -149,7 +224,11 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
                 }
             })
-                    .addOnSuccessListener(aVoid -> Log.i(MainActivity.TAG, "Connecting from active order activity done"))
+                    .addOnSuccessListener(aVoid -> {
+                        thingsEndpointId = endpointId;
+                        Log.i(MainActivity.TAG, "Connecting from active order activity done");
+                        nearbyConnectionsClient.stopAdvertising();
+                    })
                     .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Connecting from active order activity failed: " + e.getLocalizedMessage()));
         }
 
@@ -160,7 +239,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
         @Override
         public void onDisconnected(@NonNull String s) {
-
+            startAdvertising();
         }
     };
 }

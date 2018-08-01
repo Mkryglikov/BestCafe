@@ -2,6 +2,8 @@ package mkruglikov.bestcafe;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -146,10 +148,14 @@ public class ConnectActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //Have to disconnect there and connect again in ActiveOrderActivity since we want to get payload in there but can't get current connection or update existing PayloadCallback
         if (nearbyConnectionsClient != null) {
+            Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
             nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
             nearbyConnectionsClient.stopDiscovery();
         }
+
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
 
         super.onDestroy();
     }
