@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -15,8 +17,11 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -48,34 +53,41 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.List;
 
 public class ActiveOrderActivity extends AppCompatActivity {
 
     public static final String ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY = "ActiveOrderActivity endpointId extra key";
+    public static final String ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY = "ActiveOrderActivity isWantToConnectWifi extra key";
     public static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 666;
 
     private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName;
     private ConstraintLayout layoutOrderCooking, layoutOrderEats, layoutOrderConnecting, containerExtraItems;
-    private TextView tvOrderCookingTime, tvToolbarActiveOrderTitle, tvOrderConnecting;
+    private TextView tvOrderCookingTime, tvOrderConnecting;
     private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking, btnCloseOrderCooking;
     private NotificationManager notificationManager;
     private ConnectionsClient nearbyConnectionsClient;
     private FragmentManager fragmentManager;
     private PaymentsClient paymentsClient;
+    private Toolbar toolbarActiveOrder;
+    private boolean isWantToConnectWifi = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_order);
 
+        toolbarActiveOrder = findViewById(R.id.toolbarActiveOrder);
+        setSupportActionBar(toolbarActiveOrder);
+
         thingsEndpointId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY);
+        isWantToConnectWifi = getIntent().getExtras().getBoolean(ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY);
 
         layoutOrderCooking = findViewById(R.id.layoutOrderCooking);
         layoutOrderEats = findViewById(R.id.layoutOrderEats);
         layoutOrderConnecting = findViewById(R.id.layoutOrderConnecting);
         containerExtraItems = findViewById(R.id.containerExtraItems);
 
-        tvToolbarActiveOrderTitle = findViewById(R.id.tvToolbarActiveOrderTitle);
         tvOrderConnecting = findViewById(R.id.tvOrderConnecting);
 
         btnCallWaiterOrderCooking = findViewById(R.id.btnCallWaiterOrderCooking);
@@ -129,6 +141,32 @@ public class ActiveOrderActivity extends AppCompatActivity {
                 new Wallet.WalletOptions.Builder()
                         .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
                         .build());
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        String currentSSID = wifiManager.getConnectionInfo().getSSID();
+        currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+        if (!currentSSID.equals(BuildConfig.WifiSSID)) {
+            getMenuInflater().inflate(R.menu.menu_wifi, menu);
+            return true;
+        } else {
+            return super.onCreateOptionsMenu(menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menuConnectToWifi:
+                isWantToConnectWifi = true;
+                connectToWifi();
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void callTheWaiter() {
@@ -223,6 +261,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
             nearbyConnectionsClient.stopAdvertising();
             thingsEndpointName = connectionInfo.getEndpointName();
             thingsEndpointId = endpointId;
+            connectToWifi();
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
@@ -379,7 +418,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
         layoutOrderCooking.setVisibility(View.GONE);
         layoutOrderEats.setVisibility(View.GONE);
         layoutOrderConnecting.setVisibility(View.VISIBLE);
-        tvToolbarActiveOrderTitle.setText("");
+        toolbarActiveOrder.setVisibility(View.INVISIBLE);
         if (thingsEndpointName != null && !thingsEndpointId.isEmpty()) {
             tvOrderConnecting.append(" to table #" + thingsEndpointName);
         }
@@ -387,7 +426,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
     private void hideConnectingLayout() {
         layoutOrderConnecting.setVisibility(View.GONE);
-        tvToolbarActiveOrderTitle.setText(getString(R.string.app_name));
+        toolbarActiveOrder.setVisibility(View.VISIBLE);
     }
 
     private void payWithGooglePay(int total) {
@@ -443,6 +482,46 @@ public class ActiveOrderActivity extends AppCompatActivity {
                     Status status = AutoResolveHelper.getStatusFromIntent(data);
                     break;
             }
+        }
+    }
+
+    private void connectToWifi() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        String currentSSID = wifiManager.getConnectionInfo().getSSID();
+        currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+
+        if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
+            AlertDialog alert = new AlertDialog.Builder(ActiveOrderActivity.this)
+                    .setTitle("BestCafe")
+                    .setMessage("Do you want to connect to our WiFi network?")
+                    .setCancelable(true)
+                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Yes", (dialogInterface, which) -> {
+                        boolean isWifiEnabled = wifiManager.isWifiEnabled();
+                        if (!isWifiEnabled)
+                            wifiManager.setWifiEnabled(true);
+
+                        //Waiting for Wifi to turn on and connect
+                        new Handler().postDelayed(() -> {
+                            WifiConfiguration conf = new WifiConfiguration();
+                            conf.SSID = "\"" + BuildConfig.WifiSSID + "\"";
+                            conf.preSharedKey = "\"" + BuildConfig.WifiPassword + "\"";
+                            wifiManager.addNetwork(conf);
+                            List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                            for (WifiConfiguration i : list) {
+                                if (i.SSID != null && i.SSID.equals("\"" + BuildConfig.WifiSSID + "\"")) {
+                                    wifiManager.disconnect();
+                                    wifiManager.enableNetwork(i.networkId, true);
+                                    wifiManager.reconnect();
+                                    break;
+                                }
+                            }
+                            toolbarActiveOrder.getMenu().findItem(R.id.menuConnectToWifi).setEnabled(false);
+
+                        }, 2000);
+                    })
+                    .create();
+            alert.show();
         }
     }
 }

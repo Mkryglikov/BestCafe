@@ -13,6 +13,8 @@ android {
         buildTypes.each {
             it.buildConfigField 'String', 'GoogleSignInClientId', GoogleSignInClientId
             it.buildConfigField 'String', 'NearbyServiceId', NearbyServiceId
+            it.buildConfigField 'String', 'WifiSSID', WifiSSID
+            it.buildConfigField 'String', 'WifiPassword', WifiPassword
         }
         release {
             minifyEnabled true

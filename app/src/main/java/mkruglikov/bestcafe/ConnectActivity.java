@@ -2,9 +2,12 @@ package mkruglikov.bestcafe;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -26,13 +29,14 @@ import com.google.android.gms.nearby.connection.PayloadCallback;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @SuppressLint("ParcelCreator")
 public class ConnectActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
     private ConnectionsClient nearbyConnectionsClient;
-    private String endpointId;
+    private boolean isWantToConnectWifi = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,8 @@ public class ConnectActivity extends AppCompatActivity {
         public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
             nearbyConnectionsClient.stopDiscovery();
             nearbyConnectionsClient.stopAdvertising();
+
+
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
@@ -73,6 +79,7 @@ public class ConnectActivity extends AppCompatActivity {
                     }
 
                     if (payloadString.substring(0, 4).equals("menu")) { //There is a menu JSON array. Create order fragment and send menu there
+                        connectToWifi();
                         payloadString = payloadString.substring(4);
                         FragmentOrder fragmentOrder = new FragmentOrder();
                         Bundle args = new Bundle();
@@ -93,6 +100,7 @@ public class ConnectActivity extends AppCompatActivity {
                             if (estimatedTime == null || estimatedTime.isEmpty()) {
                                 Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
                                 activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY, endpointId);
+                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY, isWantToConnectWifi);
                                 if (nearbyConnectionsClient != null) {
                                     Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
                                     nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
@@ -110,6 +118,7 @@ public class ConnectActivity extends AppCompatActivity {
 
                         Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
                         activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY, endpointId);
+                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY, isWantToConnectWifi);
                         if (nearbyConnectionsClient != null) {
                             Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
                             nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
@@ -133,7 +142,6 @@ public class ConnectActivity extends AppCompatActivity {
         public void onConnectionResult(@NonNull String id, @NonNull ConnectionResolution result) {
             switch (result.getStatus().getStatusCode()) {
                 case ConnectionsStatusCodes.STATUS_OK:
-                    endpointId = id;
                     break;
                 case ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED:
                     break;
@@ -171,5 +179,48 @@ public class ConnectActivity extends AppCompatActivity {
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
 
         super.onDestroy();
+    }
+
+    private void connectToWifi() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        String currentSSID = wifiManager.getConnectionInfo().getSSID();
+        currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+
+        if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
+            AlertDialog alert = new AlertDialog.Builder(ConnectActivity.this)
+                    .setTitle("BestCafe")
+                    .setMessage("Do you want to connect to our WiFi network?")
+                    .setCancelable(true)
+                    .setNegativeButton("No", (dialog, id) -> {
+                        isWantToConnectWifi = false;
+                        dialog.cancel();
+                    })
+                    .setPositiveButton("Yes", (dialogInterface, which) -> {
+                        boolean isWifiEnabled = wifiManager.isWifiEnabled();
+                        if (!isWifiEnabled)
+                            wifiManager.setWifiEnabled(true);
+
+                        isWantToConnectWifi = true;
+
+                        //Waiting for Wifi to turn on and connect
+                        new Handler().postDelayed(() -> {
+                            WifiConfiguration conf = new WifiConfiguration();
+                            conf.SSID = "\"" + BuildConfig.WifiSSID + "\"";
+                            conf.preSharedKey = "\"" + BuildConfig.WifiPassword + "\"";
+                            wifiManager.addNetwork(conf);
+                            List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                            for (WifiConfiguration i : list) {
+                                if (i.SSID != null && i.SSID.equals("\"" + BuildConfig.WifiSSID + "\"")) {
+                                    wifiManager.disconnect();
+                                    wifiManager.enableNetwork(i.networkId, true);
+                                    wifiManager.reconnect();
+                                    break;
+                                }
+                            }
+                        }, 2000);
+                    })
+                    .create();
+            alert.show();
+        }
     }
 }
