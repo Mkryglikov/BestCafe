@@ -99,7 +99,7 @@ public class FragmentOrder extends Fragment {
         if (!isNewOrder)
             btnSubmitOrder.setText("Add extra items");
         btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
-            JSONArray jsonArrayMenu = new JSONArray();
+            JSONArray jsonArrayItems = new JSONArray();
             for (MenuItem menuItem : selectedItems) {
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -111,9 +111,14 @@ public class FragmentOrder extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                jsonArrayMenu.put(jsonObject);
+                jsonArrayItems.put(jsonObject);
             }
-            Payload payload = Payload.fromBytes(("extraItems" + jsonArrayMenu.toString()).getBytes());
+            Payload payload;
+            if (isNewOrder) {
+                payload = Payload.fromBytes(jsonArrayItems.toString().getBytes());
+            } else {
+                payload = Payload.fromBytes(("extraItems" + jsonArrayItems.toString()).getBytes());
+            }
             Nearby.getConnectionsClient(getActivity().getApplicationContext())
                     .sendPayload(thingsEndpointId, payload)
                     .addOnSuccessListener(aVoid -> Log.i(MainActivity.TAG, "Order payload sent"))

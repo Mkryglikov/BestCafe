@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ public class FirestoreUtils {
     static final String FIRESTORE_ITEMS_FIELD = "items";
     static final String FIRESTORE_STATUS_FIELD = "status";
     static final String FIRESTORE_CALL_WAITER_FIELD = "callWaiter";
+    static final String FIRESTORE_TOTAL_FIELD = "total";
 
     static final String FIRESTORE_STATUS_PREPARING = "preparing";
     static final String FIRESTORE_STATUS_EATS = "eats";
@@ -39,6 +40,8 @@ public class FirestoreUtils {
     private static OnCheckIsTableActiveListener onCheckIsTableActiveListener;
     private static OnGetOrderItemsListener onGetOrderItemsListener;
     private static OnAddExtraItemsListener onAddExtraitemsListener;
+    private static OnGetOrderTotalListener onGetOrderTotalListener;
+    private static OnCloseOrderListener onCloseOrderListener;
 
     public static void getMenu(OnGetMenuListener listener) {
         if (db == null)
@@ -99,6 +102,9 @@ public class FirestoreUtils {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots.getDocuments().size() > 0) {
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots) {
+                            Log.i(MainActivity.TAG, "PREPARING: " + queryDocumentSnapshot.getId());
+                        }
                         onCheckIsTableActiveListener.onTableChecked(
                                 true,
                                 null,
@@ -111,6 +117,9 @@ public class FirestoreUtils {
                                 .get()
                                 .addOnSuccessListener(queryDocumentSnapshots1 -> {
                                     if (queryDocumentSnapshots1.getDocuments().size() > 0) {
+                                        for (QueryDocumentSnapshot queryDocumentSnapshot1 : queryDocumentSnapshots1) {
+                                            Log.i(MainActivity.TAG, "EATS: " + queryDocumentSnapshot1.getId());
+                                        }
                                         onCheckIsTableActiveListener.onTableChecked(
                                                 true,
                                                 null,
@@ -142,29 +151,6 @@ public class FirestoreUtils {
         db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId).addSnapshotListener(listener);
     }
 
-    public static void getIsActiveRealtimeUpdates(OnTableStatusUpdateListener listener) {
-        if (db == null)
-            db = FirebaseFirestore.getInstance();
-        Query query = db.collection(FIRESTORE_ORDERS_COLLECTION).whereEqualTo(FIRESTORE_TABLE_FIELD, MainActivity.TABLE_NUMBER);
-        query.addSnapshotListener((queryDocumentSnapshots, e) -> {
-            boolean isActive = false;
-            if (queryDocumentSnapshots != null) {
-                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                    if (!documentSnapshot.getString(FIRESTORE_STATUS_FIELD).equals(FIRESTORE_STATUS_DONE)) {
-                        isActive = true;
-                        break;
-                    }
-                }
-                listener.onTableStatusUpdated(isActive);
-            }
-        });
-
-    }
-
-    public interface OnTableStatusUpdateListener {
-        void onTableStatusUpdated(boolean isActive);
-    }
-
     public static void getWaiterStatusRealtimeUpdates(String orderId, EventListener<DocumentSnapshot> listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
@@ -180,7 +166,8 @@ public class FirestoreUtils {
             db = FirebaseFirestore.getInstance();
 
         DocumentReference orderDocument = db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId);
-        orderDocument.update(FIRESTORE_CALL_WAITER_FIELD, true);
+        orderDocument.update(FIRESTORE_CALL_WAITER_FIELD, true)
+                .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Error updating call the waiter: " + e.getLocalizedMessage()));
     }
 
     public static void getOrderItems(String orderId, OnGetOrderItemsListener listener) {
@@ -192,29 +179,64 @@ public class FirestoreUtils {
         db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId).get()
                 .addOnSuccessListener(documentSnapshot -> onGetOrderItemsListener.onGotItems(
                         ((List<String>) documentSnapshot.get(FIRESTORE_ITEMS_FIELD)),
+                        documentSnapshot.getLong(FIRESTORE_TOTAL_FIELD),
                         documentSnapshot.getString(FIRESTORE_STATUS_FIELD).equals(FIRESTORE_STATUS_PREPARING),
                         null))
-                .addOnFailureListener(e -> onGetOrderItemsListener.onGotItems(null, false, e.getLocalizedMessage()));
+                .addOnFailureListener(e -> onGetOrderItemsListener.onGotItems(null, 0, false, e.getLocalizedMessage()));
 
     }
 
     public interface OnGetOrderItemsListener {
-        void onGotItems(List<String> items, boolean isCooking, String exceptionMessage);
+        void onGotItems(List<String> items, long currentTotal, boolean isCooking, String exceptionMessage);
     }
 
-    public static void addExtraItems(String orderId, List<String> items, OnAddExtraItemsListener listener) {
+    public static void addExtraItems(String orderId, List<String> items, long newTotal, OnAddExtraItemsListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
         onAddExtraitemsListener = listener;
 
         db.collection(FIRESTORE_ORDERS_COLLECTION)
                 .document(orderId)
-                .update(FIRESTORE_ITEMS_FIELD, items, FIRESTORE_STATUS_FIELD, FIRESTORE_STATUS_PREPARING)
+                .update(FIRESTORE_ITEMS_FIELD, items, FIRESTORE_STATUS_FIELD, FIRESTORE_STATUS_PREPARING, FIRESTORE_TOTAL_FIELD, newTotal)
                 .addOnSuccessListener(aVoid -> onAddExtraitemsListener.onExtraItemsAdded(null))
                 .addOnFailureListener(e -> onAddExtraitemsListener.onExtraItemsAdded(e.getLocalizedMessage()));
     }
 
     public interface OnAddExtraItemsListener {
         void onExtraItemsAdded(String exceptionMessage);
+    }
+
+    public static void getOrderTotal(String orderId, OnGetOrderTotalListener listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+
+        onGetOrderTotalListener = listener;
+
+        db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId).get()
+                .addOnSuccessListener(documentSnapshot -> onGetOrderTotalListener.onGotTotal(
+                        documentSnapshot.getLong(FIRESTORE_TOTAL_FIELD),
+                        null))
+                .addOnFailureListener(e -> onGetOrderTotalListener.onGotTotal(0, e.getLocalizedMessage()));
+
+    }
+
+    public interface OnGetOrderTotalListener {
+        void onGotTotal(long total, String exceptionMessage);
+    }
+
+    public static void closeOrder(String orderId, OnCloseOrderListener listener) {
+        if (db == null)
+            db = FirebaseFirestore.getInstance();
+        onCloseOrderListener = listener;
+
+        db.collection(FIRESTORE_ORDERS_COLLECTION)
+                .document(orderId)
+                .update(FIRESTORE_STATUS_FIELD, FIRESTORE_STATUS_DONE)
+                .addOnSuccessListener(aVoid -> onCloseOrderListener.onOrderClosed(null))
+                .addOnFailureListener(e -> onCloseOrderListener.onOrderClosed(e.getLocalizedMessage()));
+    }
+
+    public interface OnCloseOrderListener {
+        void onOrderClosed(String exceptionMessage);
     }
 }

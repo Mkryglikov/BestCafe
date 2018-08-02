@@ -1,6 +1,8 @@
 package mkruglikov.bestcafe;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,7 +20,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.connection.AdvertisingOptions;
 import com.google.android.gms.nearby.connection.ConnectionInfo;
@@ -29,30 +34,40 @@ import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.PayloadCallback;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.nearby.connection.Strategy;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.CardRequirements;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.TransactionInfo;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 public class ActiveOrderActivity extends AppCompatActivity {
 
-    public static final String ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY = "ActiveOrderActivity orderId extra key";
-    public static final String ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY = "ActiveOrderActivity estimatedTime extra key";
     public static final String ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY = "ActiveOrderActivity endpointId extra key";
+    public static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 666;
 
     private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName;
     private ConstraintLayout layoutOrderCooking, layoutOrderEats, layoutOrderConnecting, containerExtraItems;
     private TextView tvOrderCookingTime, tvToolbarActiveOrderTitle, tvOrderConnecting;
-    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking;
+    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking, btnCloseOrderCooking;
     private NotificationManager notificationManager;
     private ConnectionsClient nearbyConnectionsClient;
     private FragmentManager fragmentManager;
+    private PaymentsClient paymentsClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_order);
 
-        orderId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY);
-        estimatedTime = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY);
         thingsEndpointId = getIntent().getExtras().getString(ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY);
 
         layoutOrderCooking = findViewById(R.id.layoutOrderCooking);
@@ -66,21 +81,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
         btnCallWaiterOrderCooking = findViewById(R.id.btnCallWaiterOrderCooking);
         btnCallWaiterOrderEats = findViewById(R.id.btnCallWaiterOrderEats);
 
-        View.OnClickListener callWaiterButtonListener = view -> {
-            Payload callTheWaiterPayload = Payload.fromBytes(("callTheWaiter" + orderId).getBytes());
-            nearbyConnectionsClient.sendPayload(thingsEndpointId, callTheWaiterPayload)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.i(MainActivity.TAG, "Waiter payload sent fo order " + orderId);
-                        if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                            btnCallWaiterOrderCooking.setText("Waiter is called");
-                            btnCallWaiterOrderCooking.setActivated(false);
-                        }
-                        if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                            btnCallWaiterOrderEats.setText("Waiter is called");
-                            btnCallWaiterOrderEats.setActivated(false);
-                        }
-                    });
-        };
+        View.OnClickListener callWaiterButtonListener = view -> callTheWaiter();
 
         btnCallWaiterOrderCooking.setOnClickListener(callWaiterButtonListener);
         btnCallWaiterOrderEats.setOnClickListener(callWaiterButtonListener);
@@ -93,6 +94,24 @@ public class ActiveOrderActivity extends AppCompatActivity {
         btnAddExtraOrderEats.setOnClickListener(addExtraButtonListener);
         btnAddExtraOrderCooking.setOnClickListener(addExtraButtonListener);
 
+        btnCloseOrderCooking = findViewById(R.id.btnCloseOrderCooking);
+        btnCloseOrderCooking.setOnClickListener(view -> {
+            AlertDialog alert = new AlertDialog.Builder(this)
+                    .setTitle("Confirm")
+                    .setMessage("Are you sure you want to close the order and pay?")
+                    .setCancelable(true)
+                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
+                    .setPositiveButton("Yes", (dialogInterface, i) ->
+                    {
+                        Payload getTotalPayload = Payload.fromBytes(("getTotal" + orderId).getBytes());
+                        nearbyConnectionsClient.sendPayload(thingsEndpointId, getTotalPayload)
+                                .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Error sending getTotal payload: " + e.getLocalizedMessage()));
+                    })
+                    .create();
+            alert.show();
+
+        });
+
         fragmentManager = getSupportFragmentManager();
 
         if (estimatedTime != null)
@@ -104,6 +123,30 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
         //Have to connect again since we want to get payload here but can't get current connection or update existing PayloadCallback
         startAdvertising();
+
+        paymentsClient = Wallet.getPaymentsClient(
+                this,
+                new Wallet.WalletOptions.Builder()
+                        .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
+                        .build());
+    }
+
+    private void callTheWaiter() {
+        Payload callTheWaiterPayload = Payload.fromBytes(("callTheWaiter" + orderId).getBytes());
+        nearbyConnectionsClient.sendPayload(thingsEndpointId, callTheWaiterPayload)
+                .addOnSuccessListener(aVoid -> {
+                    Log.i(MainActivity.TAG, "Waiter payload sent fo order " + orderId);
+                    if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
+                        btnCallWaiterOrderCooking.setText("Waiter is called");
+                        btnCallWaiterOrderCooking.setEnabled(false);
+                        btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
+                    }
+                    if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
+                        btnCallWaiterOrderEats.setText("Waiter is called");
+                        btnCallWaiterOrderEats.setEnabled(false);
+                        btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
+                    }
+                });
     }
 
     @SuppressLint("MissingPermission")
@@ -177,7 +220,9 @@ public class ActiveOrderActivity extends AppCompatActivity {
     ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
         @Override
         public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
+            nearbyConnectionsClient.stopAdvertising();
             thingsEndpointName = connectionInfo.getEndpointName();
+            thingsEndpointId = endpointId;
             nearbyConnectionsClient.acceptConnection(endpointId, new PayloadCallback() {
                 @Override
                 public void onPayloadReceived(@NonNull String s, @NonNull Payload payload) {
@@ -209,7 +254,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                 showCookingLayout();
                             else
                                 showEatsLayout();
-                        }, 500);
+                        }, 1000);
                     } else if (payloadString.length() > 13 && payloadString.substring(0, 13).equals("estimatedTime")) {
                         estimatedTime = payloadString.substring(13);
                     } else if (payloadString.length() > 17 && payloadString.substring(0, 17).equals("orderStatusUpdate")) {
@@ -222,7 +267,9 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                 showEatsLayout();
                                 break;
                             case (FirestoreUtils.FIRESTORE_STATUS_DONE):
-                                //TODO
+                                Toast.makeText(ActiveOrderActivity.this, "Thank you for coming", Toast.LENGTH_LONG).show();
+                                startActivity(new Intent(ActiveOrderActivity.this, MainActivity.class));
+                                finish();
                                 break;
                         }
                     } else if (payloadString.length() > 12 && payloadString.substring(0, 12).equals("waiterUpdate")) {
@@ -265,6 +312,42 @@ public class ActiveOrderActivity extends AppCompatActivity {
                         fragmentManager.beginTransaction()
                                 .replace(R.id.containerExtraItems, fragmentOrder)
                                 .commit();
+                    } else if (payloadString.substring(0, 10).equals("orderTotal")) {
+                        int total = Integer.valueOf(payloadString.substring(10));
+
+                        String[] payOptions = new String[]{"With cash / credit card", "Google Pay"};
+                        new AlertDialog.Builder(ActiveOrderActivity.this)
+                                .setTitle("How do you want to pay?")
+                                .setItems(payOptions, (dialog, item) -> {
+                                    switch (item) {
+                                        case 0:
+                                            callTheWaiter();
+                                            Toast.makeText(ActiveOrderActivity.this, "Waiter is called", Toast.LENGTH_LONG).show();
+                                            break;
+                                        case 1:
+                                            IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
+                                                    .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+                                                    .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+                                                    .build();
+                                            Task<Boolean> task = paymentsClient.isReadyToPay(request);
+                                            task.addOnCompleteListener(
+                                                    task1 -> {
+                                                        try {
+                                                            if (task1.getResult(ApiException.class))
+                                                                payWithGooglePay(total);
+                                                            else
+                                                                Toast.makeText(ActiveOrderActivity.this, "Can't pay with Google Pay", Toast.LENGTH_LONG).show();
+                                                        } catch (ApiException exception) {
+                                                            Log.w(MainActivity.TAG, "payWithGooglePay exception: " + exception.getLocalizedMessage());
+                                                            Toast.makeText(ActiveOrderActivity.this, "payWithGooglePay exception: " + exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                            break;
+                                    }
+                                })
+                                .setCancelable(false)
+                                .create()
+                                .show();
                     }
                 }
 
@@ -305,5 +388,61 @@ public class ActiveOrderActivity extends AppCompatActivity {
     private void hideConnectingLayout() {
         layoutOrderConnecting.setVisibility(View.GONE);
         tvToolbarActiveOrderTitle.setText(getString(R.string.app_name));
+    }
+
+    private void payWithGooglePay(int total) {
+        PaymentDataRequest.Builder request = PaymentDataRequest.newBuilder()
+                .setTransactionInfo(
+                        TransactionInfo.newBuilder()
+                                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                                .setTotalPrice(String.valueOf(total) + ".00")
+                                .setCurrencyCode("USD")
+                                .build())
+                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
+                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
+                .setCardRequirements(CardRequirements.newBuilder()
+                        .addAllowedCardNetworks(
+                                Arrays.asList(
+                                        WalletConstants.CARD_NETWORK_AMEX,
+                                        WalletConstants.CARD_NETWORK_DISCOVER,
+                                        WalletConstants.CARD_NETWORK_VISA,
+                                        WalletConstants.CARD_NETWORK_MASTERCARD))
+                        .build());
+
+        //Parameters for testing
+        PaymentMethodTokenizationParameters params = PaymentMethodTokenizationParameters.newBuilder()
+                .setPaymentMethodTokenizationType(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
+                .addParameter("gateway", "example")
+                .addParameter("gatewayMerchantId", "exampleGatewayMerchantId")
+                .build();
+
+        request.setPaymentMethodTokenizationParameters(params);
+        PaymentDataRequest requestResult = request.build();
+        if (requestResult != null) {
+            AutoResolveHelper.resolveTask(
+                    paymentsClient.loadPaymentData(requestResult),
+                    this,
+                    LOAD_PAYMENT_DATA_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOAD_PAYMENT_DATA_REQUEST_CODE) {
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    PaymentData paymentData = PaymentData.getFromIntent(data);
+                    String token = paymentData.getPaymentMethodToken().getToken();
+                    Payload orderDonePayload = Payload.fromBytes("orderDone".getBytes());
+                    nearbyConnectionsClient.sendPayload(thingsEndpointId, orderDonePayload)
+                            .addOnFailureListener(e -> Log.w(MainActivity.TAG, "Error sending orderDonePayload payload: " + e.getLocalizedMessage()));
+                    break;
+                case Activity.RESULT_CANCELED:
+                    break;
+                case AutoResolveHelper.RESULT_ERROR:
+                    Status status = AutoResolveHelper.getStatusFromIntent(data);
+                    break;
+            }
+        }
     }
 }

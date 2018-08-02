@@ -89,11 +89,17 @@ public class ConnectActivity extends AppCompatActivity {
 
                         //Wait for estimated time
                         new Handler().postDelayed(() -> {
-                            //If there is no estimated time, it means that table is already active, tries to reconnect and order status is EATS. Send orderId only
+                            //If there is no estimated time, it means that table is already active, tries to reconnect and order status is EATS.
                             if (estimatedTime == null || estimatedTime.isEmpty()) {
                                 Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
-                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY, orderId);
-                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY, estimatedTime);
+                                activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY, endpointId);
+                                if (nearbyConnectionsClient != null) {
+                                    Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
+                                    nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
+                                    nearbyConnectionsClient.stopDiscovery();
+                                    nearbyConnectionsClient.stopAdvertising();
+                                    nearbyConnectionsClient = null;
+                                }
                                 startActivity(activeOrderActivityIntent);
                                 finish();
                             }
@@ -103,9 +109,14 @@ public class ConnectActivity extends AppCompatActivity {
                         Log.i(MainActivity.TAG, "Estimated time received: " + estimatedTime);
 
                         Intent activeOrderActivityIntent = new Intent(ConnectActivity.this, ActiveOrderActivity.class);
-                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ORDER_ID_EXTRA_KEY, orderId);
-                        activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ESTIMATED_TIME_EXTRA_KEY, estimatedTime);
                         activeOrderActivityIntent.putExtra(ActiveOrderActivity.ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY, endpointId);
+                        if (nearbyConnectionsClient != null) {
+                            Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
+                            nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
+                            nearbyConnectionsClient.stopDiscovery();
+                            nearbyConnectionsClient.stopAdvertising();
+                            nearbyConnectionsClient = null;
+                        }
                         startActivity(activeOrderActivityIntent);
                         finish();
                     }
@@ -154,6 +165,7 @@ public class ConnectActivity extends AppCompatActivity {
             Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
             nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
             nearbyConnectionsClient.stopDiscovery();
+            nearbyConnectionsClient.stopAdvertising();
         }
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).cancelAll();
