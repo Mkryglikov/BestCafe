@@ -194,7 +194,7 @@ public class MainActivity extends Activity {
             if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
                 Log.w(TAG, "Can't check if table is active: " + exceptionMessage);
             } else if (isActive && eName != null && !eName.isEmpty()) {
-                    currentOrderId = oId;
+                currentOrderId = oId;
                 connectToLastEndpoint(eName, currentOrderId, oStatus, iCount);
             } else {
                 startAdvertising();

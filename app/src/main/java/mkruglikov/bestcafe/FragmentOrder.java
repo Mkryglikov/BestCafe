@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ public class FragmentOrder extends Fragment {
     private ImageView ivArrowOrderBottomSheet;
     private View tintViewOrder;
     private String thingsEndpointId;
+    private ProgressBar pbSubmitOrder;
     private boolean isNewOrder;
     private int total = 0;
 
@@ -95,10 +97,15 @@ public class FragmentOrder extends Fragment {
             tvDetailsHintOrderBottomSheet.setText("Extra items details");
         layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
         tintViewOrder = rootView.findViewById(R.id.tintViewOrder);
+
+        pbSubmitOrder = rootView.findViewById(R.id.pbSubmitOrder);
+
         btnSubmitOrder = rootView.findViewById(R.id.btnSubmitOrder);
         if (!isNewOrder)
             btnSubmitOrder.setText("Add extra items");
         btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
+            btnSubmitOrder.setVisibility(View.GONE);
+            pbSubmitOrder.setVisibility(View.VISIBLE);
             JSONArray jsonArrayItems = new JSONArray();
             for (MenuItem menuItem : selectedItems) {
                 JSONObject jsonObject = new JSONObject();
@@ -157,6 +164,7 @@ public class FragmentOrder extends Fragment {
         });
 
         tintViewOrder.setOnClickListener(view -> behaviorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED));
+
         return rootView;
     }
 
@@ -175,7 +183,7 @@ public class FragmentOrder extends Fragment {
             selectedItems.add(item);
             total += item.getPrice();
             tvTotalOrderBottomSheet.setText("$" + total);
-            rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(selectedItems, onMenuItemDeleteListener));
+            rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             tvNoItemsOrderBottomSheet.setVisibility(View.GONE);
             rvOrderBottomSheet.setVisibility(View.VISIBLE);
@@ -199,7 +207,7 @@ public class FragmentOrder extends Fragment {
             selectedItems.remove(item);
             total -= item.getPrice();
             tvTotalOrderBottomSheet.setText("$" + total);
-            rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(selectedItems, onMenuItemDeleteListener));
+            rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             if (!selectedItems.isEmpty()) {
                 tvNoItemsOrderBottomSheet.setVisibility(View.GONE);

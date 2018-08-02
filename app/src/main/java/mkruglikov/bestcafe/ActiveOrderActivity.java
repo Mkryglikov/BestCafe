@@ -61,7 +61,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     public static final String ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY = "ActiveOrderActivity isWantToConnectWifi extra key";
     public static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 666;
 
-    private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName;
+    private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName, currentStatus;
     private ConstraintLayout layoutOrderCooking, layoutOrderEats, layoutOrderConnecting, containerExtraItems;
     private TextView tvOrderCookingTime, tvOrderConnecting;
     private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking, btnCloseOrderCooking;
@@ -202,6 +202,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showCookingLayout() {
+        currentStatus = FirestoreUtils.FIRESTORE_STATUS_PREPARING;
         hideConnectingLayout();
         layoutOrderEats.setVisibility(View.GONE);
         containerExtraItems.setVisibility(View.GONE);
@@ -222,6 +223,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
     }
 
     private void showEatsLayout() {
+        currentStatus = FirestoreUtils.FIRESTORE_STATUS_EATS;
         hideConnectingLayout();
         layoutOrderCooking.setVisibility(View.GONE);
         containerExtraItems.setVisibility(View.GONE);
@@ -522,6 +524,22 @@ public class ActiveOrderActivity extends AppCompatActivity {
                     })
                     .create();
             alert.show();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (containerExtraItems.getVisibility() == View.VISIBLE) {
+            switch (currentStatus) {
+                case FirestoreUtils.FIRESTORE_STATUS_PREPARING:
+                    showCookingLayout();
+                    break;
+                case FirestoreUtils.FIRESTORE_STATUS_EATS:
+                    showEatsLayout();
+                    break;
+            }
+        } else {
+            super.onBackPressed();
         }
     }
 }

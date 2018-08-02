@@ -1,10 +1,15 @@
 package mkruglikov.bestcafe.adapters;
 
+import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -18,8 +23,10 @@ public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuI
 
     private List<MenuItem> items;
     private FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener;
+    private Context context;
 
-    public SelectedMenuItemsAdapter(List<MenuItem> items, FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener) {
+    public SelectedMenuItemsAdapter(Context context, List<MenuItem> items, FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener) {
+        this.context = context;
         this.items = items;
         this.onMenuItemDeleteListener = onMenuItemDeleteListener;
     }
@@ -27,12 +34,14 @@ public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuI
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvSelectedMenuItemName, tvSelectedMenuItemPrice;
         private final ImageButton btnDeleteSelectedMenuItem;
+        private final ConstraintLayout layoutSelectedItem;
 
         ViewHolder(View itemView) {
             super(itemView);
             tvSelectedMenuItemName = itemView.findViewById(R.id.tvSelectedMenuItemName);
             tvSelectedMenuItemPrice = itemView.findViewById(R.id.tvSelectedMenuItemPrice);
             btnDeleteSelectedMenuItem = itemView.findViewById(R.id.btnDeleteSelectedMenuItem);
+            layoutSelectedItem = itemView.findViewById(R.id.layoutSelectedItem);
         }
     }
 
@@ -44,10 +53,14 @@ public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuI
 
     @Override
     public void onBindViewHolder(@NonNull SelectedMenuItemsAdapter.ViewHolder holder, int position) {
+        Animation fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_out);
         MenuItem item = items.get(position);
         holder.tvSelectedMenuItemName.setText(item.getName());
         holder.tvSelectedMenuItemPrice.setText("$" + String.valueOf(item.getPrice()));
-        holder.btnDeleteSelectedMenuItem.setOnClickListener(view -> onMenuItemDeleteListener.onMenuItemDeleted(item));
+        holder.btnDeleteSelectedMenuItem.setOnClickListener(view -> {
+            holder.layoutSelectedItem.startAnimation(fadeOutAnimation);
+            new Handler().postDelayed(() -> onMenuItemDeleteListener.onMenuItemDeleted(item), 150);
+        });
     }
 
     @Override

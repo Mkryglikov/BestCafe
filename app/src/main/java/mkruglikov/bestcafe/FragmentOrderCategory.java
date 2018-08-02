@@ -39,7 +39,7 @@ public class FragmentOrderCategory extends Fragment {
         rvOrderCategory = rootView.findViewById(R.id.rvOrderCategory);
         rvOrderCategory.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
         rvOrderCategory.addItemDecoration(new DividerItemDecoration(rvOrderCategory.getContext(), DividerItemDecoration.VERTICAL));
-        rvOrderCategory.setAdapter(new CategoryItemsAdapter(menuCategory, onMenuItemSelectListener));
+        rvOrderCategory.setAdapter(new CategoryItemsAdapter(getActivity().getApplicationContext(), menuCategory, onMenuItemSelectListener));
         return rootView;
     }
 

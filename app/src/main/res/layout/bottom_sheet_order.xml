@@ -66,8 +66,20 @@
         android:layout_height="64dp"
         android:layout_alignParentBottom="true"
         android:background="@color/colorAccent"
+        android:clickable="true"
+        android:focusable="true"
         android:text="Place the order"
         android:textColor="@android:color/white"
         android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/pbSubmitOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="16dp"
+        android:visibility="gone" />
+
 
 </RelativeLayout>

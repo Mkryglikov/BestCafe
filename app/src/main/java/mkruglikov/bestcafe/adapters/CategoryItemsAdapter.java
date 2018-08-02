@@ -1,5 +1,6 @@
 package mkruglikov.bestcafe.adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,10 +19,12 @@ public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdap
 
     private List<MenuItem> menuCategory;
     private FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
+    private Context context;
 
-    public CategoryItemsAdapter(List<MenuItem> menuCategory, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
+    public CategoryItemsAdapter(Context context, List<MenuItem> menuCategory, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
         this.menuCategory = menuCategory;
         this.onMenuItemSelectListener = onMenuItemSelectListener;
+        this.context = context;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,7 +53,10 @@ public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdap
         if (description != null && !description.isEmpty())
             holder.tvMenuItemDescription.setText(description);
         holder.btnMenuItemSelect.setText(menuItem.getPrice() + "$");
-        holder.btnMenuItemSelect.setOnClickListener(view -> onMenuItemSelectListener.onMenuItemSelected(menuItem));
+        holder.btnMenuItemSelect.setOnClickListener(view -> {
+
+            onMenuItemSelectListener.onMenuItemSelected(menuItem);
+        });
 
     }
 
