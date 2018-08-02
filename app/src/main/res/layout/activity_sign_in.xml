@@ -45,10 +45,10 @@
             android:id="@+id/tilEmailSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="92dp"
+            app:errorEnabled="true"
             app:layout_constraintTop_toTopOf="parent">
 
             <EditText
@@ -66,7 +66,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            app:errorEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/tilEmailSignIn">
 
             <EditText
@@ -81,10 +81,10 @@
             android:id="@+id/tvOrSignIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/or"
-            android:textSize="18sp"
             android:layout_margin="16dp"
             android:gravity="center"
+            android:text="@string/or"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tilPasswordSignIn" />

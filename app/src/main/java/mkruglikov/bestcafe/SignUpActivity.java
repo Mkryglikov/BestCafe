@@ -4,7 +4,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -29,6 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private EditText etEmailSignUp, etPasswordSignUp;
     private GoogleSignInClient googleSignInClient;
+    private TextInputLayout tilEmailSignUp, tilPasswordSignUp;
 
 
     @Override
@@ -44,8 +48,45 @@ public class SignUpActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
+        tilEmailSignUp = findViewById(R.id.tilEmailSignUp);
+        tilPasswordSignUp = findViewById(R.id.tilPasswordSignUp);
+
         etEmailSignUp = findViewById(R.id.etEmailSignUp);
         etPasswordSignUp = findViewById(R.id.etPasswordSignUp);
+
+        etEmailSignUp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                checkUserEmail(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        etPasswordSignUp.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                checkUserPassword(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         Button btnSubmitSignUp = findViewById(R.id.btnSubmitSignUp);
         btnSubmitSignUp.setOnClickListener(view -> addUser(etEmailSignUp.getText().toString(), etPasswordSignUp.getText().toString()));
@@ -62,6 +103,8 @@ public class SignUpActivity extends AppCompatActivity {
             Intent signUpIntent = googleSignInClient.getSignInIntent();
             startActivityForResult(signUpIntent, GOOGLE_SIGN_UP_ACTIVITY_REQUEST_CODE);
         });
+
+
     }
 
     @Override
@@ -72,14 +115,14 @@ public class SignUpActivity extends AppCompatActivity {
             try {
                 firebaseAuthWithGoogle(task.getResult(ApiException.class));
             } catch (ApiException e) {
-                //TODO
+                Toast.makeText(this, "Login with Google failed", Toast.LENGTH_LONG).show();
                 Log.w(MainActivity.TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
             }
         }
     }
 
     protected void addUser(String email, String password) {
-        if (checkUserEmailPassword(email, password)) {
+        if (checkUserEmail(email) && checkUserPassword(password)) {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
                     updateWidget();
@@ -89,15 +132,41 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            //TODO
-            Toast.makeText(SignUpActivity.this, "Info isn't correct", Toast.LENGTH_SHORT).show();
         }
     }
 
-    protected boolean checkUserEmailPassword(String email, String password) {
-        //TODO
-        return (!email.isEmpty() && !password.isEmpty());
+    protected boolean checkUserEmail(String email) {
+        boolean isValid = true;
+
+        if (email.isEmpty()) {
+            tilEmailSignUp.setError("Required");
+            isValid = false;
+        } else if (!email.matches("^([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_-]+)\\.([a-zA-Z]{2,6})$")) {
+            tilEmailSignUp.setError("Isn't Email address");
+            isValid = false;
+        } else {
+            tilEmailSignUp.setError("");
+        }
+        return isValid;
+    }
+
+    protected boolean checkUserPassword(String password) {
+        boolean isValid = true;
+
+        if (password.isEmpty()) {
+            tilPasswordSignUp.setError("Required");
+            isValid = false;
+        } else if (password.length() < 8) {
+            tilPasswordSignUp.setError("At least 8 characters");
+            isValid = false;
+        } else if (!password.matches("[A-Za-z0-9]+")) {
+            tilPasswordSignUp.setError("Password can contain only letters and numbers");
+            isValid = false;
+        } else {
+            tilPasswordSignUp.setError("");
+        }
+
+        return isValid;
     }
 
     private void updateWidget() {
@@ -116,9 +185,8 @@ public class SignUpActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 finish();
             } else {
-                //TODO
+                Toast.makeText(this, "Login with Google failed", Toast.LENGTH_LONG).show();
                 Log.w(MainActivity.TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
-                Toast.makeText(this, "Authorization error", Toast.LENGTH_LONG).show();
                 setResult(RESULT_CANCELED);
                 finish();
             }

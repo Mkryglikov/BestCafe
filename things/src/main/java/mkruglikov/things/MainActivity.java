@@ -149,7 +149,6 @@ public class MainActivity extends Activity {
                     nearbyConnectionsClient.stopDiscovery();
                     FirestoreUtils.getMenu((menu, exceptionMessage) -> {
                         if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
-                            //TODO
                             Log.w(TAG, "Error getting menu: " + exceptionMessage);
                             return;
                         }
@@ -288,9 +287,9 @@ public class MainActivity extends Activity {
                                                                         .addOnSuccessListener(aVoid -> Log.i(TAG, "extraItemsAdded sent"))
                                                                         .addOnFailureListener(e -> Log.w(TAG, "extraItemsAdded isn't sent: " + e.getLocalizedMessage()));
 
-                                                                //TODO Orders status was "eats", added extra item, status set to "preparing" with time only for the new items.
-                                                                //TODO Add one more item from there and time is calculating for all items (because current status is "preparing"),
-                                                                //TODO instead of calculating for 2nd and 3rd items adding.
+                                                                // Orders status was "eats", added extra item, status set to "preparing" with time only for the new items.
+                                                                // Add one more item from there and time is calculating for all items (because current status is "preparing"),
+                                                                // instead of calculating for 2nd and 3rd items adding.
 
                                                                 Payload payloadEstimatedTime = Payload.fromBytes(("estimatedTime" + getCookingTime(isCooking ? items.size() : extraItems.size())).getBytes());
                                                                 nearbyConnectionsClient.sendPayload(endpointId, payloadEstimatedTime)

@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             showFragmentNotSignedIn();
         } else {
-            //TODO
             Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show();
         }
     }

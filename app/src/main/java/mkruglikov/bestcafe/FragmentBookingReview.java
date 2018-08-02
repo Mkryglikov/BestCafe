@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -81,7 +82,7 @@ public class FragmentBookingReview extends Fragment {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        //TODO
+                        Toast.makeText(getActivity().getApplicationContext(), "Login with Google failed", Toast.LENGTH_LONG).show();
                         Log.w(MainActivity.TAG, "Google sign in failed: " + e.getLocalizedMessage());
                     }
                 }
@@ -98,7 +99,7 @@ public class FragmentBookingReview extends Fragment {
                 user = firebaseAuth.getCurrentUser();
                 changeLayout();
             } else {
-                //TODO
+                Toast.makeText(getActivity().getApplicationContext(), "Login with Google failed", Toast.LENGTH_LONG).show();
                 Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage() );
             }
         });
