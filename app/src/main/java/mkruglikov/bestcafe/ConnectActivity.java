@@ -163,7 +163,7 @@ public class ConnectActivity extends AppCompatActivity {
         //Have to disconnect there and connect again in ActiveOrderActivity since we want to get payload in there but can't get current connection or update existing PayloadCallback
         if (nearbyConnectionsClient != null) {
             Log.i(MainActivity.TAG, "Disconnecting by connect Activity");
-            nearbyConnectionsClient.disconnectFromEndpoint(endpointId);
+            nearbyConnectionsClient.stopAllEndpoints();
             nearbyConnectionsClient.stopDiscovery();
             nearbyConnectionsClient.stopAdvertising();
         }

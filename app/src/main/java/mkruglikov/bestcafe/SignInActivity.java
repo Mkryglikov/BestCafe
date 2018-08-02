@@ -1,19 +1,27 @@
 package mkruglikov.bestcafe;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -61,6 +69,7 @@ public class SignInActivity extends AppCompatActivity {
         if (checkUserEmailPassword(email, password)) {
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
+                    updateWidget();
                     setResult(Activity.RESULT_OK);
                     finish();
                 } else {
@@ -78,13 +87,45 @@ public class SignInActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GOOGLE_SIGN_IN_ACTIVITY_REQUEST_CODE) {
-            setResult(RESULT_OK, data);
-            finish();
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                firebaseAuthWithGoogle(task.getResult(ApiException.class));
+
+            } catch (ApiException e) {
+                //TODO
+                Log.w(MainActivity.TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
+            }
+
         }
     }
 
     protected boolean checkUserEmailPassword(String email, String password) {
         //TODO
         return (!email.isEmpty() && !password.isEmpty());
+    }
+
+    private void updateWidget() {
+        Intent intent = new Intent(this, Widget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), Widget.class));
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                updateWidget();
+                setResult(RESULT_OK);
+                finish();
+            } else {
+                //TODO
+                Log.w(MainActivity.TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
+                Toast.makeText(this, "Authorization error", Toast.LENGTH_LONG).show();
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
     }
 }

@@ -2,6 +2,9 @@ package mkruglikov.bestcafe;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -282,6 +285,11 @@ public class BookingActivity extends AppCompatActivity implements
 
         FirestoreUtils.addBooking(bookingMap, (isSuccessful, exceptionMessage) -> {
             if (isSuccessful) {
+                Intent intent = new Intent(this, Widget.class);
+                intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), Widget.class));
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                sendBroadcast(intent);
                 setResult(Activity.RESULT_OK);
             } else {
                 setResult(Activity.RESULT_CANCELED);

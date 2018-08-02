@@ -50,5 +50,6 @@
     <string name="cooking_time_measure_text">min</string>
     <string name="enjoy_your_meal_text">Enjoy your meal</string>
     <string name="close_the_order_text">Close the order</string>
+    <string name="loading">Loading...</string>
 
 </resources>

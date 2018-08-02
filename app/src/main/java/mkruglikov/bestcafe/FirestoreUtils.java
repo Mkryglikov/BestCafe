@@ -1,5 +1,7 @@
 package mkruglikov.bestcafe;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -113,16 +115,20 @@ public class FirestoreUtils {
     public static void deleteBooking(String bookingId, OnDeleteBookingListener listener) {
         if (db == null)
             db = FirebaseFirestore.getInstance();
-        onDeleteBookingListener = listener;
-
+        if (listener != null) {
+            onDeleteBookingListener = listener;
+        }
+        Log.i(MainActivity.TAG, "deleteBooking: " + bookingId);
         db.collection(FIRESTORE_BOOKINGS_COLLECTION)
                 .document(bookingId)
                 .delete()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful())
-                        onDeleteBookingListener.onBookingDeleted(true, null);
-                    else
-                        onDeleteBookingListener.onBookingDeleted(false, task.getException().getLocalizedMessage());
+                    if (listener != null) {
+                        if (task.isSuccessful())
+                            onDeleteBookingListener.onBookingDeleted(true, null);
+                        else
+                            onDeleteBookingListener.onBookingDeleted(false, task.getException().getLocalizedMessage());
+                    }
                 });
     }
 
