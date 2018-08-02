@@ -1,6 +1,8 @@
 package mkruglikov.bestcafe;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class FragmentMainSignedIn extends Fragment {
     private List<Booking> bookings;
     private ConstraintLayout layoutMainNoBookings, layoutMainBookings, layoutLoadingMain;
     private View rootView;
+    private ConnectivityManager connectivityManager;
 
     public FragmentMainSignedIn() {
 
@@ -40,6 +44,8 @@ public class FragmentMainSignedIn extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main_signed_in, container, false);
+
+        connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         layoutMainNoBookings = rootView.findViewById(R.id.layoutMainNoBookings);
         layoutMainBookings = rootView.findViewById(R.id.layoutBookingsMain);
@@ -91,8 +97,17 @@ public class FragmentMainSignedIn extends Fragment {
                 btnConnectMainSignedIn.setOnClickListener(view -> startActivity(new Intent(getActivity().getApplicationContext(), ConnectActivity.class)));
 
                 btnBookMainSignedIn = rootView.findViewById(R.id.btnBookMainSignedIn);
-                btnBookMainSignedIn.setOnClickListener(view -> getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE));
+                btnBookMainSignedIn.setOnClickListener(view -> {
+                    if (isNetworkConnected())
+                        getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
+                    else
+                        Toast.makeText(getActivity().getApplicationContext(), "You have no internet connection", Toast.LENGTH_LONG).show();
+                });
             }
         });
+    }
+
+    private boolean isNetworkConnected() {
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 }

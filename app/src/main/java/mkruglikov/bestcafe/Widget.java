@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class Widget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+
         for (int appWidgetId : appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId);
         }
@@ -65,19 +67,31 @@ public class Widget extends AppWidgetProvider {
         Log.i(MainActivity.TAG, "onReceive widgetId: " + String.valueOf(widgetId));
         switch (intent.getAction()) {
             case ONCLICK_SIGNUP:
-                Intent signUpIntent = new Intent(context, SignUpActivity.class);
-                signUpIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(signUpIntent);
+                if (isNetworkConnected(context)) {
+                    Intent signUpIntent = new Intent(context, SignUpActivity.class);
+                    signUpIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(signUpIntent);
+                } else {
+                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                }
                 break;
             case ONCLICK_SIGNIN:
-                Intent signInIntent = new Intent(context, SignInActivity.class);
-                signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(signInIntent);
+                if (isNetworkConnected(context)) {
+                    Intent signInIntent = new Intent(context, SignInActivity.class);
+                    signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(signInIntent);
+                } else {
+                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                }
                 break;
             case ONCLICK_BOOK:
-                Intent bookingIntent = new Intent(context, BookingActivity.class);
-                bookingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(bookingIntent);
+                if (isNetworkConnected(context)) {
+                    Intent bookingIntent = new Intent(context, BookingActivity.class);
+                    bookingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(bookingIntent);
+                } else {
+                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                }
                 break;
             case ONCLICK_CONNECT:
                 Intent connectIntent = new Intent(context, ConnectActivity.class);
@@ -85,18 +99,22 @@ public class Widget extends AppWidgetProvider {
                 context.startActivity(connectIntent);
                 break;
             case ONCLICK_CANCEL:
-                String bookingId = intent.getExtras().getString(WIDGET_BOOKING_ID_INTENT_EXTRA_KEY);
-                Log.i(MainActivity.TAG, "onReceive bookingId: " + bookingId);
-                FirestoreUtils.deleteBooking(bookingId, (isSuccessful, exceptionMessage) -> {
-                    if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
-                        Log.w(MainActivity.TAG, "Error deleting booking: " + exceptionMessage);
-                        Toast.makeText(context, "Error deleting booking", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-                    updateWidget(context, appWidgetManager, widgetId);
-                    Toast.makeText(context, "Booking cancelled", Toast.LENGTH_LONG).show();
-                });
+                if (isNetworkConnected(context)) {
+                    String bookingId = intent.getExtras().getString(WIDGET_BOOKING_ID_INTENT_EXTRA_KEY);
+                    Log.i(MainActivity.TAG, "onReceive bookingId: " + bookingId);
+                    FirestoreUtils.deleteBooking(bookingId, (isSuccessful, exceptionMessage) -> {
+                        if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
+                            Log.w(MainActivity.TAG, "Error deleting booking: " + exceptionMessage);
+                            Toast.makeText(context, "Error deleting booking", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+                        updateWidget(context, appWidgetManager, widgetId);
+                        Toast.makeText(context, "Booking cancelled", Toast.LENGTH_LONG).show();
+                    });
+                } else {
+                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                }
                 break;
         }
     }
@@ -166,5 +184,10 @@ public class Widget extends AppWidgetProvider {
                 appWidgetManager.updateAppWidget(widgetId, widgetView);
             });
         }
+    }
+
+    private boolean isNetworkConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 }

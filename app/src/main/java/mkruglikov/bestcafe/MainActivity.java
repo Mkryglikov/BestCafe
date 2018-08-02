@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,11 +24,15 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
+    private ConnectivityManager connectivityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
         firebaseAuth = FirebaseAuth.getInstance();
         fragmentManager = getSupportFragmentManager();
         user = firebaseAuth.getCurrentUser();
@@ -83,14 +88,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuSignOut:
-                AlertDialog alert = new AlertDialog.Builder(this)
-                        .setTitle("Confirm")
-                        .setMessage("Are you sure you want to Log out?")
-                        .setCancelable(true)
-                        .setNegativeButton("No", (dialog, id) -> dialog.cancel())
-                        .setPositiveButton("Yes", (dialogInterface, i) -> signOut())
-                        .create();
-                alert.show();
+                if (isNetworkConnected()) {
+                    AlertDialog alert = new AlertDialog.Builder(this)
+                            .setTitle("Confirm")
+                            .setMessage("Are you sure you want to log out?")
+                            .setCancelable(true)
+                            .setNegativeButton("No", (dialog, id) -> dialog.cancel())
+                            .setPositiveButton("Yes", (dialogInterface, i) -> signOut())
+                            .create();
+                    alert.show();
+                } else {
+                    Toast.makeText(this, "You have no internet connection", Toast.LENGTH_LONG).show();
+                }
                 return true;
             default:
                 return false;
@@ -122,5 +131,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private boolean isNetworkConnected() {
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 }

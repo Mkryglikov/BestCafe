@@ -1,7 +1,9 @@
 package mkruglikov.bestcafe;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
@@ -43,6 +45,7 @@ public class FragmentBookingReview extends Fragment {
     private FirebaseUser user;
     private GoogleSignInClient googleSignInClient;
     private OnBookingSubmitListener onBookingSubmitListener;
+    private ConnectivityManager connectivityManager;
 
     public FragmentBookingReview() {
 
@@ -51,6 +54,8 @@ public class FragmentBookingReview extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_booking_review, container, false);
+
+        connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         onBookingSubmitListener = getArguments().getParcelable(ON_BOOKING_SUBMIT_LISTENER_BUNDLE_KEY);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -100,7 +105,7 @@ public class FragmentBookingReview extends Fragment {
                 changeLayout();
             } else {
                 Toast.makeText(getActivity().getApplicationContext(), "Login with Google failed", Toast.LENGTH_LONG).show();
-                Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage() );
+                Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
             }
         });
     }
@@ -128,12 +133,22 @@ public class FragmentBookingReview extends Fragment {
             tvEmailReview.setText(user.getEmail());
 
             btnSubmitBooking = rootView.findViewById(R.id.btnSubmitBooking);
-            btnSubmitBooking.setOnClickListener(view -> onBookingSubmitListener.onBookingSubmitted());
+            btnSubmitBooking.setOnClickListener(view ->
+            {
+                if (isNetworkConnected())
+                    onBookingSubmitListener.onBookingSubmitted();
+                else
+                    Toast.makeText(getActivity().getApplicationContext(), "You have no internet connection", Toast.LENGTH_LONG).show();
+            });
         }
     }
 
-    interface OnBookingSubmitListener extends Parcelable{
+    interface OnBookingSubmitListener extends Parcelable {
         void onBookingSubmitted();
+    }
+
+    private boolean isNetworkConnected() {
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 
 }
