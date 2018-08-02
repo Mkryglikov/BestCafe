@@ -19,6 +19,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -153,6 +154,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_wifi, menu);
             return true;
         } else {
+            toolbarActiveOrder.setPadding(0,0,dpToPx(16),0);
             return super.onCreateOptionsMenu(menu);
         }
     }
@@ -518,13 +520,19 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                     break;
                                 }
                             }
-                            toolbarActiveOrder.getMenu().findItem(R.id.menuConnectToWifi).setEnabled(false);
+                            toolbarActiveOrder.getMenu().findItem(R.id.menuConnectToWifi).setVisible(false);
+                            toolbarActiveOrder.setPadding(0,0,dpToPx(16),0);
 
                         }, 2000);
                     })
                     .create();
             alert.show();
         }
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     @Override
