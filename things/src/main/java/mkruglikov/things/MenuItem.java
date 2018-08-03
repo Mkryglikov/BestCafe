@@ -1,12 +1,12 @@
 package mkruglikov.things;
 
-public class MenuItem {
+class MenuItem {
 
-    private String id;
-    private String name;
-    private String category;
-    private String description;
-    private long price;
+    private final String id;
+    private final String name;
+    private final String category;
+    private final String description;
+    private final long price;
 
     MenuItem(String id, String name, String category, String description, long price) {
         this.id = id;

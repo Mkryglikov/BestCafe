@@ -3,6 +3,6 @@
     <item
         android:id="@+id/menuConnectToWifi"
         android:icon="@drawable/ic_wifi"
-        android:title="@string/connect_to_wifi_text"
+        android:title="@string/connect_to_wifi"
         app:showAsAction="ifRoom" />
 </menu>

@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FirestoreUtils {
+class FirestoreUtils {
 
-    static final String FIRESTORE_MENU_COLLECTION = "menu";
-    static final String FIRESTORE_ORDERS_COLLECTION = "orders";
+    private static final String FIRESTORE_MENU_COLLECTION = "menu";
+    private static final String FIRESTORE_ORDERS_COLLECTION = "orders";
 
     static final String FIRESTORE_ID_FIELD = "id";
     static final String FIRESTORE_NAME_FIELD = "name";
@@ -156,9 +156,7 @@ public class FirestoreUtils {
             db = FirebaseFirestore.getInstance();
         DocumentReference document = db.collection(FIRESTORE_ORDERS_COLLECTION).document(orderId);
         document.addSnapshotListener(listener);
-        document.get().addOnSuccessListener(documentSnapshot -> {
-            listener.onEvent(documentSnapshot, null);
-        });
+        document.get().addOnSuccessListener(documentSnapshot -> listener.onEvent(documentSnapshot, null));
     }
 
     public static void callTheWaiter(String orderId) {

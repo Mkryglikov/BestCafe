@@ -45,13 +45,10 @@ public class FragmentOrder extends Fragment {
     private List<MenuItem> menu;
     private List<MenuItem> selectedItems;
     private List<String> categories;
-    private TabLayout tlOrder;
-    private ViewPager vpOrder;
-    private TextView tvTotalOrderBottomSheet, tvNoItemsOrderBottomSheet, tvDetailsHintOrderBottomSheet;
+    private TextView tvTotalOrderBottomSheet, tvNoItemsOrderBottomSheet;
     private Button btnSubmitOrder;
     private RecyclerView rvOrderBottomSheet;
     private BottomSheetBehavior behaviorBottomSheet;
-    private RelativeLayout layoutOrderBottomSheet;
     private ImageView ivArrowOrderBottomSheet;
     private View tintViewOrder;
     private String thingsEndpointId;
@@ -83,8 +80,8 @@ public class FragmentOrder extends Fragment {
         }
         createMenuCategoriesList();
 
-        tlOrder = rootView.findViewById(R.id.tlOrder);
-        vpOrder = rootView.findViewById(R.id.vpOrder);
+        TabLayout tlOrder = rootView.findViewById(R.id.tlOrder);
+        ViewPager vpOrder = rootView.findViewById(R.id.vpOrder);
 
         vpOrder.setAdapter(new OrderTabsAdapter(getActivity().getSupportFragmentManager(), menu, categories, onMenuItemSelectListener));
         tlOrder.setupWithViewPager(vpOrder);
@@ -92,17 +89,17 @@ public class FragmentOrder extends Fragment {
         ivArrowOrderBottomSheet = rootView.findViewById(R.id.ivArrowOrderBottomSheet);
         tvTotalOrderBottomSheet = rootView.findViewById(R.id.tvTotalOrderBottomSheet);
         tvNoItemsOrderBottomSheet = rootView.findViewById(R.id.tvNoItemsOrderBottomSheet);
-        tvDetailsHintOrderBottomSheet = rootView.findViewById(R.id.tvDetailsHintOrderBottomSheet);
+        TextView tvDetailsHintOrderBottomSheet = rootView.findViewById(R.id.tvDetailsHintOrderBottomSheet);
         if (!isNewOrder)
-            tvDetailsHintOrderBottomSheet.setText("Extra items details");
-        layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
+            tvDetailsHintOrderBottomSheet.setText(R.string.extra_items_bottom_sheet_title);
+        RelativeLayout layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
         tintViewOrder = rootView.findViewById(R.id.tintViewOrder);
 
         pbSubmitOrder = rootView.findViewById(R.id.pbSubmitOrder);
 
         btnSubmitOrder = rootView.findViewById(R.id.btnSubmitOrder);
         if (!isNewOrder)
-            btnSubmitOrder.setText("Add extra items");
+            btnSubmitOrder.setText(R.string.add_extra_items_bottom_sheet_button_text);
         btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
             btnSubmitOrder.setVisibility(View.GONE);
             pbSubmitOrder.setVisibility(View.VISIBLE);
@@ -177,12 +174,12 @@ public class FragmentOrder extends Fragment {
         }
     }
 
-    OnMenuItemSelectListener onMenuItemSelectListener = new OnMenuItemSelectListener() {
+    private final OnMenuItemSelectListener onMenuItemSelectListener = new OnMenuItemSelectListener() {
         @Override
         public void onMenuItemSelected(MenuItem item) {
             selectedItems.add(item);
             total += item.getPrice();
-            tvTotalOrderBottomSheet.setText("$" + total);
+            tvTotalOrderBottomSheet.setText(R.string.currency_label + total);
             rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             tvNoItemsOrderBottomSheet.setVisibility(View.GONE);
@@ -201,12 +198,12 @@ public class FragmentOrder extends Fragment {
         }
     };
 
-    OnMenuItemDeleteListener onMenuItemDeleteListener = new OnMenuItemDeleteListener() {
+    private final OnMenuItemDeleteListener onMenuItemDeleteListener = new OnMenuItemDeleteListener() {
         @Override
         public void onMenuItemDeleted(MenuItem item) {
             selectedItems.remove(item);
             total -= item.getPrice();
-            tvTotalOrderBottomSheet.setText("$" + total);
+            tvTotalOrderBottomSheet.setText(R.string.currency_label + total);
             rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             if (!selectedItems.isEmpty()) {

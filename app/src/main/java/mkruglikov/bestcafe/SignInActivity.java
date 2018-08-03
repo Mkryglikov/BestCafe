@@ -29,7 +29,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class SignInActivity extends AppCompatActivity {
 
     public static final int SIGN_IN_ACTIVITY_REQUEST_CODE = 13;
-    public static final int GOOGLE_SIGN_IN_ACTIVITY_REQUEST_CODE = 14;
+    private static final int GOOGLE_SIGN_IN_ACTIVITY_REQUEST_CODE = 14;
 
     private FirebaseAuth firebaseAuth;
     private EditText etEmailSignIn, etPasswordSignIn;
@@ -107,7 +107,7 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
-    protected void signInUser(String email, String password) {
+    private void signInUser(String email, String password) {
         if (checkUserEmail(email) && checkUserPassword(password)) {
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
@@ -130,21 +130,21 @@ public class SignInActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(task.getResult(ApiException.class));
 
             } catch (ApiException e) {
-                Toast.makeText(this, "Error login with Google", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.google_login_error_message, Toast.LENGTH_SHORT).show();
                 Log.w(MainActivity.TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
             }
 
         }
     }
 
-    protected boolean checkUserEmail(String email) {
+    private boolean checkUserEmail(String email) {
         boolean isValid = true;
 
         if (email.isEmpty()) {
-            tilEmailSignIn.setError("Required");
+            tilEmailSignIn.setError(getString(R.string.required_field_hint));
             isValid = false;
         } else if (!email.matches("^([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_-]+)\\.([a-zA-Z]{2,6})$")) {
-            tilEmailSignIn.setError("Isn't Email address");
+            tilEmailSignIn.setError(getString(R.string.not_an_email_error_hint));
             isValid = false;
         } else {
             tilEmailSignIn.setError("");
@@ -152,17 +152,17 @@ public class SignInActivity extends AppCompatActivity {
         return isValid;
     }
 
-    protected boolean checkUserPassword(String password) {
+    private boolean checkUserPassword(String password) {
         boolean isValid = true;
 
         if (password.isEmpty()) {
-            tilPasswordSignIn.setError("Required");
+            tilPasswordSignIn.setError(getString(R.string.required_field_hint));
             isValid = false;
         } else if (password.length() < 8) {
-            tilPasswordSignIn.setError("At least 8 characters");
+            tilPasswordSignIn.setError(getString(R.string.password_8_characters_hint));
             isValid = false;
         } else if (!password.matches("[A-Za-z0-9]+")) {
-            tilPasswordSignIn.setError("Password can contain only letters and numbers");
+            tilPasswordSignIn.setError(getString(R.string.password_wrong_symbols_hint));
             isValid = false;
         } else {
             tilPasswordSignIn.setError("");
@@ -187,7 +187,7 @@ public class SignInActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 finish();
             } else {
-                Toast.makeText(this, "Login with Google failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.google_login_error_message, Toast.LENGTH_LONG).show();
                 Log.w(MainActivity.TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
                 setResult(RESULT_CANCELED);
                 finish();

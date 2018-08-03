@@ -29,6 +29,7 @@
 
     <ImageButton
         android:id="@+id/btnDeleteSelectedMenuItem"
+        android:contentDescription="@string/contentDescription_delete_this_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

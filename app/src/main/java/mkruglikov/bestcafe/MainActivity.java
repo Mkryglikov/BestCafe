@@ -90,15 +90,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menuSignOut:
                 if (isNetworkConnected()) {
                     AlertDialog alert = new AlertDialog.Builder(this)
-                            .setTitle("Confirm")
-                            .setMessage("Are you sure you want to log out?")
+                            .setTitle(R.string.confirmation_title)
+                            .setMessage(R.string.log_out_confirmation_message)
                             .setCancelable(true)
-                            .setNegativeButton("No", (dialog, id) -> dialog.cancel())
-                            .setPositiveButton("Yes", (dialogInterface, i) -> signOut())
+                            .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
+                            .setPositiveButton(R.string.yes, (dialogInterface, i) -> signOut())
                             .create();
                     alert.show();
                 } else {
-                    Toast.makeText(this, "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
                 }
                 return true;
             default:
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             showFragmentNotSignedIn();
         } else {
-            Toast.makeText(this, "Error signing out", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.sign_out_error_message, Toast.LENGTH_SHORT).show();
         }
     }
 

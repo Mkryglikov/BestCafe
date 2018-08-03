@@ -23,6 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:paddingStart="48dp"
+                android:paddingEnd="0dp"
                 app:layout_collapseMode="pin">
 
                 <TextView
@@ -51,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="128dp"
             android:gravity="center"
-            android:text="@string/tvNoBookingsHint_text"
+            android:text="@string/no_active_bookings_message"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/btnConnectMainSignedIn"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -70,7 +71,7 @@
             android:paddingEnd="48dp"
             android:paddingStart="48dp"
             android:paddingTop="24dp"
-            android:text="@string/btnConnectMain_text"
+            android:text="@string/connect_to_table"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toTopOf="@+id/btnBookMainSignedIn"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -87,7 +88,7 @@
             android:paddingEnd="48dp"
             android:paddingStart="48dp"
             android:paddingTop="24dp"
-            android:text="@string/btnBookMain_text"
+            android:text="@string/book_a_table"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -112,8 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/btnBookMoreMain_text"
-            android:textColor="@color/colorLightGrey"
+            android:text="@string/book_more_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rvBookingsMain" />

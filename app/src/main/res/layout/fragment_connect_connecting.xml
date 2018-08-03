@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="Searching for a table near you"
+        android:text="@string/table_searching_message"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/pbConnecting"
         app:layout_constraintEnd_toEndOf="parent"

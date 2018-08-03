@@ -2,15 +2,15 @@ package mkruglikov.bestcafe.models;
 
 public class Booking {
 
-    private String id;
-    private String userId;
-    private long day;
-    private long month;
-    private long year;
-    private long hour;
-    private long minute;
-    private long people;
-    private boolean active;
+    private final String id;
+    private final String userId;
+    private final long day;
+    private final long month;
+    private final long year;
+    private final long hour;
+    private final long minute;
+    private final long people;
+    private final boolean active;
 
     public Booking(String id, String userId, long day, long month, long year, long hour, long minute, long people, boolean active) {
         this.id = id;

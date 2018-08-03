@@ -22,6 +22,7 @@
                 android:id="@+id/toolbarOrder"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:paddingStart="0dp"
                 android:paddingEnd="16dp"
                 app:layout_collapseMode="pin">
 
@@ -63,6 +64,7 @@
         android:alpha="0"
         android:background="@android:color/black"
         android:clickable="true"
+        android:focusable="true"
         android:visibility="gone" />
 
     <include layout="@layout/bottom_sheet_order" />

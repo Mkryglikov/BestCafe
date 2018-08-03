@@ -14,7 +14,6 @@ public class FragmentBookingTime extends Fragment {
 
     public static final String ON_TIME_SELECTED_LISTENER_FRAGMENT_BOOKING_TIME_BUNDLE_KEY = "OnTimeSelectedListener FragmentBookingTime Bundle key";
 
-    private TimePicker timePickerBooking;
     private BookingOnTimeSelectedListener onTimeSelectedListener;
 
     public FragmentBookingTime() {
@@ -26,7 +25,7 @@ public class FragmentBookingTime extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_booking_time, container, false);
         onTimeSelectedListener = getArguments().getParcelable(ON_TIME_SELECTED_LISTENER_FRAGMENT_BOOKING_TIME_BUNDLE_KEY);
 
-        timePickerBooking = rootView.findViewById(R.id.timePickerBooking);
+        TimePicker timePickerBooking = rootView.findViewById(R.id.timePickerBooking);
         timePickerBooking.setIs24HourView(DateFormat.is24HourFormat(getActivity().getApplicationContext()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             timePickerBooking.setHour(BookingActivity.getSelectedHour());

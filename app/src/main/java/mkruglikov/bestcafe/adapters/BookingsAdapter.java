@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import mkruglikov.bestcafe.FirestoreUtils;
 import mkruglikov.bestcafe.R;
@@ -20,10 +21,10 @@ import mkruglikov.bestcafe.models.Booking;
 
 public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHolder> {
 
-    private Context context;
-    private List<Booking> bookings;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d ");
-    private FirestoreUtils.OnDeleteBookingListener onDeleteBookingListener;
+    private final Context context;
+    private final List<Booking> bookings;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d ", Locale.US);
+    private final FirestoreUtils.OnDeleteBookingListener onDeleteBookingListener;
 
     public BookingsAdapter(Context context, List<Booking> bookings, FirestoreUtils.OnDeleteBookingListener onDeleteBookingListener) {
         this.context = context;
@@ -67,11 +68,11 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
 
         holder.btnBookingItemCancel.setOnClickListener(view -> {
             AlertDialog alert = new AlertDialog.Builder(context)
-                    .setTitle("Confirm")
-                    .setMessage("Are you sure you want to cancel the booking?")
+                    .setTitle(R.string.confirmation_title)
+                    .setMessage(R.string.booking_cancel_confirmation)
                     .setCancelable(true)
-                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
-                    .setPositiveButton("Yes", (dialogInterface, i) -> FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener))
+                    .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
+                    .setPositiveButton(R.string.yes, (dialogInterface, i) -> FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener))
                     .create();
             alert.show();
         });

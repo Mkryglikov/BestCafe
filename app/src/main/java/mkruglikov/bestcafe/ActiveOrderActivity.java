@@ -60,12 +60,12 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
     public static final String ACTIVE_ORDER_ACTIVITY_ENDPOINT_ID_EXTRA_KEY = "ActiveOrderActivity endpointId extra key";
     public static final String ACTIVE_ORDER_ACTIVITY_IS_WANT_TO_CONNECT_WIFI_EXTRA_KEY = "ActiveOrderActivity isWantToConnectWifi extra key";
-    public static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 666;
+    private static final int LOAD_PAYMENT_DATA_REQUEST_CODE = 666;
 
     private String orderId, estimatedTime, thingsEndpointId, thingsEndpointName, currentStatus;
     private ConstraintLayout layoutOrderCooking, layoutOrderEats, layoutOrderConnecting, containerExtraItems;
-    private TextView tvOrderCookingTime, tvOrderConnecting;
-    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats, btnAddExtraOrderEats, btnAddExtraOrderCooking, btnCloseOrderCooking;
+    private TextView tvOrderConnecting;
+    private Button btnCallWaiterOrderCooking, btnCallWaiterOrderEats;
     private NotificationManager notificationManager;
     private ConnectionsClient nearbyConnectionsClient;
     private FragmentManager fragmentManager;
@@ -99,22 +99,22 @@ public class ActiveOrderActivity extends AppCompatActivity {
         btnCallWaiterOrderCooking.setOnClickListener(callWaiterButtonListener);
         btnCallWaiterOrderEats.setOnClickListener(callWaiterButtonListener);
 
-        btnAddExtraOrderEats = findViewById(R.id.btnAddExtraOrderEats);
-        btnAddExtraOrderCooking = findViewById(R.id.btnAddExtraOrderCooking);
+        Button btnAddExtraOrderEats = findViewById(R.id.btnAddExtraOrderEats);
+        Button btnAddExtraOrderCooking = findViewById(R.id.btnAddExtraOrderCooking);
 
         View.OnClickListener addExtraButtonListener = view -> showExtraItemsFragment();
 
         btnAddExtraOrderEats.setOnClickListener(addExtraButtonListener);
         btnAddExtraOrderCooking.setOnClickListener(addExtraButtonListener);
 
-        btnCloseOrderCooking = findViewById(R.id.btnCloseOrderCooking);
+        Button btnCloseOrderCooking = findViewById(R.id.btnCloseOrderCooking);
         btnCloseOrderCooking.setOnClickListener(view -> {
             AlertDialog alert = new AlertDialog.Builder(this)
-                    .setTitle("Confirm")
-                    .setMessage("Are you sure you want to close the order and pay?")
+                    .setTitle(getString(R.string.confirmation_title))
+                    .setMessage(R.string.close_the_order_confirmation)
                     .setCancelable(true)
-                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
-                    .setPositiveButton("Yes", (dialogInterface, i) ->
+                    .setNegativeButton(getString(R.string.no), (dialog, id) -> dialog.cancel())
+                    .setPositiveButton(getString(R.string.yes), (dialogInterface, i) ->
                     {
                         Payload getTotalPayload = Payload.fromBytes(("getTotal" + orderId).getBytes());
                         nearbyConnectionsClient.sendPayload(thingsEndpointId, getTotalPayload)
@@ -126,13 +126,12 @@ public class ActiveOrderActivity extends AppCompatActivity {
         });
 
         fragmentManager = getSupportFragmentManager();
+        nearbyConnectionsClient = Nearby.getConnectionsClient(this);
 
         if (estimatedTime != null)
             showCookingLayout();
         else
             showEatsLayout();
-
-        nearbyConnectionsClient = Nearby.getConnectionsClient(this);
 
         //Have to connect again since we want to get payload here but can't get current connection or update existing PayloadCallback
         startAdvertising();
@@ -148,13 +147,17 @@ public class ActiveOrderActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        String currentSSID = wifiManager.getConnectionInfo().getSSID();
-        currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
-        if (!currentSSID.equals(BuildConfig.WifiSSID)) {
-            getMenuInflater().inflate(R.menu.menu_wifi, menu);
-            return true;
+        if (wifiManager != null) {
+            String currentSSID = wifiManager.getConnectionInfo().getSSID();
+            currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+            if (!currentSSID.equals(BuildConfig.WifiSSID)) {
+                getMenuInflater().inflate(R.menu.menu_wifi, menu);
+                return true;
+            } else {
+                toolbarActiveOrder.setPadding(0, 0, dpToPx(16), 0);
+                return super.onCreateOptionsMenu(menu);
+            }
         } else {
-            toolbarActiveOrder.setPadding(0,0,dpToPx(16),0);
             return super.onCreateOptionsMenu(menu);
         }
     }
@@ -177,12 +180,12 @@ public class ActiveOrderActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Log.i(MainActivity.TAG, "Waiter payload sent fo order " + orderId);
                     if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                        btnCallWaiterOrderCooking.setText("Waiter is called");
+                        btnCallWaiterOrderCooking.setText(R.string.waiter_is_called);
                         btnCallWaiterOrderCooking.setEnabled(false);
                         btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
                     }
                     if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                        btnCallWaiterOrderEats.setText("Waiter is called");
+                        btnCallWaiterOrderEats.setText(R.string.waiter_is_called);
                         btnCallWaiterOrderEats.setEnabled(false);
                         btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
                     }
@@ -209,14 +212,14 @@ public class ActiveOrderActivity extends AppCompatActivity {
         layoutOrderEats.setVisibility(View.GONE);
         containerExtraItems.setVisibility(View.GONE);
         layoutOrderCooking.setVisibility(View.VISIBLE);
-        tvOrderCookingTime = findViewById(R.id.tvOrderCookingTime);
+        TextView tvOrderCookingTime = findViewById(R.id.tvOrderCookingTime);
         tvOrderCookingTime.setText(estimatedTime);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, ActiveOrderActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentIntent(contentIntent)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText("Your order will be cooked in " + estimatedTime + " minutes")
+                .setContentText(getString(R.string.your_order_will_be_cooked_in) + " " + estimatedTime + " " + getString(R.string.in_minutes))
                 .setAutoCancel(false)
                 .setOngoing(true);
 
@@ -259,7 +262,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
+    private final ConnectionLifecycleCallback connectionLifecycleCallback = new ConnectionLifecycleCallback() {
         @Override
         public void onConnectionInitiated(@NonNull String endpointId, @NonNull ConnectionInfo connectionInfo) {
             nearbyConnectionsClient.stopAdvertising();
@@ -321,24 +324,24 @@ public class ActiveOrderActivity extends AppCompatActivity {
                         if (Boolean.valueOf(isWaiterCalled)) {
                             Log.i(MainActivity.TAG, "Waiter is called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderCooking.setText("Waiter is called");
+                                btnCallWaiterOrderCooking.setText(R.string.waiter_is_called);
                                 btnCallWaiterOrderCooking.setEnabled(false);
                                 btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderEats.setText("Waiter is called");
+                                btnCallWaiterOrderEats.setText(R.string.waiter_is_called);
                                 btnCallWaiterOrderEats.setEnabled(false);
                                 btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
                             }
                         } else {
                             Log.i(MainActivity.TAG, "Waiter is not called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderCooking.setText(getString(R.string.call_the_waiter_text));
+                                btnCallWaiterOrderCooking.setText(R.string.call_the_waiter);
                                 btnCallWaiterOrderCooking.setEnabled(true);
                                 btnCallWaiterOrderCooking.setBackgroundResource(R.drawable.button_rounded_white);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderEats.setText(getString(R.string.call_the_waiter_text));
+                                btnCallWaiterOrderEats.setText(R.string.call_the_waiter);
                                 btnCallWaiterOrderEats.setEnabled(true);
                                 btnCallWaiterOrderEats.setBackgroundResource(R.drawable.button_rounded_white);
 
@@ -358,14 +361,14 @@ public class ActiveOrderActivity extends AppCompatActivity {
                     } else if (payloadString.substring(0, 10).equals("orderTotal")) {
                         int total = Integer.valueOf(payloadString.substring(10));
 
-                        String[] payOptions = new String[]{"With cash / credit card", "Google Pay"};
+                        String[] payOptions = new String[]{getString(R.string.payment_option_cash_card), getString(R.string.payment_option_google_pay)};
                         new AlertDialog.Builder(ActiveOrderActivity.this)
-                                .setTitle("How do you want to pay?")
+                                .setTitle(R.string.how_to_pay_title)
                                 .setItems(payOptions, (dialog, item) -> {
                                     switch (item) {
                                         case 0:
                                             callTheWaiter();
-                                            Toast.makeText(ActiveOrderActivity.this, "Waiter is called", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(ActiveOrderActivity.this, R.string.waiter_is_called, Toast.LENGTH_LONG).show();
                                             break;
                                         case 1:
                                             IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
@@ -379,10 +382,10 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                                             if (task1.getResult(ApiException.class))
                                                                 payWithGooglePay(total);
                                                             else
-                                                                Toast.makeText(ActiveOrderActivity.this, "Can't pay with Google Pay", Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(ActiveOrderActivity.this, R.string.google_pay_error, Toast.LENGTH_LONG).show();
                                                         } catch (ApiException exception) {
                                                             Log.w(MainActivity.TAG, "payWithGooglePay exception: " + exception.getLocalizedMessage());
-                                                            Toast.makeText(ActiveOrderActivity.this, "payWithGooglePay exception: " + exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(ActiveOrderActivity.this, R.string.google_pay_error, Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                             break;
@@ -424,7 +427,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
         layoutOrderConnecting.setVisibility(View.VISIBLE);
         toolbarActiveOrder.setVisibility(View.INVISIBLE);
         if (thingsEndpointName != null && !thingsEndpointId.isEmpty()) {
-            tvOrderConnecting.append(" to table #" + thingsEndpointName);
+            tvOrderConnecting.append(" " + getString(R.string.connecting_to_tableNo_hint) + thingsEndpointName);
         }
     }
 
@@ -439,7 +442,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
                         TransactionInfo.newBuilder()
                                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                                 .setTotalPrice(String.valueOf(total) + ".00")
-                                .setCurrencyCode("USD")
+                                .setCurrencyCode(getString(R.string.currency_code))
                                 .build())
                 .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
                 .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
@@ -491,46 +494,48 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
     private void connectToWifi() {
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        String currentSSID = wifiManager.getConnectionInfo().getSSID();
-        currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
+        if (wifiManager != null) {
+            String currentSSID = wifiManager.getConnectionInfo().getSSID();
+            currentSSID = currentSSID.substring(1, currentSSID.length() - 1);
 
-        if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
-            AlertDialog alert = new AlertDialog.Builder(ActiveOrderActivity.this)
-                    .setTitle("BestCafe")
-                    .setMessage("Do you want to connect to our WiFi network?")
-                    .setCancelable(true)
-                    .setNegativeButton("No", (dialog, id) -> dialog.cancel())
-                    .setPositiveButton("Yes", (dialogInterface, which) -> {
-                        boolean isWifiEnabled = wifiManager.isWifiEnabled();
-                        if (!isWifiEnabled)
-                            wifiManager.setWifiEnabled(true);
+            if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
+                AlertDialog alert = new AlertDialog.Builder(ActiveOrderActivity.this)
+                        .setTitle(R.string.app_name)
+                        .setMessage(R.string.connect_to_wifi_confirmation)
+                        .setCancelable(true)
+                        .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
+                        .setPositiveButton(R.string.yes, (dialogInterface, which) -> {
+                            boolean isWifiEnabled = wifiManager.isWifiEnabled();
+                            if (!isWifiEnabled)
+                                wifiManager.setWifiEnabled(true);
 
-                        //Waiting for Wifi to turn on and connect
-                        new Handler().postDelayed(() -> {
-                            WifiConfiguration conf = new WifiConfiguration();
-                            conf.SSID = "\"" + BuildConfig.WifiSSID + "\"";
-                            conf.preSharedKey = "\"" + BuildConfig.WifiPassword + "\"";
-                            wifiManager.addNetwork(conf);
-                            List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-                            for (WifiConfiguration i : list) {
-                                if (i.SSID != null && i.SSID.equals("\"" + BuildConfig.WifiSSID + "\"")) {
-                                    wifiManager.disconnect();
-                                    wifiManager.enableNetwork(i.networkId, true);
-                                    wifiManager.reconnect();
-                                    break;
+                            //Waiting for Wifi to turn on and connect
+                            new Handler().postDelayed(() -> {
+                                WifiConfiguration conf = new WifiConfiguration();
+                                conf.SSID = "\"" + BuildConfig.WifiSSID + "\"";
+                                conf.preSharedKey = "\"" + BuildConfig.WifiPassword + "\"";
+                                wifiManager.addNetwork(conf);
+                                List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                                for (WifiConfiguration i : list) {
+                                    if (i.SSID != null && i.SSID.equals("\"" + BuildConfig.WifiSSID + "\"")) {
+                                        wifiManager.disconnect();
+                                        wifiManager.enableNetwork(i.networkId, true);
+                                        wifiManager.reconnect();
+                                        break;
+                                    }
                                 }
-                            }
-                            toolbarActiveOrder.getMenu().findItem(R.id.menuConnectToWifi).setVisible(false);
-                            toolbarActiveOrder.setPadding(0,0,dpToPx(16),0);
+                                toolbarActiveOrder.getMenu().findItem(R.id.menuConnectToWifi).setVisible(false);
+                                toolbarActiveOrder.setPadding(0, 0, dpToPx(16), 0);
 
-                        }, 2000);
-                    })
-                    .create();
-            alert.show();
+                            }, 2000);
+                        })
+                        .create();
+                alert.show();
+            }
         }
     }
 
-    public int dpToPx(int dp) {
+    private int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }

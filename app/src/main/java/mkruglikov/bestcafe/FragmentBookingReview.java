@@ -35,9 +35,6 @@ public class FragmentBookingReview extends Fragment {
     private static final int GOOGLE_SIGN_IN_REVIEW_REQUEST_CODE = 18;
     static final String ON_BOOKING_SUBMIT_LISTENER_BUNDLE_KEY = "onBookingSubmitListener bundle key";
 
-    private Button btnSignInReview, btnSignUpReview, btnSubmitBooking;
-    private TextView tvEmailReview;
-    private SignInButton btnGoogleReview;
     private ConstraintLayout layoutBookingReviewNotSignedIn, layoutBookingReviewSignedIn;
     private View rootView;
 
@@ -87,7 +84,7 @@ public class FragmentBookingReview extends Fragment {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        Toast.makeText(getActivity().getApplicationContext(), "Login with Google failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), R.string.google_login_error_message, Toast.LENGTH_LONG).show();
                         Log.w(MainActivity.TAG, "Google sign in failed: " + e.getLocalizedMessage());
                     }
                 }
@@ -104,7 +101,7 @@ public class FragmentBookingReview extends Fragment {
                 user = firebaseAuth.getCurrentUser();
                 changeLayout();
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), "Login with Google failed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), R.string.google_login_error_message, Toast.LENGTH_LONG).show();
                 Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
             }
         });
@@ -112,9 +109,9 @@ public class FragmentBookingReview extends Fragment {
 
     private void changeLayout() {
         if (user == null) {
-            btnSignInReview = rootView.findViewById(R.id.btnSignInReview);
-            btnSignUpReview = rootView.findViewById(R.id.btnSignUpReview);
-            btnGoogleReview = rootView.findViewById(R.id.btnGoogleReview);
+            Button btnSignInReview = rootView.findViewById(R.id.btnSignInReview);
+            Button btnSignUpReview = rootView.findViewById(R.id.btnSignUpReview);
+            SignInButton btnGoogleReview = rootView.findViewById(R.id.btnGoogleReview);
 
             layoutBookingReviewSignedIn.setVisibility(View.GONE);
             layoutBookingReviewNotSignedIn.setVisibility(View.VISIBLE);
@@ -129,16 +126,16 @@ public class FragmentBookingReview extends Fragment {
             layoutBookingReviewSignedIn.setVisibility(View.VISIBLE);
             layoutBookingReviewNotSignedIn.setVisibility(View.GONE);
 
-            tvEmailReview = rootView.findViewById(R.id.tvEmailReview);
+            TextView tvEmailReview = rootView.findViewById(R.id.tvEmailReview);
             tvEmailReview.setText(user.getEmail());
 
-            btnSubmitBooking = rootView.findViewById(R.id.btnSubmitBooking);
+            Button btnSubmitBooking = rootView.findViewById(R.id.btnSubmitBooking);
             btnSubmitBooking.setOnClickListener(view ->
             {
                 if (isNetworkConnected())
                     onBookingSubmitListener.onBookingSubmitted();
                 else
-                    Toast.makeText(getActivity().getApplicationContext(), "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
             });
         }
     }

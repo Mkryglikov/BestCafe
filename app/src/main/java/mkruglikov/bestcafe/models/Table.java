@@ -1,8 +1,8 @@
 package mkruglikov.bestcafe.models;
 
 public class Table {
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
 
     public Table(String id, String name) {
         this.id = id;

@@ -17,9 +17,9 @@ import mkruglikov.bestcafe.models.MenuItem;
 
 public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdapter.ViewHolder> {
 
-    private List<MenuItem> menuCategory;
-    private FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
-    private Context context;
+    private final List<MenuItem> menuCategory;
+    private final FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
+    private final Context context;
 
     public CategoryItemsAdapter(Context context, List<MenuItem> menuCategory, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
         this.menuCategory = menuCategory;
@@ -52,12 +52,8 @@ public class CategoryItemsAdapter extends RecyclerView.Adapter<CategoryItemsAdap
         String description = menuItem.getDescription();
         if (description != null && !description.isEmpty())
             holder.tvMenuItemDescription.setText(description);
-        holder.btnMenuItemSelect.setText(menuItem.getPrice() + "$");
-        holder.btnMenuItemSelect.setOnClickListener(view -> {
-
-            onMenuItemSelectListener.onMenuItemSelected(menuItem);
-        });
-
+        holder.btnMenuItemSelect.setText(menuItem.getPrice() + context.getString(R.string.currency_label));
+        holder.btnMenuItemSelect.setOnClickListener(view -> onMenuItemSelectListener.onMenuItemSelected(menuItem));
     }
 
     @Override

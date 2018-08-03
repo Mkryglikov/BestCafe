@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import mkruglikov.bestcafe.models.Booking;
 
@@ -29,35 +30,17 @@ public class Widget extends AppWidgetProvider {
     private static final String WIDGET_ID_INTENT_EXTRA_KEY = "widget_id_intent_extra_key";
     private static final String WIDGET_BOOKING_ID_INTENT_EXTRA_KEY = "widget_booking_id_intent_extra_key";
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser user;
     private RemoteViews widgetView;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d", Locale.US);
 
-    @Override
-    public void onEnabled(Context context) {
-        super.onEnabled(context);
-    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-
         for (int appWidgetId : appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId);
         }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
-    }
-
-    @Override
-    public void onDeleted(Context context, int[] appWidgetIds) {
-        super.onDeleted(context, appWidgetIds);
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        super.onDisabled(context);
     }
 
     @Override
@@ -72,7 +55,7 @@ public class Widget extends AppWidgetProvider {
                     signUpIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(signUpIntent);
                 } else {
-                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_SIGNIN:
@@ -81,7 +64,7 @@ public class Widget extends AppWidgetProvider {
                     signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(signInIntent);
                 } else {
-                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_BOOK:
@@ -90,7 +73,7 @@ public class Widget extends AppWidgetProvider {
                     bookingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(bookingIntent);
                 } else {
-                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_CONNECT:
@@ -105,21 +88,21 @@ public class Widget extends AppWidgetProvider {
                     FirestoreUtils.deleteBooking(bookingId, (isSuccessful, exceptionMessage) -> {
                         if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
                             Log.w(MainActivity.TAG, "Error deleting booking: " + exceptionMessage);
-                            Toast.makeText(context, "Error deleting booking", Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, R.string.booking_deleting_error_message, Toast.LENGTH_LONG).show();
                             return;
                         }
                         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                         updateWidget(context, appWidgetManager, widgetId);
-                        Toast.makeText(context, "Booking cancelled", Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.booking_canceled_message, Toast.LENGTH_LONG).show();
                     });
                 } else {
-                    Toast.makeText(context, "You have no internet connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
                 }
                 break;
         }
     }
 
-    protected PendingIntent getPendingIntent(Context context, String action, int widgetId, String bookingId) {
+    private PendingIntent getPendingIntent(Context context, String action, int widgetId, String bookingId) {
         Intent intent = new Intent(context, getClass());
         intent.setAction(action);
 
@@ -131,15 +114,15 @@ public class Widget extends AppWidgetProvider {
     }
 
     private void updateWidget(Context context, AppWidgetManager appWidgetManager, int widgetId) {
-        firebaseAuth = FirebaseAuth.getInstance();
-        user = firebaseAuth.getCurrentUser();
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
         widgetView = new RemoteViews(context.getPackageName(), R.layout.widget);
 
         if (user == null) {
             Log.i(MainActivity.TAG, "User is null");
-            widgetView.setTextViewText(R.id.tvWidgetText, "You must be logged in to view your bookings.");
-            widgetView.setTextViewText(R.id.btnWidgetLeft, "Sign Up");
-            widgetView.setTextViewText(R.id.btnWidgetRight, "Sign In");
+            widgetView.setTextViewText(R.id.tvWidgetText, context.getString(R.string.login_to_view_bookings_message));
+            widgetView.setTextViewText(R.id.btnWidgetLeft, context.getString(R.string.sign_up));
+            widgetView.setTextViewText(R.id.btnWidgetRight, context.getString(R.string.sign_up));
             widgetView.setOnClickPendingIntent(R.id.btnWidgetLeft, getPendingIntent(context, ONCLICK_SIGNUP, widgetId, null));
             widgetView.setOnClickPendingIntent(R.id.btnWidgetRight, getPendingIntent(context, ONCLICK_SIGNIN, widgetId, null));
             appWidgetManager.updateAppWidget(widgetId, widgetView);
@@ -156,9 +139,9 @@ public class Widget extends AppWidgetProvider {
                 if (bookings.isEmpty()) {
                     Log.i(MainActivity.TAG, "Bookings is empty");
 
-                    widgetView.setTextViewText(R.id.tvWidgetText, context.getString(R.string.tvNoBookingsHint_text));
-                    widgetView.setTextViewText(R.id.btnWidgetLeft, context.getString(R.string.btnBookMain_text));
-                    widgetView.setTextViewText(R.id.btnWidgetRight, context.getString(R.string.btnConnectMain_text));
+                    widgetView.setTextViewText(R.id.tvWidgetText, context.getString(R.string.no_active_bookings_message));
+                    widgetView.setTextViewText(R.id.btnWidgetLeft, context.getString(R.string.book_a_table));
+                    widgetView.setTextViewText(R.id.btnWidgetRight, context.getString(R.string.connect_to_table));
                     widgetView.setOnClickPendingIntent(R.id.btnWidgetLeft, getPendingIntent(context, ONCLICK_BOOK, widgetId, null));
                     widgetView.setOnClickPendingIntent(R.id.btnWidgetRight, getPendingIntent(context, ONCLICK_CONNECT, widgetId, null));
                 } else {
@@ -174,9 +157,9 @@ public class Widget extends AppWidgetProvider {
                     calendar.set(Calendar.YEAR, Integer.parseInt(String.valueOf(booking.getYear())));
                     sdf.setTimeZone(calendar.getTimeZone());
 
-                    widgetView.setTextViewText(R.id.tvWidgetText, "You have a booking on " + sdf.format(calendar.getTime()) + " at " + String.valueOf(booking.getHour()) + ":" + String.valueOf(booking.getMinute()));
-                    widgetView.setTextViewText(R.id.btnWidgetLeft, "Cancel booking");
-                    widgetView.setTextViewText(R.id.btnWidgetRight, "Connect to table");
+                    widgetView.setTextViewText(R.id.tvWidgetText, context.getString(R.string.you_have_a_booking_on) + " " + sdf.format(calendar.getTime()) + " " + context.getString(R.string.at) + " " + String.valueOf(booking.getHour()) + ":" + String.valueOf(booking.getMinute()));
+                    widgetView.setTextViewText(R.id.btnWidgetLeft, context.getString(R.string.cancel_booking_text));
+                    widgetView.setTextViewText(R.id.btnWidgetRight, context.getString(R.string.connect_to_table));
                     Log.i(MainActivity.TAG, "Setting booking id: " + booking.getId());
                     widgetView.setOnClickPendingIntent(R.id.btnWidgetLeft, getPendingIntent(context, ONCLICK_CANCEL, widgetId, booking.getId()));
                     widgetView.setOnClickPendingIntent(R.id.btnWidgetRight, getPendingIntent(context, ONCLICK_CONNECT, widgetId, null));

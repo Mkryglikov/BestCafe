@@ -74,7 +74,7 @@ public class FragmentConnect extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.w(MainActivity.TAG, "App unable to discover: " + e.getLocalizedMessage());
-                    tvConnectingHint.setText("App is unable to discover tables");
+                    tvConnectingHint.setText(R.string.discovering_error_message);
                     pbConnecting.setVisibility(View.INVISIBLE);
                 });
     }
@@ -111,9 +111,9 @@ public class FragmentConnect extends Fragment {
     };
 
     @SuppressLint("MissingPermission")
-    private TablesAdapter.OnSelectTableToConnectListener onSelectTableToConnectListener = (tableId, tableName) -> {
+    private final TablesAdapter.OnSelectTableToConnectListener onSelectTableToConnectListener = (tableId, tableName) -> {
         rvTablesConnect.setVisibility(View.INVISIBLE);
-        tvConnectingHint.setText("Connecting to " + tableName);
+        tvConnectingHint.setText(getString(R.string.connecting_to) + " " + tableName);
         nearbyConnectionsClient.requestConnection(((TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId(), tableId, connectionLifecycleCallback);
     };
 

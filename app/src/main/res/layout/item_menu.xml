@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="4dp"
+        android:paddingStart="0dp"
         android:paddingEnd="8dp"
         android:textColor="@color/colorLightGrey"
         app:layout_constraintBottom_toBottomOf="parent"

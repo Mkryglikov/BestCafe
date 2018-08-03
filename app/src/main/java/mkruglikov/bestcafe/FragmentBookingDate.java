@@ -18,7 +18,6 @@ public class FragmentBookingDate extends Fragment {
 
     public static final String ON_DATE_SELECTED_LISTENER_FRAGMENT_BOOKING_DATE_BUNDLE_KEY = "OnDateSelectedListener FragmentBookingDate Bundle key";
 
-    private MaterialCalendarView calendarBooking;
     private BookingOnDateSelectedListener onDateSelectedListener;
 
     public FragmentBookingDate() {
@@ -29,7 +28,7 @@ public class FragmentBookingDate extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_booking_date, container, false);
         onDateSelectedListener = getArguments().getParcelable(ON_DATE_SELECTED_LISTENER_FRAGMENT_BOOKING_DATE_BUNDLE_KEY);
-        calendarBooking = rootView.findViewById(R.id.calendarBooking);
+        MaterialCalendarView calendarBooking = rootView.findViewById(R.id.calendarBooking);
         calendarBooking.state().edit()
                 .setMinimumDate(CalendarDay.from(Calendar.getInstance()))
                 .commit();

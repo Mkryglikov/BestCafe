@@ -17,17 +17,17 @@ import mkruglikov.bestcafe.R;
 
 public class BookingPeopleAdapter extends RecyclerView.Adapter<BookingPeopleAdapter.ViewHolder> {
 
-    private int maxPeopleCount, selectedPeopleCount;
-    private List<PeopleButton> peopleButtons;
-    private OnPeopleButtonClickListener onPeopleButtonClickListener;
-    private Context context;
+    private final int maxPeopleCount;
+    private final int selectedPeopleCount;
+    private final OnPeopleButtonClickListener onPeopleButtonClickListener;
+    private final Context context;
 
     public BookingPeopleAdapter(Context context, int maxPeopleCount, int selectedPeopleCount, OnPeopleButtonClickListener onPeopleButtonClickListener) {
         this.context = context;
         this.maxPeopleCount = maxPeopleCount;
         this.selectedPeopleCount = selectedPeopleCount;
         this.onPeopleButtonClickListener = onPeopleButtonClickListener;
-        peopleButtons = new ArrayList<>();
+        List<PeopleButton> peopleButtons = new ArrayList<>();
         for (int i = 1; i <= maxPeopleCount; i++) {
             peopleButtons.add(new PeopleButton(i));
         }
@@ -72,13 +72,13 @@ public class BookingPeopleAdapter extends RecyclerView.Adapter<BookingPeopleAdap
     }
 
     class PeopleButton {
-        int id;
+        final int id;
 
         public int getId() {
             return id;
         }
 
-        public PeopleButton(int id) {
+        PeopleButton(int id) {
             this.id = id;
         }
     }

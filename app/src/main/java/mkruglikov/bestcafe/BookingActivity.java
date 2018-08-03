@@ -26,6 +26,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @SuppressLint("ParcelCreator")
@@ -36,18 +37,18 @@ public class BookingActivity extends AppCompatActivity implements
         FragmentBookingReview.OnBookingSubmitListener {
 
     public static final int BOOKING_ACTIVITY_REQUEST_CODE = 17;
-    public static final int CAFES_OPENING_HOUR = 9;
-    public static final int CAFES_CLOSING_HOUR = 22;
+    private static final int CAFES_OPENING_HOUR = 9;
+    private static final int CAFES_CLOSING_HOUR = 22;
 
     private FragmentManager fragmentManager;
     private ImageView ivBookingDateIcon, ivBookingTimeIcon, ivBookingPeopleIcon, ivBookingNextStepIcon;
     private TextView tvToolbarBooking, tvBookingDateText, tvBookingTimeText, tvBookingPeopleText, tvBookingNextStepNo, tvBookingNextStepHint;
     private ConstraintLayout clBookingNextStep;
-    private SimpleDateFormat sdf = new SimpleDateFormat("MMM dd ");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("MMM dd ", Locale.US);
     private static Calendar selectedDate;
     private static int selectedHour = 24, selectedMinute = 60, selectedPeopleCount;
     private static int currentStep = 0;
-    private Calendar calendar = Calendar.getInstance();
+    private final Calendar calendar = Calendar.getInstance();
 
 
     @Override
@@ -57,7 +58,9 @@ public class BookingActivity extends AppCompatActivity implements
 
         Toolbar toolbarBooking = findViewById(R.id.toolbarBooking);
         setSupportActionBar(toolbarBooking);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         fragmentManager = getSupportFragmentManager();
 
@@ -207,7 +210,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private boolean checkSelectedDate() {
         if (selectedDate == null) {
-            Toast.makeText(this, "Choose the day", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.choose_the_day_message, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -215,10 +218,10 @@ public class BookingActivity extends AppCompatActivity implements
 
     private boolean checkSelectedTime() {
         if (selectedHour == 24 || selectedMinute == 60) {
-            Toast.makeText(this, "Choose the time", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.choose_the_time_message, Toast.LENGTH_SHORT).show();
             return false;
         } else if (selectedHour < CAFES_OPENING_HOUR || selectedHour > CAFES_CLOSING_HOUR) {
-            Toast.makeText(this, "We're open from " + CAFES_OPENING_HOUR + " to " + CAFES_CLOSING_HOUR, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.we_are_open_from_message) + " " + CAFES_OPENING_HOUR + " " + getString(R.string.from_to) + " " + CAFES_CLOSING_HOUR, Toast.LENGTH_SHORT).show();
             return false;
         }
         // selected day == today && (selected hour < current hour || (selected hour == current hour && selected minute <= current minute))
@@ -226,7 +229,7 @@ public class BookingActivity extends AppCompatActivity implements
                 ((selectedHour < calendar.get(Calendar.HOUR_OF_DAY) ||
                         (selectedHour == calendar.get(Calendar.HOUR_OF_DAY) &&
                                 selectedMinute <= calendar.get(Calendar.MINUTE))))) {
-            Toast.makeText(this, "Selected time has passed already", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.selected_time_has_passed_already_message, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -234,7 +237,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private boolean checkSelectedPeople() {
         if (selectedPeopleCount <= 0) {
-            Toast.makeText(this, "Choose people count", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.choose_people_count_message, Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

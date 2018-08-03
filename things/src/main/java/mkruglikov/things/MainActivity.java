@@ -38,8 +38,8 @@ import java.util.Map;
 public class MainActivity extends Activity {
 
     public static final String TAG = "FUCK";
-    public static final String LAST_CONNECTED_ENDPOINT_NAME = "last_connected_endpoint_name";
-    public static final int TABLE_NUMBER = 5;
+    private static final String LAST_CONNECTED_ENDPOINT_NAME = "last_connected_endpoint_name";
+    private static final int TABLE_NUMBER = 5;
 
     private ConnectionsClient nearbyConnectionsClient;
     private SharedPreferences sharedPreferences;
@@ -186,7 +186,7 @@ public class MainActivity extends Activity {
         return itemsCount * 5;
     }
 
-    private FirestoreUtils.OnCheckIsTableActiveListener onCheckIsTableActiveListener = new FirestoreUtils.OnCheckIsTableActiveListener() {
+    private final FirestoreUtils.OnCheckIsTableActiveListener onCheckIsTableActiveListener = new FirestoreUtils.OnCheckIsTableActiveListener() {
         @Override
         public void onTableChecked(boolean isActive, String exceptionMessage, String oId, String oStatus, int iCount) {
             String eName = sharedPreferences.getString(LAST_CONNECTED_ENDPOINT_NAME, null);

@@ -188,14 +188,14 @@ public class ConnectActivity extends AppCompatActivity {
 
         if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
             AlertDialog alert = new AlertDialog.Builder(ConnectActivity.this)
-                    .setTitle("BestCafe")
-                    .setMessage("Do you want to connect to our WiFi network?")
+                    .setTitle(R.string.app_name)
+                    .setMessage(R.string.connect_to_wifi_confirmation)
                     .setCancelable(true)
-                    .setNegativeButton("No", (dialog, id) -> {
+                    .setNegativeButton(R.string.no, (dialog, id) -> {
                         isWantToConnectWifi = false;
                         dialog.cancel();
                     })
-                    .setPositiveButton("Yes", (dialogInterface, which) -> {
+                    .setPositiveButton(R.string.yes, (dialogInterface, which) -> {
                         boolean isWifiEnabled = wifiManager.isWifiEnabled();
                         if (!isWifiEnabled)
                             wifiManager.setWifiEnabled(true);

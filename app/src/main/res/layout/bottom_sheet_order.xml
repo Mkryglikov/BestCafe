@@ -14,6 +14,7 @@
         android:id="@+id/ivArrowOrderBottomSheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/contentDescription_order_details"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_arrow_up"
@@ -26,7 +27,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/ivArrowOrderBottomSheet"
         android:layout_marginStart="16dp"
-        android:text="Order Details"
+        android:text="@string/bottom_sheet_title"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -37,7 +38,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/ivArrowOrderBottomSheet"
         android:layout_marginEnd="16dp"
-        android:text="$0"
+        android:text="@string/zero_total"
         android:textSize="18sp" />
 
     <TextView
@@ -47,7 +48,7 @@
         android:layout_below="@+id/tvDetailsHintOrderBottomSheet"
         android:layout_centerHorizontal="true"
         android:layout_margin="32dp"
-        android:text="You haven't selected any items yet" />
+        android:text="@string/no_selected_items_message" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvOrderBottomSheet"
@@ -68,7 +69,7 @@
         android:background="@color/colorAccent"
         android:clickable="true"
         android:focusable="true"
-        android:text="Place the order"
+        android:text="@string/place_the_order"
         android:textColor="@android:color/white"
         android:visibility="gone" />
 

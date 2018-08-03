@@ -1,56 +1,104 @@
 <resources>
-    <!--Application name-->
+
     <string name="app_name">Best Cafe</string>
 
-    <!--Main activity-->
-    <string name="btnBookMain_text">Book a table</string>
-    <string name="btnConnectMain_text">Connect to table</string>
-    <string name="sign_out_text">Sign Out</string>
-    <string name="btnBookMoreMain_text">Book one more</string>
+    <string name="book_a_table">Book a table</string>
+    <string name="book_more_text">Book one more</string>
+    <string name="no_active_bookings_message">You have no active bookings yet</string>
 
-    <!--Not SignedIn fragment-->
-    <string name="tvSignInMain_text">Sign In</string>
+    <string name="connect_to_table">Connect to table</string>
 
-    <!--SignedIn fragment-->
-    <string name="tvNoBookingsHint_text">You have no active bookings yet</string>
-
-    <!--Both login activities-->
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="or">or</string>
 
-    <!--SignIn activity-->
-    <string name="btnSubmitSignIn_text">Sign In</string>
-    <string name="SignInActivity_title">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
 
-    <!--SignUp activity-->
-    <string name="SignUpActivity_title">Sign Up</string>
-    <string name="btnSubmitSignUp_text">Sign Up</string>
-
-    <!--Booking activity-->
     <string name="step_label">Step</string>
     <string name="booking_date_hint">Choose a date</string>
     <string name="booking_time_hint">Choose a time</string>
     <string name="booking_people_hint">No of people</string>
     <string name="booking_review_hint">Review booking</string>
-    <string name="tvNeedLoginHint_text">You need to login to make a booking</string>
-    <string name="btnSignUpReview_text">Sign Up</string>
-    <string name="btnSignInReview_text">Sign In</string>
-    <string name="btnSubmitBooking_text">Book a table</string>
-    <string name="tvLoggedAsHintReview_hint">You\'re logged in as</string>
+    <string name="need_to_login_message">You need to login to make a booking</string>
+    <string name="logged_in_as_hint">You\'re logged in as</string>
 
-    <!--Connecting activity-->
     <string name="menu_title">Menu</string>
 
-    <!--Active order activity-->
-    <string name="add_extra_items_text">Add extra items</string>
-    <string name="call_the_waiter_text">Call the waiter</string>
-    <string name="your_order_is_cooking_text">Your order is cooking</string>
-    <string name="estimated_waiting_time_text">Estimated waiting time:</string>
-    <string name="cooking_time_measure_text">min</string>
-    <string name="enjoy_your_meal_text">Enjoy your meal</string>
-    <string name="close_the_order_text">Close the order</string>
-    <string name="loading">Loading...</string>
-    <string name="connect_to_wifi_text">Connect to Wifi</string>
+    <string name="add_extra_items">Add extra items</string>
+    <string name="call_the_waiter">Call the waiter</string>
+    <string name="waiter_is_called">Waiter is called</string>
+    <string name="your_order_is_cooking">Your order is cooking</string>
+    <string name="estimated_waiting_time">Estimated waiting time:</string>
+    <string name="your_order_will_be_cooked_in">Your order will be cooked in</string>
+    <string name="cooking_time_measure">min</string>
+    <string name="in_minutes">minutes</string>
+    <string name="enjoy_your_meal_message">Enjoy your meal</string>
+    <string name="close_the_order">Close the order</string>
+    <string name="loading">Loading…</string>
+    <string name="connect_to_wifi">Connect to Wifi</string>
+    <string name="confirmation_title">Confirm</string>
+
+    <string name="booking_cancel_confirmation">Are you sure you want to cancel the booking?</string>
+    <string name="close_the_order_confirmation">Are you sure you want to close the order and pay?</string>
+    <string name="connect_to_wifi_confirmation">Do you want to connect to our WiFi network?</string>
+    <string name="log_out_confirmation_message">Are you sure you want to log out?</string>
+
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="from_to">to</string>
+    <string name="at">at</string>
+    <string name="currency_label">$</string>
+    <string name="currency_code">USD</string>
+
+    <string name="payment_option_cash_card">With cash or credit card</string>
+    <string name="payment_option_google_pay">Google Pay</string>
+    <string name="how_to_pay_title">How do you want to pay?</string>
+    <string name="google_pay_error">Can\'t pay with Google Pay</string>
+
+    <string name="connecting_to_tableNo_hint">to Table #</string>
+    <string name="choose_the_day_message">Choose the day</string>
+    <string name="choose_the_time_message">Choose the time</string>
+    <string name="we_are_open_from_message">We\'re open from</string>
+
+    <string name="selected_time_has_passed_already_message">Selected time has passed already</string>
+    <string name="choose_people_count_message">Choose people count</string>
+    <string name="google_login_error_message">Login with Google failed</string>
+    <string name="no_internet_error_message">You have no internet connection</string>
+    <string name="discovering_error_message">App is unable to discover tables</string>
+
+    <string name="connecting_to">Connecting to</string>
+    <string name="extra_items_bottom_sheet_title">Extra items details</string>
+    <string name="add_extra_items_bottom_sheet_button_text">Add extra items</string>
+    <string name="sign_out_error_message">Error signing out</string>
+
+    <string name="required_field_hint">Required</string>
+    <string name="not_an_email_error_hint">Isn\'t Email address</string>
+    <string name="password_8_characters_hint">At least 8 characters</string>
+    <string name="password_wrong_symbols_hint">Password can contain only letters and numbers</string>
+    <string name="authentication_error_message">Authentication failed</string>
+    <string name="booking_canceled_message">Booking cancelled</string>
+    <string name="booking_deleting_error_message">Error deleting booking</string>
+    <string name="login_to_view_bookings_message">You must be logged in to view your bookings</string>
+    <string name="you_have_a_booking_on">You have a booking on</string>
+    <string name="cancel_booking_text">Cancel booking</string>
+    <string name="logo_subtitle">* for introverts</string>
+    <string name="booking_for">Booking for</string>
+    <string name="person">person</string>
+    <string name="cancel">Cancel</string>
+    <string name="table_searching_message">Searching for a table near you</string>
+    <string name="connect">Connect</string>
+    <string name="connecting">Connecting</string>
+    <string name="bottom_sheet_title">Order Details</string>
+    <string name="zero_total">$0</string>
+    <string name="no_selected_items_message">You haven\'t selected any items yet</string>
+    <string name="place_the_order">Place the order</string>
+    <string name="contentDescription_choose_the_date">Choose the date</string>
+    <string name="contentDescription_choose_the_time">Choose the time</string>
+    <string name="contentDescription_select_number_of_people">Select number of people</string>
+    <string name="contentDescription_next_step">Next step</string>
+    <string name="contentDescription_order_details">Order details</string>
+    <string name="contentDescription_delete_this_item">Delete this item</string>
 
 </resources>

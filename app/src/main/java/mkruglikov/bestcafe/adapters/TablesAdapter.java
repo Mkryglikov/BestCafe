@@ -15,8 +15,8 @@ import mkruglikov.bestcafe.models.Table;
 
 public class TablesAdapter extends RecyclerView.Adapter<TablesAdapter.ViewHolder> {
 
-    private List<Table> tables;
-    private OnSelectTableToConnectListener onSelectTableToConnectListener;
+    private final List<Table> tables;
+    private final OnSelectTableToConnectListener onSelectTableToConnectListener;
 
     public TablesAdapter(List<Table> tables, OnSelectTableToConnectListener onSelectTableToConnectListener) {
         this.tables = tables;

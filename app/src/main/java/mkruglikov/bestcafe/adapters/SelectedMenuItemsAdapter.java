@@ -21,9 +21,9 @@ import mkruglikov.bestcafe.models.MenuItem;
 
 public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuItemsAdapter.ViewHolder> {
 
-    private List<MenuItem> items;
-    private FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener;
-    private Context context;
+    private final List<MenuItem> items;
+    private final FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener;
+    private final Context context;
 
     public SelectedMenuItemsAdapter(Context context, List<MenuItem> items, FragmentOrder.OnMenuItemDeleteListener onMenuItemDeleteListener) {
         this.context = context;
@@ -56,7 +56,7 @@ public class SelectedMenuItemsAdapter extends RecyclerView.Adapter<SelectedMenuI
         Animation fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_out);
         MenuItem item = items.get(position);
         holder.tvSelectedMenuItemName.setText(item.getName());
-        holder.tvSelectedMenuItemPrice.setText("$" + String.valueOf(item.getPrice()));
+        holder.tvSelectedMenuItemPrice.setText(context.getString(R.string.currency_label) + String.valueOf(item.getPrice()));
         holder.btnDeleteSelectedMenuItem.setOnClickListener(view -> {
             holder.layoutSelectedItem.startAnimation(fadeOutAnimation);
             new Handler().postDelayed(() -> onMenuItemDeleteListener.onMenuItemDeleted(item), 150);

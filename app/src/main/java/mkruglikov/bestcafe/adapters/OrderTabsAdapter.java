@@ -16,9 +16,9 @@ import mkruglikov.bestcafe.FragmentOrderCategory;
 import mkruglikov.bestcafe.models.MenuItem;
 
 public class OrderTabsAdapter extends FragmentPagerAdapter {
-    private List<MenuItem> menu;
-    private List<String> categories;
-    private FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
+    private final List<MenuItem> menu;
+    private final List<String> categories;
+    private final FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener;
 
     public OrderTabsAdapter(FragmentManager fm, List<MenuItem> menu, List<String> categories, FragmentOrder.OnMenuItemSelectListener onMenuItemSelectListener) {
         super(fm);

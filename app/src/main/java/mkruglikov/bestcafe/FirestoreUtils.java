@@ -1,7 +1,5 @@
 package mkruglikov.bestcafe;
 
-import android.util.Log;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,9 +15,9 @@ import mkruglikov.bestcafe.models.Booking;
 public class FirestoreUtils {
 
     //Booking
-    static final String FIRESTORE_BOOKINGS_COLLECTION = "bookings";
-    static final String FIRESTORE_COUNTER_DOCUMENT = "counter";
-    static final String FIRESTORE_COUNTER_FIELD = "lastId";
+    private static final String FIRESTORE_BOOKINGS_COLLECTION = "bookings";
+    private static final String FIRESTORE_COUNTER_DOCUMENT = "counter";
+    private static final String FIRESTORE_COUNTER_FIELD = "lastId";
 
     static final String FIRESTORE_USERID_FIELD = "userId";
     static final String FIRESTORE_DAY_FIELD = "day";
@@ -38,8 +36,6 @@ public class FirestoreUtils {
     static final String FIRESTORE_PRICE_FIELD = "price";
 
     //Order
-    static final String FIRESTORE_ORDERS_COLLECTION = "orders";
-    static final String FIRESTORE_STATUS_FIELD = "status";
     static final String FIRESTORE_STATUS_PREPARING = "preparing";
     static final String FIRESTORE_STATUS_EATS = "eats";
     static final String FIRESTORE_STATUS_DONE = "done";
@@ -118,7 +114,6 @@ public class FirestoreUtils {
         if (listener != null) {
             onDeleteBookingListener = listener;
         }
-        Log.i(MainActivity.TAG, "deleteBooking: " + bookingId);
         db.collection(FIRESTORE_BOOKINGS_COLLECTION)
                 .document(bookingId)
                 .delete()
