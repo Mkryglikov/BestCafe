@@ -11,12 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/tvNeedLoginHint"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="92dp"
             android:gravity="center"
             android:text="@string/need_to_login_message"
             android:textSize="18sp"
@@ -24,14 +25,14 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="5.0"
+            app:layout_constraintVertical_bias="0.65"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <Button
             android:id="@+id/btnSignInReview"
             android:layout_width="wrap_content"
             android:layout_height="64dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="32dp"
             android:background="@drawable/button_rounded_red"
             android:elevation="8dp"
             android:paddingEnd="86dp"
@@ -73,6 +74,7 @@
         <com.google.android.gms.common.SignInButton
             android:id="@+id/btnGoogleReview"
             android:layout_width="128dp"
+
             android:layout_height="64dp"
             android:layout_marginTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"

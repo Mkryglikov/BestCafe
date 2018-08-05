@@ -84,7 +84,7 @@ public class FragmentBookingReview extends Fragment {
                     try {
                         firebaseAuthWithGoogle(task.getResult(ApiException.class));
                     } catch (ApiException e) {
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.google_login_error_message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), getString(R.string.google_login_error_message), Toast.LENGTH_LONG).show();
                         Log.w(MainActivity.TAG, "Google sign in failed: " + e.getLocalizedMessage());
                     }
                 }
@@ -101,7 +101,7 @@ public class FragmentBookingReview extends Fragment {
                 user = firebaseAuth.getCurrentUser();
                 changeLayout();
             } else {
-                Toast.makeText(getActivity().getApplicationContext(), R.string.google_login_error_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.google_login_error_message), Toast.LENGTH_LONG).show();
                 Log.w(TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
             }
         });
@@ -135,7 +135,7 @@ public class FragmentBookingReview extends Fragment {
                 if (isNetworkConnected())
                     onBookingSubmitListener.onBookingSubmitted();
                 else
-                    Toast.makeText(getActivity().getApplicationContext(), R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
             });
         }
     }

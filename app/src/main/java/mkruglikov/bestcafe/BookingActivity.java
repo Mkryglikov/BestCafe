@@ -137,8 +137,8 @@ public class BookingActivity extends AppCompatActivity implements
 
         ivBookingNextStepIcon.setImageResource(R.drawable.ic_clock);
         tvBookingNextStepNo.setText("2");
-        tvBookingNextStepHint.setText(R.string.booking_time_hint);
-        tvToolbarBooking.setText(R.string.booking_date_hint);
+        tvBookingNextStepHint.setText(getString(R.string.booking_time_hint));
+        tvToolbarBooking.setText(getString(R.string.booking_date_hint));
         currentStep = 1;
     }
 
@@ -158,10 +158,10 @@ public class BookingActivity extends AppCompatActivity implements
         ivBookingTimeIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
         ivBookingPeopleIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorLightGrey));
 
-        tvToolbarBooking.setText(R.string.booking_time_hint);
+        tvToolbarBooking.setText(getString(R.string.booking_time_hint));
         ivBookingNextStepIcon.setImageResource(R.drawable.ic_people);
         tvBookingNextStepNo.setText("3");
-        tvBookingNextStepHint.setText(R.string.booking_people_hint);
+        tvBookingNextStepHint.setText(getString(R.string.booking_people_hint));
         currentStep = 2;
     }
 
@@ -182,10 +182,10 @@ public class BookingActivity extends AppCompatActivity implements
         ivBookingTimeIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorLightGrey));
         ivBookingPeopleIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent));
 
-        tvToolbarBooking.setText(R.string.booking_people_hint);
+        tvToolbarBooking.setText(getString(R.string.booking_people_hint));
         ivBookingNextStepIcon.setImageResource(R.drawable.ic_review);
         tvBookingNextStepNo.setText("4");
-        tvBookingNextStepHint.setText(R.string.booking_review_hint);
+        tvBookingNextStepHint.setText(getString(R.string.booking_review_hint));
         currentStep = 3;
     }
 
@@ -204,13 +204,13 @@ public class BookingActivity extends AppCompatActivity implements
         ivBookingPeopleIcon.setColorFilter(Color.BLACK);
         clBookingNextStep.setVisibility(View.GONE);
 
-        tvToolbarBooking.setText(R.string.booking_review_hint);
+        tvToolbarBooking.setText(getString(R.string.booking_review_hint));
         currentStep = 4;
     }
 
     private boolean checkSelectedDate() {
         if (selectedDate == null) {
-            Toast.makeText(this, R.string.choose_the_day_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.choose_the_day_message), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -218,7 +218,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private boolean checkSelectedTime() {
         if (selectedHour == 24 || selectedMinute == 60) {
-            Toast.makeText(this, R.string.choose_the_time_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.choose_the_time_message), Toast.LENGTH_SHORT).show();
             return false;
         } else if (selectedHour < CAFES_OPENING_HOUR || selectedHour > CAFES_CLOSING_HOUR) {
             Toast.makeText(this, getString(R.string.we_are_open_from_message) + " " + CAFES_OPENING_HOUR + " " + getString(R.string.from_to) + " " + CAFES_CLOSING_HOUR, Toast.LENGTH_SHORT).show();
@@ -229,7 +229,7 @@ public class BookingActivity extends AppCompatActivity implements
                 ((selectedHour < calendar.get(Calendar.HOUR_OF_DAY) ||
                         (selectedHour == calendar.get(Calendar.HOUR_OF_DAY) &&
                                 selectedMinute <= calendar.get(Calendar.MINUTE))))) {
-            Toast.makeText(this, R.string.selected_time_has_passed_already_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.selected_time_has_passed_already_message), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -237,7 +237,7 @@ public class BookingActivity extends AppCompatActivity implements
 
     private boolean checkSelectedPeople() {
         if (selectedPeopleCount <= 0) {
-            Toast.makeText(this, R.string.choose_people_count_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.choose_people_count_message), Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

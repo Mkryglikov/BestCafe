@@ -111,7 +111,7 @@ public class ActiveOrderActivity extends AppCompatActivity {
         btnCloseOrderCooking.setOnClickListener(view -> {
             AlertDialog alert = new AlertDialog.Builder(this)
                     .setTitle(getString(R.string.confirmation_title))
-                    .setMessage(R.string.close_the_order_confirmation)
+                    .setMessage(getString(R.string.close_the_order_confirmation))
                     .setCancelable(true)
                     .setNegativeButton(getString(R.string.no), (dialog, id) -> dialog.cancel())
                     .setPositiveButton(getString(R.string.yes), (dialogInterface, i) ->
@@ -180,12 +180,12 @@ public class ActiveOrderActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     Log.i(MainActivity.TAG, "Waiter payload sent fo order " + orderId);
                     if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                        btnCallWaiterOrderCooking.setText(R.string.waiter_is_called);
+                        btnCallWaiterOrderCooking.setText(getString(R.string.waiter_is_called));
                         btnCallWaiterOrderCooking.setEnabled(false);
                         btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
                     }
                     if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                        btnCallWaiterOrderEats.setText(R.string.waiter_is_called);
+                        btnCallWaiterOrderEats.setText(getString(R.string.waiter_is_called));
                         btnCallWaiterOrderEats.setEnabled(false);
                         btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
                     }
@@ -324,24 +324,24 @@ public class ActiveOrderActivity extends AppCompatActivity {
                         if (Boolean.valueOf(isWaiterCalled)) {
                             Log.i(MainActivity.TAG, "Waiter is called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderCooking.setText(R.string.waiter_is_called);
+                                btnCallWaiterOrderCooking.setText(getString(R.string.waiter_is_called));
                                 btnCallWaiterOrderCooking.setEnabled(false);
                                 btnCallWaiterOrderCooking.setBackgroundColor(Color.TRANSPARENT);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderEats.setText(R.string.waiter_is_called);
+                                btnCallWaiterOrderEats.setText(getString(R.string.waiter_is_called));
                                 btnCallWaiterOrderEats.setEnabled(false);
                                 btnCallWaiterOrderEats.setBackgroundColor(Color.TRANSPARENT);
                             }
                         } else {
                             Log.i(MainActivity.TAG, "Waiter is not called");
                             if (btnCallWaiterOrderCooking.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderCooking.setText(R.string.call_the_waiter);
+                                btnCallWaiterOrderCooking.setText(getString(R.string.call_the_waiter));
                                 btnCallWaiterOrderCooking.setEnabled(true);
                                 btnCallWaiterOrderCooking.setBackgroundResource(R.drawable.button_rounded_white);
                             }
                             if (btnCallWaiterOrderEats.getVisibility() == View.VISIBLE) {
-                                btnCallWaiterOrderEats.setText(R.string.call_the_waiter);
+                                btnCallWaiterOrderEats.setText(getString(R.string.call_the_waiter));
                                 btnCallWaiterOrderEats.setEnabled(true);
                                 btnCallWaiterOrderEats.setBackgroundResource(R.drawable.button_rounded_white);
 
@@ -363,12 +363,12 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
                         String[] payOptions = new String[]{getString(R.string.payment_option_cash_card), getString(R.string.payment_option_google_pay)};
                         new AlertDialog.Builder(ActiveOrderActivity.this)
-                                .setTitle(R.string.how_to_pay_title)
+                                .setTitle(getString(R.string.how_to_pay_title))
                                 .setItems(payOptions, (dialog, item) -> {
                                     switch (item) {
                                         case 0:
                                             callTheWaiter();
-                                            Toast.makeText(ActiveOrderActivity.this, R.string.waiter_is_called, Toast.LENGTH_LONG).show();
+                                            Toast.makeText(ActiveOrderActivity.this, getString(R.string.waiter_is_called), Toast.LENGTH_LONG).show();
                                             break;
                                         case 1:
                                             IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
@@ -382,10 +382,10 @@ public class ActiveOrderActivity extends AppCompatActivity {
                                                             if (task1.getResult(ApiException.class))
                                                                 payWithGooglePay(total);
                                                             else
-                                                                Toast.makeText(ActiveOrderActivity.this, R.string.google_pay_error, Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(ActiveOrderActivity.this, getString(R.string.google_pay_error), Toast.LENGTH_LONG).show();
                                                         } catch (ApiException exception) {
                                                             Log.w(MainActivity.TAG, "payWithGooglePay exception: " + exception.getLocalizedMessage());
-                                                            Toast.makeText(ActiveOrderActivity.this, R.string.google_pay_error, Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(ActiveOrderActivity.this, getString(R.string.google_pay_error), Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                             break;
@@ -500,11 +500,11 @@ public class ActiveOrderActivity extends AppCompatActivity {
 
             if (!currentSSID.equals(BuildConfig.WifiSSID) && isWantToConnectWifi) {
                 AlertDialog alert = new AlertDialog.Builder(ActiveOrderActivity.this)
-                        .setTitle(R.string.app_name)
-                        .setMessage(R.string.connect_to_wifi_confirmation)
+                        .setTitle(getString(R.string.app_name))
+                        .setMessage(getString(R.string.connect_to_wifi_confirmation))
                         .setCancelable(true)
-                        .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
-                        .setPositiveButton(R.string.yes, (dialogInterface, which) -> {
+                        .setNegativeButton(getString(R.string.no), (dialog, id) -> dialog.cancel())
+                        .setPositiveButton(getString(R.string.yes), (dialogInterface, which) -> {
                             boolean isWifiEnabled = wifiManager.isWifiEnabled();
                             if (!isWifiEnabled)
                                 wifiManager.setWifiEnabled(true);

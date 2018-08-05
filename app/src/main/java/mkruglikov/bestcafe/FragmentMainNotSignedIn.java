@@ -34,7 +34,7 @@ public class FragmentMainNotSignedIn extends Fragment {
             if (isNetworkConnected())
                 getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
             else
-                Toast.makeText(getActivity().getApplicationContext(), R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
         });
 
         TextView tvSignInMainNotSignedIn = rootView.findViewById(R.id.tvSignInMainNotSignedIn);
@@ -42,7 +42,7 @@ public class FragmentMainNotSignedIn extends Fragment {
             if (isNetworkConnected())
                 getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), SignInActivity.class), SignInActivity.SIGN_IN_ACTIVITY_REQUEST_CODE);
             else
-                Toast.makeText(getActivity().getApplicationContext(), R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
         });
         return rootView;
     }

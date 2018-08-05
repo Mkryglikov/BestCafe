@@ -68,11 +68,11 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
 
         holder.btnBookingItemCancel.setOnClickListener(view -> {
             AlertDialog alert = new AlertDialog.Builder(context)
-                    .setTitle(R.string.confirmation_title)
-                    .setMessage(R.string.booking_cancel_confirmation)
+                    .setTitle(context.getString(R.string.confirmation_title))
+                    .setMessage(context.getString(R.string.booking_cancel_confirmation))
                     .setCancelable(true)
-                    .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
-                    .setPositiveButton(R.string.yes, (dialogInterface, i) -> FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener))
+                    .setNegativeButton(context.getString(R.string.no), (dialog, id) -> dialog.cancel())
+                    .setPositiveButton(context.getString(R.string.yes), (dialogInterface, i) -> FirestoreUtils.deleteBooking(booking.getId(), onDeleteBookingListener))
                     .create();
             alert.show();
         });

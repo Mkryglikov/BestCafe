@@ -90,15 +90,15 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menuSignOut:
                 if (isNetworkConnected()) {
                     AlertDialog alert = new AlertDialog.Builder(this)
-                            .setTitle(R.string.confirmation_title)
-                            .setMessage(R.string.log_out_confirmation_message)
+                            .setTitle(getString(R.string.confirmation_title))
+                            .setMessage(getString(R.string.log_out_confirmation_message))
                             .setCancelable(true)
-                            .setNegativeButton(R.string.no, (dialog, id) -> dialog.cancel())
-                            .setPositiveButton(R.string.yes, (dialogInterface, i) -> signOut())
+                            .setNegativeButton(getString(R.string.no), (dialog, id) -> dialog.cancel())
+                            .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> signOut())
                             .create();
                     alert.show();
                 } else {
-                    Toast.makeText(this, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 }
                 return true;
             default:
@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         if (user == null) {
             showFragmentNotSignedIn();
         } else {
-            Toast.makeText(this, R.string.sign_out_error_message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.sign_out_error_message), Toast.LENGTH_SHORT).show();
         }
     }
 

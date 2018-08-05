@@ -101,7 +101,7 @@ public class FragmentMainSignedIn extends Fragment {
                     if (isNetworkConnected())
                         getActivity().startActivityForResult(new Intent(getActivity().getApplicationContext(), BookingActivity.class), BookingActivity.BOOKING_ACTIVITY_REQUEST_CODE);
                     else
-                        Toast.makeText(getActivity().getApplicationContext(), R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity().getApplicationContext(), getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 });
             }
         });

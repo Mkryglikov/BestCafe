@@ -74,7 +74,7 @@ public class FragmentConnect extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.w(MainActivity.TAG, "App unable to discover: " + e.getLocalizedMessage());
-                    tvConnectingHint.setText(R.string.discovering_error_message);
+                    tvConnectingHint.setText(getString(R.string.discovering_error_message));
                     pbConnecting.setVisibility(View.INVISIBLE);
                 });
     }

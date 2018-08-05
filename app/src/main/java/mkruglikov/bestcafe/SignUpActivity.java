@@ -115,7 +115,7 @@ public class SignUpActivity extends AppCompatActivity {
             try {
                 firebaseAuthWithGoogle(task.getResult(ApiException.class));
             } catch (ApiException e) {
-                Toast.makeText(this, R.string.google_login_error_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.google_login_error_message), Toast.LENGTH_LONG).show();
                 Log.w(MainActivity.TAG, "firebaseAuthWithGoogle: " + e.getLocalizedMessage());
             }
         }
@@ -129,7 +129,7 @@ public class SignUpActivity extends AppCompatActivity {
                     setResult(RESULT_OK);
                     finish();
                 } else {
-                    Toast.makeText(SignUpActivity.this, R.string.authentication_error_message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, getString(R.string.authentication_error_message), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -185,7 +185,7 @@ public class SignUpActivity extends AppCompatActivity {
                 setResult(RESULT_OK);
                 finish();
             } else {
-                Toast.makeText(this, R.string.google_login_error_message, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.google_login_error_message), Toast.LENGTH_LONG).show();
                 Log.w(MainActivity.TAG, "Firebase Auth With Google failed: " + task.getException().getLocalizedMessage());
                 setResult(RESULT_CANCELED);
                 finish();

@@ -55,7 +55,7 @@ public class Widget extends AppWidgetProvider {
                     signUpIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(signUpIntent);
                 } else {
-                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_SIGNIN:
@@ -64,7 +64,7 @@ public class Widget extends AppWidgetProvider {
                     signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(signInIntent);
                 } else {
-                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_BOOK:
@@ -73,7 +73,7 @@ public class Widget extends AppWidgetProvider {
                     bookingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(bookingIntent);
                 } else {
-                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 }
                 break;
             case ONCLICK_CONNECT:
@@ -88,15 +88,15 @@ public class Widget extends AppWidgetProvider {
                     FirestoreUtils.deleteBooking(bookingId, (isSuccessful, exceptionMessage) -> {
                         if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
                             Log.w(MainActivity.TAG, "Error deleting booking: " + exceptionMessage);
-                            Toast.makeText(context, R.string.booking_deleting_error_message, Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, context.getString(R.string.booking_deleting_error_message), Toast.LENGTH_LONG).show();
                             return;
                         }
                         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                         updateWidget(context, appWidgetManager, widgetId);
-                        Toast.makeText(context, R.string.booking_canceled_message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, context.getString(R.string.booking_canceled_message), Toast.LENGTH_LONG).show();
                     });
                 } else {
-                    Toast.makeText(context, R.string.no_internet_error_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, context.getString(R.string.no_internet_error_message), Toast.LENGTH_LONG).show();
                 }
                 break;
         }

@@ -91,7 +91,7 @@ public class FragmentOrder extends Fragment {
         tvNoItemsOrderBottomSheet = rootView.findViewById(R.id.tvNoItemsOrderBottomSheet);
         TextView tvDetailsHintOrderBottomSheet = rootView.findViewById(R.id.tvDetailsHintOrderBottomSheet);
         if (!isNewOrder)
-            tvDetailsHintOrderBottomSheet.setText(R.string.extra_items_bottom_sheet_title);
+            tvDetailsHintOrderBottomSheet.setText(getString(R.string.extra_items_bottom_sheet_title));
         RelativeLayout layoutOrderBottomSheet = rootView.findViewById(R.id.layoutOrderBottomSheet);
         tintViewOrder = rootView.findViewById(R.id.tintViewOrder);
 
@@ -99,7 +99,7 @@ public class FragmentOrder extends Fragment {
 
         btnSubmitOrder = rootView.findViewById(R.id.btnSubmitOrder);
         if (!isNewOrder)
-            btnSubmitOrder.setText(R.string.add_extra_items_bottom_sheet_button_text);
+            btnSubmitOrder.setText(getString(R.string.add_extra_items_bottom_sheet_button_text));
         btnSubmitOrder.setOnClickListener(view -> {  //Send order to Things and add to Firestore there
             btnSubmitOrder.setVisibility(View.GONE);
             pbSubmitOrder.setVisibility(View.VISIBLE);
@@ -179,7 +179,7 @@ public class FragmentOrder extends Fragment {
         public void onMenuItemSelected(MenuItem item) {
             selectedItems.add(item);
             total += item.getPrice();
-            tvTotalOrderBottomSheet.setText(R.string.currency_label + total);
+            tvTotalOrderBottomSheet.setText(getResources().getString(R.string.currency_label) + total);
             rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             tvNoItemsOrderBottomSheet.setVisibility(View.GONE);
@@ -203,7 +203,7 @@ public class FragmentOrder extends Fragment {
         public void onMenuItemDeleted(MenuItem item) {
             selectedItems.remove(item);
             total -= item.getPrice();
-            tvTotalOrderBottomSheet.setText(R.string.currency_label + total);
+            tvTotalOrderBottomSheet.setText(getResources().getString(R.string.currency_label) + total);
             rvOrderBottomSheet.setAdapter(new SelectedMenuItemsAdapter(getActivity().getApplicationContext(), selectedItems, onMenuItemDeleteListener));
 
             if (!selectedItems.isEmpty()) {
