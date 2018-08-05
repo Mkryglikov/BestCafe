@@ -36,3 +36,15 @@ In my opinion, the most simple way to install Android Things and connect it to t
 4. When the board is started you should see its local IP address on the monitor (otherwise, you can plug in a USB keyboard to your RPi and connect to the Internet using WiFi), use it to connect to adb using `adb connect IP`.
 
 *No additional peripheral hardware for Android Things is required.*
+
+## Screenshots
+
+<img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/01.%20Main%20not%20signed%20in.jpg" width="250"/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/02.%20Connecting.jpg" width="250" /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/03.%20Menu.jpg" width="250"/>
+
+<img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/04.%20Order%20details.jpg" width="250"/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/05.%20Order%20cooking.jpg" width="250" /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/06.%20Order%20eats.jpg" width="250"/>
+
+<img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/07.%20Booking%20date.jpg" width="250"/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/08.%20Booking%20time.jpg" width="250" /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/09.%20Booking%20people.jpg" width="250"/>
+
+<img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/10.%20Booking%20review%20sign%20in.jpg" width="250"/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/11.%20Sign%20in.jpg" width="250" /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/12.%20Booking%20review.jpg" width="250"/>
+
+<img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/13.%20Main%20signed%20in%20bookings.jpg" width="250"/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <img src="https://github.com/Mkryglikov/BestCafe/blob/master/screenshots/14.%20Main%20signed%20in%20no%20bookings.jpg" width="250" />
