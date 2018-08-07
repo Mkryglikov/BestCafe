@@ -1,5 +1,5 @@
 # Best Cafe
-**Capstone project for the Android developer Nanodegree from Udacity**
+**Capstone project for the Android developer scolarship from Google and Udacity**
 
 That’s the app for minimizing users interactions with the waiters in restaurants, cafes etc. The user makes a booking or comes to a cafe straight away, connects to the Android Things module near the table using Nearby Connections, gets a menu, wifi credentials and connects to cafes network (optionally). The user makes an order on its phone and sends it back to the Android Things module using Nearby Connections, where module sends the order to the Firestore database. Then the app shows estimated waiting time and checks in Android Things module if the waiter has brought the order and if so, shows options to open a menu and order some additional stuff, close the order by paying with Google Pay or call the waiter to pay.
 
