@@ -48,7 +48,7 @@ public class BookingActivity extends AppCompatActivity implements
     private static Calendar selectedDate;
     private static int selectedHour = 24, selectedMinute = 60, selectedPeopleCount;
     private static int currentStep = 0;
-    private final Calendar calendar = Calendar.getInstance();
+    private Calendar calendar;
 
 
     @Override
@@ -84,6 +84,13 @@ public class BookingActivity extends AppCompatActivity implements
 
         clBookingNextStep = findViewById(R.id.clBookingNextStep);
         clBookingNextStep.setOnClickListener(view -> nextStep());
+
+        currentStep = 0;
+        selectedHour = 24;
+        selectedMinute = 60;
+        selectedPeopleCount = 0;
+        calendar = Calendar.getInstance();
+
         nextStep();
     }
 
@@ -126,7 +133,6 @@ public class BookingActivity extends AppCompatActivity implements
         fragmentBookingDate.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerBooking, fragmentBookingDate)
-                .addToBackStack(null)
                 .commit();
 
         clBookingNextStep.setVisibility(View.VISIBLE);
@@ -149,7 +155,6 @@ public class BookingActivity extends AppCompatActivity implements
         fragmentBookingTime.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerBooking, fragmentBookingTime)
-                .addToBackStack(null)
                 .commit();
 
         clBookingNextStep.setVisibility(View.VISIBLE);
@@ -173,7 +178,6 @@ public class BookingActivity extends AppCompatActivity implements
         fragmentBookingPeople.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerBooking, fragmentBookingPeople)
-                .addToBackStack(null)
                 .commit();
 
         clBookingNextStep.setVisibility(View.VISIBLE);
@@ -196,7 +200,6 @@ public class BookingActivity extends AppCompatActivity implements
         fragmentBookingReview.setArguments(args);
         fragmentManager.beginTransaction()
                 .replace(R.id.containerBooking, fragmentBookingReview)
-                .addToBackStack(null)
                 .commit();
 
         ivBookingDateIcon.setColorFilter(Color.BLACK);
