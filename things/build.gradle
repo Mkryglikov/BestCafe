@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'bestcafethings'
+            keyPassword 'password'
+            storeFile file('E:/Git/BestCafe/keystore.jks')
+            storePassword 'password'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId 'mkruglikov.things'
@@ -17,6 +25,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
