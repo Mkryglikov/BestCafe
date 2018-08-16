@@ -52,7 +52,7 @@ In my opinion, the most simple way to install Android Things and connect it to t
 ## License
 MIT License
 
-Copyright (c) 2018 Kruglikov Maksim
+Copyright (c) 2018 Maksim Kruglikov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
