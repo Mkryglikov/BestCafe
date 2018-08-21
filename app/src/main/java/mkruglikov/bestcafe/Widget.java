@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import mkruglikov.bestcafe.models.Booking;
 
@@ -31,7 +30,6 @@ public class Widget extends AppWidgetProvider {
     private static final String WIDGET_BOOKING_ID_INTENT_EXTRA_KEY = "widget_booking_id_intent_extra_key";
 
     private RemoteViews widgetView;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d", Locale.US);
 
 
     @Override
@@ -114,6 +112,7 @@ public class Widget extends AppWidgetProvider {
     }
 
     private void updateWidget(Context context, AppWidgetManager appWidgetManager, int widgetId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM, d", context.getResources().getConfiguration().locale);
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
         widgetView = new RemoteViews(context.getPackageName(), R.layout.widget);

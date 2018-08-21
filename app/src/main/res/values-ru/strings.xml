@@ -1,0 +1,104 @@
+<resources>
+
+    <string name="app_name">Best Cafe</string>
+
+    <string name="book_a_table">Забронировать столик</string>
+    <string name="book_more_text">Забронировать ещё один</string>
+    <string name="no_active_bookings_message">Нет активных броней</string>
+
+    <string name="connect_to_table">Подключиться к столу</string>
+
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="or">или</string>
+
+    <string name="sign_out">Выйти</string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+
+    <string name="step_label">Шаг</string>
+    <string name="booking_date_hint">Выбор даты</string>
+    <string name="booking_time_hint">Выбор времени</string>
+    <string name="booking_people_hint">Кол-во гостей</string>
+    <string name="booking_review_hint">Итог</string>
+    <string name="need_to_login_message">Вам необхоимо войти, чтобы продолжить бронирование</string>
+    <string name="logged_in_as_hint">Вы вошли как</string>
+
+    <string name="menu_title">Меню</string>
+
+    <string name="add_extra_items">Заказать ещё</string>
+    <string name="call_the_waiter">Вызвать официанта</string>
+    <string name="waiter_is_called">Официант вызван</string>
+    <string name="your_order_is_cooking">Ваш заказ готовится</string>
+    <string name="estimated_waiting_time">Приерное время ожидания:</string>
+    <string name="your_order_will_be_cooked_in">Ваш заказ будет готов через</string>
+    <string name="cooking_time_measure">мин</string>
+    <string name="in_minutes">минут</string>
+    <string name="enjoy_your_meal_message">Приятного аппетита</string>
+    <string name="close_the_order">Закрыть заказ</string>
+    <string name="loading">Загрузка…</string>
+    <string name="connect_to_wifi">Подключиться к Wifi</string>
+    <string name="confirmation_title">Подтвердить</string>
+
+    <string name="booking_cancel_confirmation">Вы уверены что хотите отменить бронь?</string>
+    <string name="close_the_order_confirmation">Вы уверены что хотите закрыть заказ и рассчитаться?</string>
+    <string name="connect_to_wifi_confirmation">Вы хотите подключиться к нашей WiFi сети?</string>
+    <string name="log_out_confirmation_message">Вы уверены что хотите выйти?</string>
+
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
+    <string name="from_to">до</string>
+    <string name="at">в</string>
+    <string name="currency_label">$</string>
+    <string name="currency_code">USD</string>
+
+    <string name="payment_option_cash_card">Наличными или картой</string>
+    <string name="payment_option_google_pay">Google Pay</string>
+    <string name="how_to_pay_title">Как вы хотите рассчитаться?</string>
+    <string name="google_pay_error">Оплата Google Pay невозможна</string>
+
+    <string name="connecting_to_tableNo_hint">к столу #</string>
+    <string name="choose_the_day_message">Выберите дату</string>
+    <string name="choose_the_time_message">Выберите время</string>
+    <string name="we_are_open_from_message">Мы работаем с</string>
+
+    <string name="selected_time_has_passed_already_message">Выбранное время уже прошло</string>
+    <string name="choose_people_count_message">Выберите кол-во гостей</string>
+    <string name="google_login_error_message">Ошибка авторизации с помощью Google</string>
+    <string name="no_internet_error_message">Отсутствует подключение</string>
+    <string name="discovering_error_message">Приложение не может найти стол</string>
+
+    <string name="connecting_to">Подключаюсь к</string>
+    <string name="extra_items_bottom_sheet_title">Детали</string>
+    <string name="add_extra_items_bottom_sheet_button_text">Заказать ещё</string>
+    <string name="sign_out_error_message">Ошибка при выходе</string>
+
+    <string name="required_field_hint">Необходимо</string>
+    <string name="not_an_email_error_hint">Это не Email адрес</string>
+    <string name="password_8_characters_hint">Как минимум 8 символов</string>
+    <string name="password_wrong_symbols_hint">Только буквы латинского алфавита и цифры</string>
+    <string name="authentication_error_message">Ошибка авторизации</string>
+    <string name="booking_canceled_message">Бронь отменена</string>
+    <string name="booking_deleting_error_message">Ошибка при отмене брони</string>
+    <string name="login_to_view_bookings_message">Необходимо войти, чтобы просмотреть свои брони</string>
+    <string name="you_have_a_booking_on">У вас забронирован столик на</string>
+    <string name="cancel_booking_text">Отменить бронь</string>
+    <string name="logo_subtitle">* for introverts</string>
+    <string name="booking_for">Бронь на</string>
+    <string name="person">гостей</string>
+    <string name="cancel">Отменить</string>
+    <string name="table_searching_message">Ищу стол поблизости</string>
+    <string name="connect">Подключиться</string>
+    <string name="connecting">Подключение</string>
+    <string name="bottom_sheet_title">Детали заказа</string>
+    <string name="zero_total">$0</string>
+    <string name="no_selected_items_message">Вы пока ничего не выбрали</string>
+    <string name="place_the_order">Заказать</string>
+    <string name="contentDescription_choose_the_date">Выберите дату</string>
+    <string name="contentDescription_choose_the_time">Выберите время</string>
+    <string name="contentDescription_select_number_of_people">Выберите кол-во гостей</string>
+    <string name="contentDescription_next_step">Следющий шаг</string>
+    <string name="contentDescription_order_details">Детали заказа</string>
+    <string name="contentDescription_delete_this_item">Удалить</string>
+
+</resources>
