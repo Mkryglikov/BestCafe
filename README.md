@@ -12,7 +12,7 @@ The implication is that the cafes information system will use the same Firestore
 
 - *gradle.properties* in the root folder with a few parameters added:
 
-```
+```groovy
 GoogleSignInClientId = "YOUR_GOOGLE_OAUTH_2.0_CLIENT_ID"
 NearbyServiceId = "YOUR_CUSTOM_NEARBY_SERVICE_ID"
 WifiSSID = "YOUR_WIFI_SSID"
