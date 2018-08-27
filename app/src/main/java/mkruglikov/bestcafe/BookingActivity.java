@@ -43,7 +43,7 @@ public class BookingActivity extends AppCompatActivity implements
     private ImageView ivBookingDateIcon, ivBookingTimeIcon, ivBookingPeopleIcon, ivBookingNextStepIcon;
     private TextView tvToolbarBooking, tvBookingDateText, tvBookingTimeText, tvBookingPeopleText, tvBookingNextStepNo, tvBookingNextStepHint;
     private ConstraintLayout clBookingNextStep;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("MMM dd ", getResources().getConfiguration().locale);
+    private SimpleDateFormat sdf;
     private static Calendar selectedDate;
     private static int selectedHour = 24, selectedMinute = 60, selectedPeopleCount;
     private static int currentStep = 0;
@@ -89,6 +89,8 @@ public class BookingActivity extends AppCompatActivity implements
         selectedMinute = 60;
         selectedPeopleCount = 0;
         calendar = Calendar.getInstance();
+
+        sdf = new SimpleDateFormat("MMM dd ", getResources().getConfiguration().locale);
 
         nextStep();
     }
