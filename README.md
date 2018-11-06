@@ -8,7 +8,7 @@ That’s the app for minimizing users interactions with the waiters in restauran
 The implication is that the cafes information system will use the same Firestore database as the Android Things module. Cafes information (such as name, menus, table) will be faked and can be changed for a real cafe.
 
 ## Installation
-**1.** The project needs 3 additional files to be added. **UDACITY REVIEWERS CAN DOWNLOAD THESE FILES FROM THE LINK PROVIDED IN SUBMISSION NOTES AND SKIP THIS STEP**
+**1.** The project needs 3 additional files to be added.
 
 - *gradle.properties* in the root folder with a few parameters added:
 
