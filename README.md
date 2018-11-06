@@ -3,7 +3,7 @@
 
 That’s the app for minimizing users interactions with the waiters in restaurants, cafes etc. The user makes a booking or comes to a cafe straight away, connects to the Android Things module near the table using Nearby Connections, gets a menu, wifi credentials and connects to cafes network (optionally). The user makes an order on its phone and sends it back to the Android Things module using Nearby Connections, where module sends the order to the Firestore database. Then the app shows estimated waiting time and checks in Android Things module if the waiter has brought the order and if so, shows options to open a menu and order some additional stuff, close the order by paying with Google Pay or call the waiter to pay.
 
-**So the project actually consists of 2 apps: one for clients phone (/app) and one for Android Things module(/things).**
+**So the project actually consists of 2 apps: one for a clients phone (/app) and one for the Android Things module (/things).**
 
 The implication is that the cafes information system will use the same Firestore database as the Android Things module. Cafes information (such as name, menus, table) will be faked and can be changed for a real cafe.
 
